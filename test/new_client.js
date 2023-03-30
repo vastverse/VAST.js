@@ -17,7 +17,7 @@
  * - radius: The search radius of the client (default: 10) (Currently unused.)
  * 
  * Example:
- * node new_client.js 1 192.168.1.10 8000 500 600 10
+ * node new_client.js 1 192.168.1.10 20000 500 600 10
  * 
  */
 

@@ -20,7 +20,7 @@
  * - radius: The search radius of the matcher (default: 100) (The VON peer will always be aware of enclosing neighbours, but will connect to any additional neighbours that fall in this circle.)
  * 
  * Example:
- * node start_matcher.js 1 500 600 150 true 192.168.1.10 8000 8001 20000 150
+ * node start_matcher.js 1 500 600 true 192.168.1.10 8000 8001 20000 150
  * 
  */
 
@@ -54,9 +54,9 @@ UTIL.lookupIP(gwHost, function (addr) {
       VON_port: vonPort,
       client_port: clientPort,
       alias: alias,
-      logDisplayLevel: 3,
-      logRecordLevel: 4,
-      eventDisplayLevel: 0,
+      logDisplayLevel: 5,
+      logRecordLevel: 5,
+      eventDisplayLevel: 5,
       eventRecordLevel: 5,
     },
     function (id) {
