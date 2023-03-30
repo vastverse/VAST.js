@@ -1,5 +1,5 @@
-const client = require("../lib/client");
-require("../lib/common.js");
+const client = require("../../lib/client");
+require("../../lib/common.js");
 var lib = require("../lib/common/logging.js");
 
 // require("dotenv").config();

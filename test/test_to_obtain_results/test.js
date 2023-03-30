@@ -1,4 +1,4 @@
-const { getTimestamp } = require("../lib/common/util")
+const { getTimestamp } = require("../../lib/common/util")
 
 console.log(50*(Math.random()-0.5))
 console.log(50*(Math.random()-0.5))
@@ -33,7 +33,7 @@ console.log("random is : ", random2);
 
 const csv = require('csv-parser')
 const fs = require('fs')
-const logger = require("../lib/common/logger")
+const logger = require("../../lib/common/logger")
 const results = [];
 
 // require('fs');
