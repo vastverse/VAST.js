@@ -447,7 +447,7 @@
                 for(var i = 0; i < debugFiles.length; i++){
                     var content = '<option value="'+i+'">' + debugFiles[i].name + '</option>';
                     $("#select-debug").append(content);
-                } 
+                }
             })
             
             //select debug file, read into debugLines
@@ -460,41 +460,102 @@
 
                 var reader = new FileReader();
                 var idx = Number($("#select-debug option:selected").val());
-    
+
                 reader.onload = function(){
                     var lines = this.result.split('\n');
                     for (var line = 0; line < lines.length; line++){
                         debugLines[line] = JSON.parse(lines[line]);
                     }
                 };
-    
+
                 reader.readAsText(debugFiles[idx]);
                 step(0); // render data up to current point for new selected file
             });
 
             // read events file
+            let filePollingInterval;
             $("#results-file").change(function(){
+
                 var file = this.files[0];
-                var reader = new FileReader();
-
-                reader.onload = function(event){
-                    var lines = this.result.split('\n');
-                    for (var line = 0; line < lines.length; line++){
-                        try {
-                            events[line] = JSON.parse(lines[line]);
-                        }
-                        catch(e){
-                            console.error(e);
-                        }
-                    }
-
+                loadResultsFile(file);
+                
+                setTimeout(() => {  
                     // current time to time of first event
                     currentEvent = 0;
                     now = events[0].time;
                     $("#time").text(easyTime(now));
+                }, 1000);
+
+            });
+
+            function loadResultsFile(file) {
+                var reader = new FileReader();
+                
+                console.log(file)
+
+                reader.onload = function (event) {
+                    var lines = this.result.split('\n');
+                    console.log('called');
+                    console.log(lines)
+                    for (var line = 0; line < lines.length; line++) {
+                        try {
+                            events[line] = JSON.parse(lines[line]);
+                        } catch (e) {
+                            console.error(e);
+                        }
+                    }
+                    console.log(events)
+
+                    // // current time to time of first event
+                    // currentEvent = 0;
+                    // now = events[0].time;
+                    // $("#time").text(easyTime(now));
                 };
 
                 reader.readAsText(file);
+            }
+
+            function loadResultsFile_from_string(string) {
+                var lines = string.split('\n');
+                console.log('called');
+                console.log(lines);
+                for (var line = 0; line < lines.length; line++) {
+                    try {
+                        events[line] = JSON.parse(lines[line]);
+                    } catch (e) {
+                        console.error(e);
+                    }
+                }
+                console.log(events);
+            }
+
+            const ws = new WebSocket('ws://localhost:1111');
+            ws.addEventListener('open', (event) => {
+                console.log('WebSocket connected:', event);
+            }); 
+
+            let updateCounter = 0;
+            ws.addEventListener('message', (event) => {
+                const message = JSON.parse(event.data);
+                
+                if (message.type === 'fileContent') {
+                    const fileContent = message.content;
+                    // Process the file content here
+                    console.log('File content:', fileContent);
+                    loadResultsFile_from_string(fileContent);
+
+                    if (updateCounter === 0 && fileContent.length > 0) {
+                        updateCounter = 1;
+                        // current time to time of first event
+                        currentEvent = 0;
+                        now = events[0].time;
+                        $("#time").text(easyTime(now));
+
+                        const button = document.getElementById('play-pause');
+                        button.click();
+
+                    }
+                }
             });
 
             // change ts
@@ -525,7 +586,7 @@
                     isPlaying = true;
                     $("#play-pause").text("Pause");
                     play();
-                } 
+                }
                 // pause
                 else {
                     isPlaying = false;
