@@ -6,7 +6,7 @@
  * default values if arguments are not provided.
  *
  * Usage:
- * node start_matcher.js [alias] [x] [y] [radius] [isGateway] [GW_host] [GW_port] [VON_port] [client_port]
+ * node start_matcher.js [alias] [x] [y] [isGateway] [GW_host] [GW_port] [VON_port] [client_port] [radius]
  *
  * Arguments:
  * - alias: The matcher alias (default: 1)
