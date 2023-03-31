@@ -3,8 +3,11 @@
 const http = require('http');
 const WebSocket = require('ws');
 const fs = require('fs');
+const express = require('express');
+const path = require('path');
 
-const server = http.createServer();
+const app = express();
+const server = http.createServer(app);
 const wss = new WebSocket.Server({ server });
 
 const filePath = './logs_and_events/Matcher_events.txt';
@@ -37,6 +40,30 @@ wss.on('connection', (ws) => {
     ws.on('close', () => {
         console.log('Client disconnected');
         fileWatcher.close(); // Stop watching the file when the client disconnects
+    });
+});
+
+app.use(express.json());
+
+app.post('/log', (req, res) => {
+    const logData = req.body.logData;
+    const filename = req.body.filename;
+    const directory = req.body.directory;
+    const extension = req.body.extension;
+
+    console.log('Received log data:', logData); // Print the received log data
+
+    if (!fs.existsSync(directory)) {
+        fs.mkdirSync(directory, { recursive: true });
+    }
+
+    fs.appendFile(path.join(directory, filename + extension), logData, (err) => {
+        if (err) {
+            console.error(err);
+            res.status(500).send('Error writing log data to file');
+        } else {
+            res.status(200).send('Log data written to file');
+        }
     });
 });
 
