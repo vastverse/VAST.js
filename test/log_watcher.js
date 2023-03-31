@@ -7,7 +7,7 @@ const fs = require('fs');
 const server = http.createServer();
 const wss = new WebSocket.Server({ server });
 
-const filePath = '../VAST.js/test/logs_and_events/Matcher_events.txt';
+const filePath = './logs_and_events/Matcher_events.txt';
 
 wss.on('connection', (ws) => {
     console.log('Client connected');
