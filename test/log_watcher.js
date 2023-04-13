@@ -12,6 +12,21 @@ const wss = new WebSocket.Server({ server });
 
 const filePath = './logs_and_events/Matcher_events.txt';
 
+// Clear log and event files
+const files = [filePath, './logs_and_events/Client_logs.txt', './logs_and_events/Matcher_logs.txt'];
+
+files.forEach((filePath) => {
+  fs.writeFile(filePath, '', 'utf8', (err) => {
+    if (err) {
+      console.error(`Error while clearing the contents of ${filePath}:`, err);
+    } else {
+      console.log(`File contents of ${filePath} cleared successfully.`);
+    }
+  });
+});
+
+
+
 wss.on('connection', (ws) => {
     console.log('Client connected');
 
