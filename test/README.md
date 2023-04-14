@@ -1,6 +1,9 @@
 # Simulator and Live Testing Visualization - Readme
 
-This Readme file explains how to simulate a vast network, start dummy clients and matchers, and visualize them using the provided tools.
+This Readme file explains how to simulate a live vast network in a the same visualiser as the simulator, start dummy clients and matchers, and visualize them using the provided tools.
+
+To rather use the static simulator refer to the simulator directory and example script.
+
 ## Configuration 
 1. In `lib/common.js`, set the following variables as desired:
 
@@ -13,6 +16,8 @@ global.VISUALISER_IP = '146.232.104.193:1111';
 
 
 The visualizer IP should be the IP of the machine used to visualize all the clients and matchers. 
+
+
 2. Change directory (cd) into the `test` folder and run `log_watcher.js` on the visualizer machine using this command:
 
 ```bash
