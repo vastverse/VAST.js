@@ -29,7 +29,7 @@ const matcher = require('../lib/matcher.js');
 // const UTIL = require('../lib/util.js');
 require('dotenv').config()
 
-const alias = parseInt(process.argv[2], 10) || 1;
+const alias = process.argv[2]
 const x = parseFloat(process.argv[3]) || Math.random() * 1000;
 const y = parseFloat(process.argv[4]) || Math.random() * 1000;
 
@@ -53,7 +53,7 @@ UTIL.lookupIP(gwHost, function (addr) {
       GW_port: gwPort,
       VON_port: vonPort,
       client_port: clientPort,
-      alias: alias,
+      alias: "Matcher " + alias,
       logDisplayLevel: 5,
       logRecordLevel: 5,
       eventDisplayLevel: 5,
