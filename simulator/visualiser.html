@@ -141,7 +141,7 @@
             }
 
             var render = function(){
-
+                
                 // background
                 ctx.globalAlpha = 1;
                 ctx.beginPath();
@@ -211,44 +211,67 @@
                 }
 
                 //subscriptions (for each sub linked to current client id)
-                for(var k in subscriptions){
-                    var sub = subscriptions[k];
-                    var aoi = sub.aoi;
+                    for(var k in subscriptions){
+                        var sub = subscriptions[k];
+                        var aoi = sub.aoi;
 
-                    ctx.beginPath();
-                    ctx.globalAlpha = 0.1;
-                    ctx.fillStyle = 'green';
-                    ctx.arc(aoi.center.x, aoi.center.y, aoi.radius, 0, 2*Math.PI);
-                    ctx.fill();
+                        ctx.beginPath();
+                        ctx.globalAlpha = 0.1;
+                        ctx.fillStyle = 'green';
+                        ctx.arc(aoi.center.x, aoi.center.y, aoi.radius, 0, 2*Math.PI);
+                        ctx.fill();
 
-                    ctx.beginPath();
-                    ctx.globalAlpha = 1;
-                    ctx.font = "15px Verdana";
-                    ctx.fillText(sub.subID, aoi.center.x/SCALING_FACTOR-20,(aoi.center.y+aoi.radius)/SCALING_FACTOR+7);
-                    ctx.stroke();
-                    ctx.fill();
-                }      
+                        ctx.beginPath();
+                        ctx.globalAlpha = 1;
+                        ctx.font = "15px Verdana";
+                        ctx.fillText(sub.subID, aoi.center.x/SCALING_FACTOR-20,(aoi.center.y+aoi.radius)/SCALING_FACTOR+7);
+                        ctx.stroke();
+                        ctx.fill();
+                    }      
                 
-                //publications
-                for(var k in publications){
-                    var pub = publications[k].pub;
-                    var aoi = pub.aoi;
-                    idx = 'C['+ pub.clientID +'] published'
+                    //publications
+                    for(var k in publications){
+                        var pub = publications[k].pub;
+                        var aoi = pub.aoi;
 
-                    ctx.beginPath();
-                    ctx.globalAlpha = 0.1;
-                    ctx.fillStyle = 'red';
-                    ctx.arc(aoi.center.x, aoi.center.y, aoi.radius, 0, 2*Math.PI);
-                    ctx.fill();
-                    
+                        // 95 &75
 
-                    ctx.beginPath();
-                    ctx.globalAlpha = 1;
-                    ctx.font = "15px Verdana";
-                    ctx.fillText(idx, aoi.center.x/SCALING_FACTOR-20,(aoi.center.y+aoi.radius)/SCALING_FACTOR+7);
-                    ctx.stroke();
-                    ctx.fill();
-                }
+                        if (
+                            // pub.channel === "serverBound" &&
+                            // pub.payload.actualPacket &&
+                            typeof pub.payload.actualPacket === "string"
+                        ) {
+                        const actualPacketArray = JSON.parse(pub.payload.actualPacket);
+                        if (
+                            actualPacketArray.length > 0 
+                            // &&
+                            // actualPacketArray[0] !== 95 &&
+                            // actualPacketArray[0] !== 75 &&
+                            // actualPacketArray[0] !== 94 &&
+                            // actualPacketArray[0] !== 97 &&
+                            // actualPacketArray[0] !== 96
+                        ) {
+                        console.log(pub.payload)
+
+                        idx = 'C['+ pub.clientID +'] published'
+
+                        ctx.beginPath();
+                        ctx.globalAlpha = 0.1;
+                        ctx.fillStyle = 'red';
+                        ctx.arc(aoi.center.x, aoi.center.y, aoi.radius, 0, 2*Math.PI);
+                        ctx.fill();
+                        
+
+                        ctx.beginPath();
+                        ctx.globalAlpha = 1;
+                        ctx.font = "15px Verdana";
+                        ctx.fillText(idx, aoi.center.x/SCALING_FACTOR-20,(aoi.center.y+aoi.radius)/SCALING_FACTOR+7);
+                        ctx.stroke();
+                        ctx.fill();
+                        }
+                    }
+                    }
+                // }
 
                 /*
                 //local render
@@ -491,12 +514,12 @@
             function loadResultsFile(file) {
                 var reader = new FileReader();
                 
-                console.log(file)
+                // console.log(file)
 
                 reader.onload = function (event) {
                     var lines = this.result.split('\n');
-                    console.log('called');
-                    console.log(lines)
+                    // console.log('called');
+                    // console.log(lines)
                     for (var line = 0; line < lines.length; line++) {
                         try {
                             events[line] = JSON.parse(lines[line]);
@@ -504,7 +527,7 @@
                             console.error(e);
                         }
                     }
-                    console.log(events)
+                    // console.log(events)
 
                     // // current time to time of first event
                     // currentEvent = 0;
@@ -517,8 +540,8 @@
 
             function loadResultsFile_from_string(string) {
                 var lines = string.split('\n');
-                console.log('called');
-                console.log(lines);
+                // console.log('called');
+                // console.log(lines);
                 for (var line = 0; line < lines.length; line++) {
                     try {
                         events[line] = JSON.parse(lines[line]);
@@ -526,7 +549,7 @@
                         console.error(e);
                     }
                 }
-                console.log(events);
+                // console.log(events);
             }
 
             const ws = new WebSocket('ws://localhost:1111');
@@ -541,7 +564,7 @@
                 if (message.type === 'fileContent') {
                     const fileContent = message.content;
                     // Process the file content here
-                    console.log('File content:', fileContent);
+                    // console.log('File content:', fileContent);
                     loadResultsFile_from_string(fileContent);
 
                     if (updateCounter === 0 && fileContent.length > 0) {
