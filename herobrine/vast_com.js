@@ -39,36 +39,43 @@ io.on('connection', function(socket){
         delete client_socket[uuid];
     });
 
-    socket.on('spawn_VASTclient', async function(alias, gwHost, gwPort) {
+    socket.on('spawn_VASTclient', async function(alias, gwHost, gwPort, x, y) {
         console.log('VAST client spawn');
-        var x = Math.random() * SIZE;
-        var y = Math.random() * SIZE;
         var r = 10; // radius
         id = generateId();
-
+    
+        if (x === undefined || y === undefined) {
+            x = Math.random() * SIZE;
+            y = Math.random() * SIZE;
+        }
+    
         const C = await createClientAsync(socket, gwHost, gwPort, id, x, y, r);
-        
+    
         console.log('Finished creating client');
-        C.setAlias(alias)
+        C.setAlias(alias);
         console.log('Finished setting alias');
-
+    
         const uuid = Object.keys(client_socket).find(key => client_socket[key] === socket);
         console.log(`Adding client instance for UUID: ${uuid}`);
         client_instance[uuid] = C;
-
-        socket.emit('log', 'Client that represents server on VAST has spawned.');
+    
+        socket.emit('log', 'VAST_COM::Client that represents server on VAST has spawned.');
     });
+    
 
     
 
     socket.on('subscribe', function(x, y, radius, channel) {
         const uuid = Object.keys(client_socket).find(key => client_socket[key] === socket);
         client_instance[uuid].subscribe(x, y, radius, channel);
+        // client_instance[uuid].subscribeMobile(radius, channel);
         console.log(`Subscribed to channel '${channel}' at AoI [${x}; ${y}; ${radius}]`);
     });
 
+    var tempcounter = 0;
     socket.on('publish', function(connectionID, username, x, y, radius, actualPacket, channel) {
 
+        tempcounter += 1
         // console.log('x value: ' + x);
         // console.log('y value: ' + y);
         // console.log('r value: ' + radius);
@@ -90,13 +97,22 @@ io.on('connection', function(socket){
         const uuid = Object.keys(client_socket).find(key => client_socket[key] === socket);
         client_instance[uuid].publish(x, y, radius, data, channel);
         
-        console.log(`Published to channel '${channel}' with payload '${data}' at AoI [${x}; ${y}; ${radius}]`);
+        console.log('I have published: ' + tempcounter )
+
+        // console.log(`Published to channel '${channel}' with payload '${data}' at AoI [${x}; ${y}; ${radius}]`);
+        console.log(`Published to channel '${channel}' at AoI [${x}; ${y}; ${radius}]`);
+
     });
 
     socket.on('unsubscribe', function(subID) {
         const uuid = Object.keys(client_socket).find(key => client_socket[key] === socket);
         client_instance[uuid].unsubscribe(subID);
         console.log(`Unsubscribed from subscription with ID '${subID}'`);
+    });
+
+    socket.on('clearSubscriptions', function() {
+        const uuid = Object.keys(client_socket).find(key => client_socket[key] === socket);
+        client_instance[uuid].clearSubscriptions();
     });
 
     socket.on('move', function(x, y) {
