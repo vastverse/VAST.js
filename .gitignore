@@ -1,7 +1,7 @@
 node_modules/
 test/logs
 test/logs_and_events
-package-lock.json
+./package-lock.json
 .eslintrc.json
 simulator/visualiser copy.html
 docs.ai.json

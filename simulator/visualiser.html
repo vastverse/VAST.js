@@ -483,14 +483,12 @@
 
                 var reader = new FileReader();
                 var idx = Number($("#select-debug option:selected").val());
-
                 reader.onload = function(){
                     var lines = this.result.split('\n');
                     for (var line = 0; line < lines.length; line++){
                         debugLines[line] = JSON.parse(lines[line]);
                     }
                 };
-
                 reader.readAsText(debugFiles[idx]);
                 step(0); // render data up to current point for new selected file
             });
