@@ -2,6 +2,7 @@
 <html>
 <head>
     <title>VAST Visualiser</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         html { height: 800px; }
@@ -28,26 +29,155 @@
         #select { flex:3%; padding: 5px 5px 5px 5px;  }
         #radio { min-width: 110px; flex:15%; display:flex; flex-flow: column; background-color: #ccc; border-radius: 4px; margin: 5px 5px 5px 5px; padding: 5px 5px 5px 5px; justify-content: center; }
         #information { list-style-type: none; margin: 0; height: 100%; width: 100%; overflow:hidden; overflow-y:scroll; padding: 5px 10px;}
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 40px;
+            height: 20px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            -webkit-transition: .4s;
+            transition: .4s;
+            border-radius: 20px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 14px;
+            width: 14px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            -webkit-transition: .4s;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: #2196F3;
+        }
+
+        input:focus + .slider {
+            box-shadow: 0 0 1px #2196F3;
+        }
+
+        input:checked + .slider:before {
+            -webkit-transform: translateX(20px);
+            -ms-transform: translateX(20px);
+            transform: translateX(20px);
+        }
+
+        /* Style the switch label (optional) */
+        .switch-label {
+            display: inline-block;
+            margin-left: 6px;
+            vertical-align: middle;
+        }
+
+        .invisible-cell {
+            visibility: hidden;
+        }
         </style>
+
+        <style> /*Tooltip*/
+            /* Tooltip container */
+            .tooltip-icon {
+              position: relative;
+              display: inline-block;
+              cursor: pointer;
+            }
+          
+            /* Tooltip text */
+            .tooltip-icon::after {
+                content: attr(data-tooltip);
+                position: absolute;
+                visibility: hidden;
+                background-color: #555;
+                color: #fff;
+                text-align: center;
+                border-radius: 6px;
+                padding: 5px;
+                /* Position the tooltip text - see CSS tutorial (z-index) */
+                top: 125%; 
+                left: 50%;
+                margin-left: -60px;
+                width: 160px;
+                z-index: 1;
+            }
+          
+            /* Show the tooltip text when you mouse over the tooltip container */
+            .tooltip-icon:hover::after {
+              visibility: visible;
+            }
+
+            #console-output {
+                display: none;
+                /* rest of the styling */
+                width: 100%;
+                height: 100px;
+                background-color: #000;
+                color: #fff;
+                padding: 10px;
+                overflow: auto;
+                white-space: pre-wrap;
+                font-family: monospace;
+                text-align: left; /* to make the text left-aligned */
+            }
+
+
+        </style>
+  
 </head>
 <body>
 
     <! INPUT FOR VISUALISER. RESULTS FILE, LOGS FOLDER >
-    <form id="file-selection"> 
+    <form id="file-selection">
         <table style="width: 100%;">
-            <tr>
-                <th style="padding: 2px; width: 25%; color: #eee">Load Event Log File</th>
-                <th style="padding: 2px; width: 25%; color: #eee">Load Debug Log Files</th>
-                <th style="padding: 2px; width: 25%; color: #eee" colspan="2">Select Debug File to View</th>
-            </tr>
-            <tr>   
-                <td style="text-align: center;"><input type="file" id="results-file" title="Select Debug File"></td>
-                <td style="text-align: center;"><input type="file" id="load-debug"  multiple="multiple" title="Select Matcher Events Log File"></td>
-                <td style="text-align: center; width: 10%;"><select id="select-debug" style="width: 100%;"></select></td>
-                <td style="text-align: center;"><button type="button" id="select-debug-button">Select</button></td>
-            </tr>
+          <tr>
+            <th style="padding: 2px; width: 15%; color: #eee"> Enable Live Watcher 
+                <span class="tooltip-icon" data-tooltip="This will enable the live watcher functionality. Disabling this will allow you to upload logs generated by simulator.js. See GitHub documentation for more info.">
+                  <i class="fas fa-question-circle"></i>
+                </span>
+            </th>
+            <th id="results-file-text" style="padding: 2px; width: 15%; color: #eee">Load Event Log File</th>
+            <th id="load-debug-text" style="padding: 2px; width: 15%; color: #eee">Load Debug Log Files</th>
+            <th id="select-text" style="padding: 2px; width: 15%; color: #eee" colspan="2">Select Debug File to View</th>
+          </tr>
+          <tr>
+            <td style="text-align: center;">
+              <label class="switch"> <input type="checkbox" id="live-watcher-switch" autocomplete="off"> <span class="slider"></span> </label>
+            </td>
+            <td style="text-align: center;">
+              <input type="file" id="results-file" title="Select Debug File">
+            </td>
+            <td style="text-align: center;">
+              <input type="file" id="load-debug" multiple="multiple" title="Select Matcher Events Log File">
+            </td>
+            <td style="text-align: center; width: 10%;">
+              <select id="select-debug" style="width: 100%;"></select>
+            </td>
+            <td style="text-align: center;">
+              <button type="button" id="select-debug-button">Select</button>
+            </td>
+          </tr>
         </table>
-    </form>
+      </form>
     <div id="flex-container">
         <div id="visual">
             <div id="key">
@@ -62,13 +192,13 @@
     <form id="time-controls"> 
         <table style="width: 100%;">
             <tr>
-                <th style="padding: 2px; width: 20%; color: #eee">Time Step Duration [ms]</th>
-                <th style="padding: 2px; width: 20%; color: #eee" colspan="1">Current Time</th>
-                <th style="padding: 2px; width: 20%; color: #eee" colspan="3">Time Controls [10 steps/s]</th>
-                <th style="padding: 2px; width: 20%; color: #eee">Publication Rendering Lifespan [ms]</th>
+                <th id="time-step-text" style="padding: 2px; width: 20%; color: #eee">Time Step Duration [ms]</th>
+                <th id="time-text" style="padding: 2px; width: 20%; color: #eee" colspan="1">Current Time</th>
+                <th id="time-controls-text" style="padding: 2px; width: 20%; color: #eee" colspan="3">Time Controls [10 steps/s]</th>
+                <th id="pub-life-text" style="padding: 2px; width: 20%; color: #eee">Publication Rendering Lifespan [ms]</th>
             </tr>
             <tr>   
-                <td style="text-align: center;"><input type="number" id="time-step" name="time-step" min="1" max="60000" value="100"></td>
+                <td style="text-align: center;"><input type="number" id="time-step" name="time-step" min="1" max="60000" value="120"></td>
                 <td style="text-align: center;"><label id="time"></td>
                 <td style="text-align: center;"><button type="button" id="back">Back Step</button></td>
                 <td style="text-align: center;"><button type="button" id="play-pause">Play</button></td>
@@ -77,6 +207,8 @@
             </tr>
         </table>
     </form>
+    <div id="console-output"></div>
+
 
 
 
@@ -89,6 +221,8 @@
     <script src="../node_modules/jquery/dist/jquery.js"></script>
 
     <script>
+        const consoleOutput = document.getElementById("console-output");
+
         $(function(){
 
             //initialise
@@ -123,8 +257,6 @@
             var info = document.getElementById("information");
 
             var init = function(){
-
-                
                 recalculate();
             }
 
@@ -271,53 +403,6 @@
                         }
                     }
                     }
-                // }
-
-                /*
-                //local render
-
-                renderLocal = false;
-
-                if (renderLocal === true){
-                    
-                    // edges
-                    ctx.beginPath();
-                    ctx.strokeStyle='#cd00b7';
-                    ctx.fillStyle='#cd00b7';
-                    ctx.lineWidth = 5;
-                    var edges = diagram2.edges,
-                        iEdge = edges.length,
-                        edge, v, c;
-                    while (iEdge--) {
-                        edge = edges[iEdge];
-                        v = edge.va;
-                        ctx.moveTo(v.x,v.y);
-                        v = edge.vb;
-                        ctx.lineTo(v.x,v.y);
-                        }
-                    ctx.stroke();
-
-                    //sites
-                    var sites = matchers[localID]['neighbours'];
-                    for (var id in sites){
-                        var pos = sites[id];
-
-                        ctx.beginPath();
-                        ctx.font = "15px Verdana";
-                        ctx.rect(pos.x/SCALING_FACTOR,pos.y/SCALING_FACTOR,6,6);
-                        ctx.fillText(id, pos.x/SCALING_FACTOR+10,pos.y/SCALING_FACTOR+10);
-                        ctx.stroke();
-                        ctx.fill();
-                    }
-
-                    //aoi
-                    var aoi = matchers[localID]['aoi'];
-                    ctx.beginPath();
-                    ctx.arc(aoi.center.x, aoi.center.y, aoi.radius, 0, 2*Math.PI);
-                    ctx.stroke();
-                }
-
-                */
             }
 
             var step = function(dt){
@@ -549,36 +634,7 @@
                 }
                 // console.log(events);
             }
-
-            const ws = new WebSocket('ws://localhost:1111');
-            ws.addEventListener('open', (event) => {
-                console.log('WebSocket connected:', event);
-            }); 
-
-            let updateCounter = 0;
-            ws.addEventListener('message', (event) => {
-                const message = JSON.parse(event.data);
-                
-                if (message.type === 'fileContent') {
-                    const fileContent = message.content;
-                    // Process the file content here
-                    // console.log('File content:', fileContent);
-                    loadResultsFile_from_string(fileContent);
-
-                    if (updateCounter === 0 && fileContent.length > 0) {
-                        updateCounter = 1;
-                        // current time to time of first event
-                        currentEvent = 0;
-                        now = events[0].time;
-                        $("#time").text(easyTime(now));
-
-                        const button = document.getElementById('play-pause');
-                        button.click();
-
-                    }
-                }
-            });
-
+            
             // change ts
             $("#time-step").change(function(){
                 ts = Number($("#time-step").val());
@@ -627,30 +683,101 @@
                 PUB : 8
             }
 
-            /*
-            //  RENDER LOCALISED VIEW
-            $("#voronoiCanvas").click(function(e){
-                var mouseX = e.clientX - ctx.canvas.offsetLeft;
-                var mouseY = e.clientY - ctx.canvas.offsetTop;
-                var canvasPos = {
-                    x: mouseX * canvas.width / canvas.clientWidth, 
-                    y: mouseY * canvas.height / canvas.clientHeight
+            function connect_live_visualiser_socket() {
+                const ws = new WebSocket('ws://localhost:1111');
+                let connectionEstablished = false;
+                
+                const disconnectPrompt = () => {
+                    // Prompt the user to start the log_watcher.js node.js instance
+                    const confirmDisconnect = confirm("Connection lost. Please start the log_watcher.js node.js instance on the same machine as the visualizer.");
+                    
+                    if (confirmDisconnect) {
+                        // Set the id=live-watcher-switch checkbox element to false
+                        document.getElementById('live-watcher-switch').checked = false;
+                        location.reload();
+                    }
+                };
+
+                const connectionTimeout = () => {
+                    if (!connectionEstablished) {
+                        disconnectPrompt();
+                    }
+                };
+
+                const connectionTimer = setTimeout(connectionTimeout, 5000);
+
+                ws.addEventListener('open', (event) => {
+                    clearTimeout(connectionTimer);
+                    connectionEstablished = true;
+                    console.log('WebSocket connected:', event);
+                    consoleOutput.textContent += '\nConnected to log_watcher.js'
+                });
+
+                ws.addEventListener('close', () => {
+                    consoleOutput.textContent += '\Disconnected from log_watcher.js'
+                    disconnectPrompt();
+                });
+
+                let updateCounter = 0; //TODO: Remove
+                ws.addEventListener('message', (event) => {
+                    consoleOutput.textContent += '\nReceived message from log_watcher.js'
+                    const message = JSON.parse(event.data);
+
+                    if (message.type === 'fileContent') {
+                        const fileContent = message.content;
+                        // Process the file content here
+                        // console.log('File content:', fileContent);
+                        loadResultsFile_from_string(fileContent);
+
+                        if (updateCounter === 0 && fileContent.length > 0) {
+                            updateCounter = 1;
+                            // current time to time of first event
+                            currentEvent = 0;
+                            // now = events[events.length-1].time;
+                            now = Date.now();
+                            $("#time").text(easyTime(now));
+
+                            const button = document.getElementById('play-pause');
+                            console.log('clicking');
+                            button.click();
+                        }
+                    }
+                });
+            }
+
+        
+
+            //This script is used to enable and disable the live watcher
+            const liveWatcherSwitch = document.getElementById('live-watcher-switch');
+            // liveWatcherSwitch.checked = False;
+            liveWatcherSwitch.addEventListener('change', function() {
+                
+                const otherInputs = document.querySelectorAll('#results-file, #load-debug, #select-debug, #select-debug-button, #time-controls-text, #pub-life-text, #results-file-text, #load-debug-text, #select-text, #back, #play-pause, #forward, #pub-life');
+                const isLiveWatcherEnabled = liveWatcherSwitch.checked;
+                if (isLiveWatcherEnabled) {
+                    connect_live_visualiser_socket();
+                    consoleOutput.style.display = 'block'; // show the console
+                    consoleOutput.textContent += '\nLive watcher is enabled';
+                } else {
+                    consoleOutput.textContent += '\nLive watcher is disabled';
+                    // consoleOutput.style.display = 'none'; // hide the console
+                    location.reload();
                 }
-
-                localID = voro.closest_to(canvasPos);
-                socket.emit('request_update', localID);
-                recalculate();
-
-                let content = 'clicked at: '+ JSON.stringify(canvasPos)  + '<br/>';
-                $('#information').prepend($('#ol'), content);
-
-                //$('#information').append($('<li>').text('Connected to server'));
-            })
-            */
+                for (let i = 0; i < otherInputs.length; i++) {
+                    // otherInputs[i].disabled = isLiveWatcherEnabled;
+                    if (isLiveWatcherEnabled) {
+                        otherInputs[i].classList.add('invisible-cell');
+                    } else {
+                        otherInputs[i].classList.remove('invisible-cell');
+                    }
+                }
+            });
 
             init();
 
         });
+
     </script>
+
 </body>
 </html>
