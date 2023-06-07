@@ -368,22 +368,22 @@
 
                         // 95 &75
 
-                        if (
-                            // pub.channel === "serverBound" &&
-                            // pub.payload.actualPacket &&
-                            typeof pub.payload.actualPacket === "string"
-                        ) {
-                        const actualPacketArray = JSON.parse(pub.payload.actualPacket);
-                        if (
-                            actualPacketArray.length > 0 
+                        // if (
+                        //     // pub.channel === "serverBound" &&
+                        //     // pub.payload.actualPacket &&
+                        //     typeof pub.payload.actualPacket === "string"
+                        // ) {
+                        // const actualPacketArray = JSON.parse(pub.payload.actualPacket);
+                        // if (
+                        //     actualPacketArray.length > 0 
                             // &&
                             // actualPacketArray[0] !== 95 &&
                             // actualPacketArray[0] !== 75 &&
                             // actualPacketArray[0] !== 94 &&
                             // actualPacketArray[0] !== 97 &&
                             // actualPacketArray[0] !== 96
-                        ) {
-                        console.log(pub.payload)
+                        // ) {
+                        // console.log(pub.payload)
 
                         idx = 'C['+ pub.clientID +'] published'
 
@@ -400,8 +400,8 @@
                         ctx.fillText(idx, aoi.center.x/SCALING_FACTOR-20,(aoi.center.y+aoi.radius)/SCALING_FACTOR+7);
                         ctx.stroke();
                         ctx.fill();
-                        }
-                    }
+                        // }
+                    // }
                     }
             }
 
@@ -727,19 +727,25 @@
                         const fileContent = message.content;
                         // Process the file content here
                         // console.log('File content:', fileContent);
-                        loadResultsFile_from_string(fileContent);
+                        
 
                         if (updateCounter === 0 && fileContent.length > 0) {
                             updateCounter = 1;
+                            loadResultsFile_from_string(fileContent);
                             // current time to time of first event
                             currentEvent = 0;
                             // now = events[events.length-1].time;
                             now = Date.now();
                             $("#time").text(easyTime(now));
 
-                            const button = document.getElementById('play-pause');
-                            console.log('clicking');
-                            button.click();
+                            step(120);
+
+                            // const button = document.getElementById('play-pause');
+                            // console.log('clicking');
+                            // button.click();
+                        } else {
+                            loadResultsFile_from_string(fileContent);
+                            step(Date.now()-now+1200);
                         }
                     }
                 });

@@ -14,6 +14,21 @@ const filePath = './logs_and_events/Matcher_events.txt';
 // Clear log and event files
 const files = [filePath, './logs_and_events/Client_logs.txt', './logs_and_events/Matcher_logs.txt'];
 
+let logList = []; // List to keep track of logs
+let logCounter = 0; // Counter to keep track of log entries
+
+var Matcher_Event = {
+  MATCHER_JOIN : 0,
+  MATCHER_MOVE : 1,
+  CLIENT_JOIN : 2,
+  CLIENT_MOVE : 3,   
+  CLIENT_LEAVE : 4,
+  SUB_NEW : 5,
+  SUB_UPDATE : 6, 
+  SUB_DELETE : 7, 
+  PUB : 8
+}
+
 files.forEach((filePath) => {
   fs.writeFile(filePath, '', 'utf8', (err) => {
     if (err) {
@@ -87,21 +102,61 @@ app.post('/log', (req, res) => {
   const directory = req.body.directory;
   const extension = req.body.extension;
 
+  const parsedLog = JSON.parse(logData);
+  const event = parsedLog.event;
+  const time = parsedLog.time;
+  const subID = (parsedLog.sub && parsedLog.sub.subID) || (parsedLog.msg && parsedLog.msg.subID) || null;
+
   console.log('Received log data:', logData); // Print the received log data
 
   if (!fs.existsSync(directory)) {
     fs.mkdirSync(directory, { recursive: true });
   }
 
-  fs.appendFile(path.join(directory, filename + extension), logData, (err) => {
-    if (err) {
-      console.error(err);
-      res.status(500).send('Error writing log data to file');
-    } else {
-      res.status(200).send('Log data written to file');
+  // Add the new log data to our logList and increase the logCounter
+  logList.push({event, time, logData, subID});
+  logCounter++;
+
+  // Check if we have received 50 logs and if so, purge the old logs
+  if (logCounter === 50) {
+    const currentTime = Date.now();
+    logList = logList.filter(log => {
+      // We want to keep the log if it is not a PUB event or if it is less than 2 seconds old
+      return !(log.event === Matcher_Event.PUB && (currentTime - log.time > 2000));
+    });
+
+    // If the event is a SUB_DELETE (7), remove all logs with the same subID
+    if (event === Matcher_Event.SUB_DELETE) {
+      const deleteSubID = subID;
+      logList = logList.filter(log => log.subID !== deleteSubID);
     }
-  });
+
+    // Reset counter
+    logCounter = 0;
+
+    // Write the updated logList to the file
+    fs.writeFile(path.join(directory, filename + extension), logList.map(log => log.logData).join(''), (err) => {
+      if (err) {
+        console.error(err);
+        res.status(500).send('Error writing log data to file');
+      } else {
+        res.status(200).send('Log data written to file');
+      }
+    });
+    console.log('Amount of lines in log-file: ', logList.length);
+  } else {
+    // If we have not received 50 logs, simply append the log to the file
+    fs.appendFile(path.join(directory, filename + extension), logData, (err) => {
+      if (err) {
+        console.error(err);
+        res.status(500).send('Error writing log data to file');
+      } else {
+        res.status(200).send('Log data written to file');
+      }
+    });
+  }
 });
+
 
 const PORT = process.env.PORT || 1111;
 server.listen(PORT, () => {
