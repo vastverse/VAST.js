@@ -128,7 +128,7 @@ rl.on('line', processInput);
 
 
 
-C = new client(gwHost, gwPort, alias, x, y, r, function (id) {
+C = new client(null, gwHost, gwPort, alias, x, y, r, function (id) {
     _id = id;
     console.log("Client " + alias + " successfully created");
     let m = C.getMatcherID();
