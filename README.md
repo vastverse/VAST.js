@@ -1,8 +1,7 @@
 # VAST.js
-This project is centered around constructing a Peer-to-Peer (P2P) Spatial Publish and Subscribe system, which is fundamentally grounded on the Voronoi Overlay Network (VON) infrastructure. 
-
+This project developed P2P Spatial Publish and Subscribe built on the Voronoi Overlay Network (VON).
 <p align="center">
-👷👷 <strong>**Please note that we're actively developing this software, and as such, the documentation may not provide comprehensive coverage.**</strong> 👷👷
+👷👷 <strong>Please note that we're actively developing this library, the documentation may not provide full coverage.</strong> 👷👷
 </p>
  
 - [VAST.js](#vastjs)
@@ -25,14 +24,10 @@ Matchers are not "aware" of each other and do not have direct connections, inste
 
 In this project, the term "VON Peer" is seldom used. Instead, we predominantly use the term "Matcher". Essentially, a "matcher" represents both a spatial publish/subscribe (pub/sub) system matcher and a VON Peer.
 
-<br/><br/>
-
 ## Voronoi Overlay Network
 The Voronoi Overlay Network (VON) is a dynamic, self-organising peer-to-peer network that establishes mutual awareness and a TCP socket between each peer and its neighbours in the virtual environment. Each peer maintains a localised Voronoi partition of its enclosing, AoI and boundary neighbours, which is shared between peers to facilitate neighbour discovery as peers join, leave and move around the VE. The VON has been extended to send any message to a point or area in the environment, and each VON peer will only receive the message once.
   
 For more detail on the VON, see [VON Peer](./docs/VON.md)
-
-<br/><br/>
 
 # Dependancies
 <!-- ## Worker Threads Module
@@ -40,8 +35,6 @@ The VON peer runs on a worker thread of the Matcher. Install in the VAST.js dire
 ```sh
 npm install worker-threads
 ```  -->
-
-<!-- <br/><br/> -->
 ## Node.js and NPM
 
 In order to host matchers and clients node instances are used. Install Node.js and the NPM package manager:
@@ -57,12 +50,6 @@ npm install socket.io
 npm install socket.io-client
 npm install JQuery
 ```
-
-##
-
-<!-- <br/><br/> -->
-
-<br/><br/>
 
 # Getting Started
 
