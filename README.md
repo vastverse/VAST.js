@@ -39,8 +39,8 @@ npm install worker-threads
 
 In order to host matchers and clients node instances are used. Install Node.js and the NPM package manager:
 ```sh
-    sudo apt install nodejs
-    sudo apt install npm
+sudo apt install nodejs
+sudo apt install npm
 ```
 ## Socket.io and jQuery
 Matchers use socket.io to establish a WebSocket connection with clients and other matchers and the live visualiser uses Jquery to manipulate HTML in order to give a visual representation of the VAST network.
