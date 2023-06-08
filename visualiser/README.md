@@ -21,8 +21,8 @@ The live visualiser functions slightly differently. While it still relies on the
 
 ```javascript
 
-global.VISUALISE_DEBUG_LOGS = true;
-global.VISUALISER_IP = '127.0.0.1:1111';
+    global.VISUALISE_DEBUG_LOGS = true;
+    global.VISUALISER_IP = '127.0.0.1:1111';
 ```
 
 
@@ -33,7 +33,7 @@ The Visualiser IP should represent the IP address of the machine used for visual
 
 ```bash
 
-node log_watcher.js
+    node log_watcher.js
 ```
 
  
@@ -51,7 +51,7 @@ Note: These script files are found in the ./test directory.
 
 ```bash
 
-node start_matcher.js 1 500 600 true 192.168.1.10 8000 8001 20000 150
+    node start_matcher.js 1 500 600 true 192.168.1.10 8000 8001 20000 150
 ```
 
 
@@ -61,7 +61,7 @@ node start_matcher.js 1 500 600 true 192.168.1.10 8000 8001 20000 150
 
 ```bash
 
-node new_client.js 1 192.168.1.10 20000 500 600 10
+    node new_client.js 1 192.168.1.10 20000 500 600 10
 ```
 
 
@@ -78,8 +78,8 @@ After completing your tests, you can use the following commands to view the node
 
 ```bash
 
-pgrep -a -f "node start_matcher.js"
-pkill -f "node start_matcher.js"
+    pgrep -a -f "node start_matcher.js"
+    pkill -f "node start_matcher.js"
 ```
 
 
