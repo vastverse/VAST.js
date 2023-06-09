@@ -1,0 +1,789 @@
+<!doctype html>
+<html>
+<head>
+    <title>VAST Visualiser</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { height: 800px; }
+        body { font: 13px Helvetica, Arial; height: 100%; margin: 0px; }
+        form { background: #000; padding: 3px;}
+        form input[type="file"] {padding: 2px; color: #000; background-color: #eee; margin: auto;}
+        form button { width: 100%; background: rgb(130, 224, 255); border: none; padding: 10px;}
+        form input[type="radio"] { padding: 0px; border: 0px; margin: 0px 5px 0px 0px; width: auto;}
+        form label {width: auto; background: #000; border: none; padding: 10px; color: #eee;}
+        span{ flex: 1 1 auto; }
+        #forms { position: fixed; top: 0; height: auto; display: flex; flex-direction: column; width: 100%; }
+        #coords-form { flex: auto;  }
+        #message { flex-flow: row; }
+        #publish { flex:auto; }
+        div {height: 100%; display:flex; justify-content: space-around;}
+        #key { min-height: 150px; position: absolute;  flex-direction: column;  top: 5px; right:5px; height: 15%; border-radius: 5px; background: #9595ea;}
+        #key:active { visibility: hidden; }
+        .key {   font-weight: bold; padding: 5px 5px 5px 5px;}
+        #voronoiCanvas {justify-content: left; align-items: left;}
+        #flex-container { display: flex; }
+        #text { flex: 25%; min-width: 300px; flex-direction: column;}
+        #visual { flex: 75%; }
+        #coords { border: 5px; }
+        #select { flex:3%; padding: 5px 5px 5px 5px;  }
+        #radio { min-width: 110px; flex:15%; display:flex; flex-flow: column; background-color: #ccc; border-radius: 4px; margin: 5px 5px 5px 5px; padding: 5px 5px 5px 5px; justify-content: center; }
+        #information { list-style-type: none; margin: 0; height: 100%; width: 100%; overflow:hidden; overflow-y:scroll; padding: 5px 10px;}
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 40px;
+            height: 20px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            -webkit-transition: .4s;
+            transition: .4s;
+            border-radius: 20px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 14px;
+            width: 14px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            -webkit-transition: .4s;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: #2196F3;
+        }
+
+        input:focus + .slider {
+            box-shadow: 0 0 1px #2196F3;
+        }
+
+        input:checked + .slider:before {
+            -webkit-transform: translateX(20px);
+            -ms-transform: translateX(20px);
+            transform: translateX(20px);
+        }
+
+        /* Style the switch label (optional) */
+        .switch-label {
+            display: inline-block;
+            margin-left: 6px;
+            vertical-align: middle;
+        }
+
+        .invisible-cell {
+            visibility: hidden;
+        }
+        </style>
+
+        <style> /*Tooltip*/
+            /* Tooltip container */
+            .tooltip-icon {
+              position: relative;
+              display: inline-block;
+              cursor: pointer;
+            }
+          
+            /* Tooltip text */
+            .tooltip-icon::after {
+                content: attr(data-tooltip);
+                position: absolute;
+                visibility: hidden;
+                background-color: #555;
+                color: #fff;
+                text-align: center;
+                border-radius: 6px;
+                padding: 5px;
+                /* Position the tooltip text - see CSS tutorial (z-index) */
+                top: 125%; 
+                left: 50%;
+                margin-left: -60px;
+                width: 160px;
+                z-index: 1;
+            }
+          
+            /* Show the tooltip text when you mouse over the tooltip container */
+            .tooltip-icon:hover::after {
+              visibility: visible;
+            }
+
+            #console-output {
+                display: none;
+                /* rest of the styling */
+                width: 100%;
+                height: 100px;
+                background-color: #000;
+                color: #fff;
+                padding: 10px;
+                overflow: auto;
+                white-space: pre-wrap;
+                font-family: monospace;
+                text-align: left; /* to make the text left-aligned */
+            }
+
+
+        </style>
+  
+</head>
+<body>
+
+    <! INPUT FOR VISUALISER. RESULTS FILE, LOGS FOLDER >
+    <form id="file-selection">
+        <table style="width: 100%;">
+          <tr>
+            <th style="padding: 2px; width: 15%; color: #eee"> Enable Live Watcher 
+                <span class="tooltip-icon" data-tooltip="This will enable the live watcher functionality. Disabling this will allow you to upload logs generated by simulator.js. See GitHub documentation for more info.">
+                  <i class="fas fa-question-circle"></i>
+                </span>
+            </th>
+            <th id="results-file-text" style="padding: 2px; width: 15%; color: #eee">Load Event Log File</th>
+            <th id="load-debug-text" style="padding: 2px; width: 15%; color: #eee">Load Debug Log Files</th>
+            <th id="select-text" style="padding: 2px; width: 15%; color: #eee" colspan="2">Select Debug File to View</th>
+          </tr>
+          <tr>
+            <td style="text-align: center;">
+              <label class="switch"> <input type="checkbox" id="live-watcher-switch" autocomplete="off"> <span class="slider"></span> </label>
+            </td>
+            <td style="text-align: center;">
+              <input type="file" id="results-file" title="Select Debug File">
+            </td>
+            <td style="text-align: center;">
+              <input type="file" id="load-debug" multiple="multiple" title="Select Matcher Events Log File">
+            </td>
+            <td style="text-align: center; width: 10%;">
+              <select id="select-debug" style="width: 100%;"></select>
+            </td>
+            <td style="text-align: center;">
+              <button type="button" id="select-debug-button">Select</button>
+            </td>
+          </tr>
+        </table>
+      </form>
+    <div id="flex-container">
+        <div id="visual">
+            <div id="key">
+
+            </div>
+            <canvas id="voronoiCanvas" width=1000 height=1000></canvas>
+        </div>
+        <div id="text">
+            <ul id="information"></ul>
+        </div>
+    </div>
+    <form id="time-controls"> 
+        <table style="width: 100%;">
+            <tr>
+                <th id="time-step-text" style="padding: 2px; width: 20%; color: #eee">Time Step Duration [ms]</th>
+                <th id="time-text" style="padding: 2px; width: 20%; color: #eee" colspan="1">Current Time</th>
+                <th id="time-controls-text" style="padding: 2px; width: 20%; color: #eee" colspan="3">Time Controls [10 steps/s]</th>
+                <th id="pub-life-text" style="padding: 2px; width: 20%; color: #eee">Publication Rendering Lifespan [ms]</th>
+            </tr>
+            <tr>   
+                <td style="text-align: center;"><input type="number" id="time-step" name="time-step" min="1" max="60000" value="120"></td>
+                <td style="text-align: center;"><label id="time"></td>
+                <td style="text-align: center;"><button type="button" id="back">Back Step</button></td>
+                <td style="text-align: center;"><button type="button" id="play-pause">Play</button></td>
+                <td style="text-align: center;"><button type="button" id="forward">Forward Step</button></td>
+                <td style="text-align: center;"><input type="number" id="pub-life" min="1" max="60000" value="1000">
+            </tr>
+        </table>
+    </form>
+    <div id="console-output"></div>
+
+
+
+
+    <script src="../lib/voronoi/point2d.js"></script>
+    <script src="../lib/voronoi/segment.js"></script>
+    <script src="../lib/voronoi/line2d.js"></script>
+    <script src="../lib/voronoi/rhill-voronoi-core.js"></script>
+    <script src="../lib/voronoi/vast_voro.js"></script>
+    <script src="../lib/common.js"></script>
+    <script src="../node_modules/jquery/dist/jquery.js"></script>
+
+    <script>
+        const consoleOutput = document.getElementById("console-output");
+
+        $(function(){
+
+            //initialise
+            console.log('visualiser started');
+
+            // store of network entites and active events
+            var matchers = {};
+            var clients = {};
+            var subscriptions = {};
+            var publications = [];
+            var voro = new VAST_Voronoi();
+            var diagram;
+
+            // Textfiles to read
+            var debugFiles = [];
+            var debugLines = [];
+            var currentDebug = 0;
+            var events = [];
+            var currentEvent = 0;
+            
+            // Current Timestep, duration, etc
+            var now = 0;        // time of current timestep; ms since 1970
+            var ts = Number($("#time-step").val())// ms length of a timestep
+            var pubLife = Number($("#pub-life").val()); // ms
+            var isPlaying = false;
+
+            var SCALING_FACTOR = 1;
+
+            //Create references to canvas, debug list
+            var canvas = document.getElementById('voronoiCanvas');
+            var ctx = canvas.getContext("2d");
+            var info = document.getElementById("information");
+
+            var init = function(){
+                recalculate();
+            }
+
+            var recalculate = function(){
+                voro.clear();
+                var k, sites;
+                for (var key in matchers){
+                    k = matchers[key];
+                    voro.insert(k.id, k.pos);
+                }
+                diagram = voro.get_result();
+
+                render();
+            }
+
+            var render = function(){
+                
+                // background
+                ctx.globalAlpha = 1;
+                ctx.beginPath();
+                ctx.rect(0,0,canvas.width,canvas.height);
+                ctx.fillStyle = 'white';
+                ctx.fill();
+                ctx.strokeStyle = '#888';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+
+                // voronoi
+                if (!diagram) {return;}
+
+                // edges
+                ctx.beginPath();
+                ctx.strokeStyle='#000';
+                var edges = diagram.edges,
+                    iEdge = edges.length,
+                    edge, v, c;
+                while (iEdge--) {
+                    edge = edges[iEdge];
+                    v = edge.va;
+                    ctx.moveTo(v.x,v.y);
+                    v = edge.vb;
+                    ctx.lineTo(v.x,v.y);
+                }
+                ctx.stroke();
+                
+                // Matchers
+                for (var key in matchers) {
+                    // sites
+                    v = matchers[key];
+                    if (v == undefined) {
+                        delete matchers[key]
+                        continue;
+                    }
+                    var idx = v.id;
+                    var alias = v.alias;
+
+                    ctx.beginPath();
+                    ctx.font = "15px Verdana";
+                    ctx.fillStyle = '#44f';
+                    ctx.strokeStyle = '#44f';
+                    ctx.rect(v.pos.x/SCALING_FACTOR,v.pos.y/SCALING_FACTOR,6,6);
+                    ctx.fillText(idx, v.pos.x/SCALING_FACTOR+7,v.pos.y/SCALING_FACTOR+7);
+                    ctx.fillText(alias, v.pos.x/SCALING_FACTOR+7,v.pos.y/SCALING_FACTOR-7);
+                    ctx.stroke();
+                    ctx.fill();
+
+                }
+
+                //clients
+                for (var j in clients){
+                    //console.log(j, key);
+                    //console.log(clients[key]);
+                    c = clients[j];
+                    idx = c.id;
+
+                    ctx.beginPath();
+                    ctx.font = "15px Verdana";
+                    ctx.fillStyle = '#ff0f15';
+                    ctx.strokeStyle = '#ff0f15';
+                    ctx.rect(c.pos.x/SCALING_FACTOR,c.pos.y/SCALING_FACTOR,6,6);
+                    ctx.fillText(idx, c.pos.x/SCALING_FACTOR+7,c.pos.y/SCALING_FACTOR+7);
+                    ctx.stroke();
+                    ctx.fill();
+                }
+
+                //subscriptions (for each sub linked to current client id)
+                    for(var k in subscriptions){
+                        var sub = subscriptions[k];
+                        var aoi = sub.aoi;
+
+                        ctx.beginPath();
+                        ctx.globalAlpha = 0.1;
+                        ctx.fillStyle = 'green';
+                        ctx.arc(aoi.center.x, aoi.center.y, aoi.radius, 0, 2*Math.PI);
+                        ctx.fill();
+
+                        ctx.beginPath();
+                        ctx.globalAlpha = 1;
+                        ctx.font = "15px Verdana";
+                        ctx.fillText(sub.subID, aoi.center.x/SCALING_FACTOR-20,(aoi.center.y+aoi.radius)/SCALING_FACTOR+7);
+                        ctx.stroke();
+                        ctx.fill();
+                    }      
+                
+                    //publications
+                    for(var k in publications){
+                        var pub = publications[k].pub;
+                        var aoi = pub.aoi;
+
+                        // 95 &75
+
+                        // if (
+                        //     // pub.channel === "serverBound" &&
+                        //     // pub.payload.actualPacket &&
+                        //     typeof pub.payload.actualPacket === "string"
+                        // ) {
+                        // const actualPacketArray = JSON.parse(pub.payload.actualPacket);
+                        // if (
+                        //     actualPacketArray.length > 0 
+                            // &&
+                            // actualPacketArray[0] !== 95 &&
+                            // actualPacketArray[0] !== 75 &&
+                            // actualPacketArray[0] !== 94 &&
+                            // actualPacketArray[0] !== 97 &&
+                            // actualPacketArray[0] !== 96
+                        // ) {
+                        // console.log(pub.payload)
+
+                        idx = 'C['+ pub.clientID +'] published'
+
+                        ctx.beginPath();
+                        ctx.globalAlpha = 0.1;
+                        ctx.fillStyle = 'red';
+                        ctx.arc(aoi.center.x, aoi.center.y, aoi.radius, 0, 2*Math.PI);
+                        ctx.fill();
+                        
+
+                        ctx.beginPath();
+                        ctx.globalAlpha = 1;
+                        ctx.font = "15px Verdana";
+                        ctx.fillText(idx, aoi.center.x/SCALING_FACTOR-20,(aoi.center.y+aoi.radius)/SCALING_FACTOR+7);
+                        ctx.stroke();
+                        ctx.fill();
+                        // }
+                    // }
+                    }
+            }
+
+            var step = function(dt){
+                
+                now += dt;
+                $("#time").text(easyTime(now));
+                
+                // Jumping backwards, so we must reload all data from the beginning
+                if(dt < 0){
+                    currentDebug = 0;
+                    currentEvent = 0;
+                    matchers = {};
+                    clients = {};
+                    subscriptions = {};
+                    publications = [];
+                    $('#information').empty();
+                }
+                else {
+                    // clean all expired publications
+                    clearPublications();
+                }
+
+                // prepare all events that occured between last time step and now
+                var event;
+                for (currentEvent; currentEvent < events.length; currentEvent++){
+                    event = events[currentEvent];
+
+                    if (event.time <= now){
+                    prepareEvent(event);
+                    }else{
+                        break;
+                    }
+                }
+
+                //add all relevant debug lines to information feed
+                var line;
+                for (currentDebug; currentDebug < debugLines.length; currentDebug++){
+                    line = debugLines[currentDebug];
+
+                    if (line.time <= now){
+                        var content = '<li>' + easyTime(line.time) + ' - ' + line.msg + '</li>';
+                        $('#information').prepend(content);
+                    }else{
+                        break;
+                    }
+                }
+
+                // recalculate and render all updates
+                recalculate();
+            }
+
+            // publications should not be rendered past pubTime + pubLife
+            var clearPublications = function(){
+                var i;
+                for (i = 0; i < publications.length; i ++){
+                    if (now - publications[i].time < pubLife){
+                        break;
+                    }
+                }
+                if (i > 0){
+                    publications.splice(0, i);
+                }
+            }
+
+            // interpret matcher events, adding or removing relevant data from structures
+            var prepareEvent = function(data){
+                switch (data.event){
+                    case Matcher_Event.MATCHER_JOIN :{
+                        matchers[data.id] = {
+                            alias : data.alias,
+                            id : data.id,
+                            aoi : data.aoi,
+                            pos : data.pos
+                        }
+                    }
+                    break;
+
+                    /*
+                    case Matcher_Event.MATCHER_MOVE :{
+                        matchers[data.id] = {
+                            alias : data.alias,
+                            id : data.id,
+                            aoi : data.aoi,
+                            pos : data.pos
+                        }
+                    }
+                    break;
+                    */
+
+                    case Matcher_Event.CLIENT_JOIN :
+                    case Matcher_Event.CLIENT_MOVE :{
+                        var client = data.client;
+                        clients[client.id] = client;
+                    }
+                    break;
+
+                    // TODO: Fix for client migration
+                    case Matcher_Event.CLIENT_LEAVE :{
+                        var client = data.client;
+                        // ONLY DELETE IF CLIENT DISCONNECTED FROM ITS HOST MATCHER
+                        if (clients[data.client.id].matcherID === data.id){
+                            delete clients[data.client.id];
+                        }
+                    }
+                    break;
+
+                    // TODO: fix for update / delete differences
+                    case Matcher_Event.SUB_NEW :
+                    case Matcher_Event.SUB_UPDATE :{
+                        var sub = data.sub;
+                        subscriptions[sub.subID] = sub;
+                    }
+                    break;  
+
+                    case Matcher_Event.SUB_DELETE :{
+                        var sub = data.sub;
+                        delete subscriptions[sub.subID];
+                    }
+                    break;
+
+                    case Matcher_Event.PUB :{
+                        publications.push({time: data.time, pub: data.pub});
+                    }
+                    break;
+                    
+                }
+            }
+
+            var play = function(){
+                if (isPlaying){
+                    step(ts);
+                    setTimeout(play, 100); // 10 steps/s
+                }
+            }
+
+            // easy-to-read text time
+            var easyTime = function(ms){
+                var date = new Date(ms);
+                return date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds() + '.' + date.getMilliseconds(); 
+            }
+
+            // load log files
+            $("#load-debug").change(function(){
+                debugFiles = this.files;
+
+                // clear debug selection menu
+                $("#select-debug").empty();
+
+                // populate file selection menu, use same array index as debugFiles[]
+                for(var i = 0; i < debugFiles.length; i++){
+                    var content = '<option value="'+i+'">' + debugFiles[i].name + '</option>';
+                    $("#select-debug").append(content);
+                }
+            })
+            
+            //select debug file, read into debugLines
+            $("#select-debug-button").click( function(){
+                // clear the current debug lines
+                debugLines = [];
+                currentDebug = 0;
+                $("#information").empty();
+
+
+                var reader = new FileReader();
+                var idx = Number($("#select-debug option:selected").val());
+                reader.onload = function(){
+                    var lines = this.result.split('\n');
+                    for (var line = 0; line < lines.length; line++){
+                        debugLines[line] = JSON.parse(lines[line]);
+                    }
+                };
+                reader.readAsText(debugFiles[idx]);
+                step(0); // render data up to current point for new selected file
+            });
+
+            // read events file
+            let filePollingInterval;
+            $("#results-file").change(function(){
+
+                var file = this.files[0];
+                loadResultsFile(file);
+                
+                setTimeout(() => {  
+                    // current time to time of first event
+                    currentEvent = 0;
+                    now = events[0].time;
+                    $("#time").text(easyTime(now));
+                }, 1000);
+
+            });
+
+            function loadResultsFile(file) {
+                var reader = new FileReader();
+                
+                // console.log(file)
+
+                reader.onload = function (event) {
+                    var lines = this.result.split('\n');
+                    // console.log('called');
+                    // console.log(lines)
+                    for (var line = 0; line < lines.length; line++) {
+                        try {
+                            events[line] = JSON.parse(lines[line]);
+                        } catch (e) {
+                            console.error(e);
+                        }
+                    }
+                    // console.log(events)
+
+                    // // current time to time of first event
+                    // currentEvent = 0;
+                    // now = events[0].time;
+                    // $("#time").text(easyTime(now));
+                };
+
+                reader.readAsText(file);
+            }
+
+            function loadResultsFile_from_string(string) {
+                var lines = string.split('\n');
+                // console.log('called');
+                // console.log(lines);
+                for (var line = 0; line < lines.length; line++) {
+                    try {
+                        events[line] = JSON.parse(lines[line]);
+                    } catch (e) {
+                        console.error(e);
+                    }
+                }
+                // console.log(events);
+            }
+            
+            // change ts
+            $("#time-step").change(function(){
+                ts = Number($("#time-step").val());
+            });
+
+            // change pub life
+            $("#pub-life").change(function(){
+                pubLife = Number($("#pub-life").val());
+            });
+
+            // back step
+            $("#back").click(function(){
+                step(-ts);
+            });
+
+            // forward step
+            $("#forward").click(function(){
+                step(ts);
+            });
+
+            // play pause
+            $("#play-pause").click(function(){
+                
+                // play
+                if (!isPlaying){
+                    isPlaying = true;
+                    $("#play-pause").text("Pause");
+                    play();
+                }
+                // pause
+                else {
+                    isPlaying = false;
+                    $("#play-pause").text("Play");
+                }
+            });
+
+            var Matcher_Event = {
+                MATCHER_JOIN : 0,
+                MATCHER_MOVE : 1,
+                CLIENT_JOIN : 2,
+                CLIENT_MOVE : 3,   
+                CLIENT_LEAVE : 4,
+                SUB_NEW : 5,
+                SUB_UPDATE : 6, 
+                SUB_DELETE : 7, 
+                PUB : 8
+            }
+
+            function connect_live_visualiser_socket() {
+                const ws = new WebSocket('ws://localhost:1111');
+                let connectionEstablished = false;
+                
+                const disconnectPrompt = () => {
+                    // Prompt the user to start the log_watcher.js node.js instance
+                    const confirmDisconnect = confirm("Connection lost. Please start the log_watcher.js node.js instance on the same machine as the visualizer.");
+                    
+                    if (confirmDisconnect) {
+                        // Set the id=live-watcher-switch checkbox element to false
+                        document.getElementById('live-watcher-switch').checked = false;
+                        location.reload();
+                    }
+                };
+
+                const connectionTimeout = () => {
+                    if (!connectionEstablished) {
+                        disconnectPrompt();
+                    }
+                };
+
+                const connectionTimer = setTimeout(connectionTimeout, 5000);
+
+                ws.addEventListener('open', (event) => {
+                    clearTimeout(connectionTimer);
+                    connectionEstablished = true;
+                    console.log('WebSocket connected:', event);
+                    consoleOutput.textContent += '\nConnected to log_watcher.js'
+                });
+
+                ws.addEventListener('close', () => {
+                    consoleOutput.textContent += '\Disconnected from log_watcher.js'
+                    disconnectPrompt();
+                });
+
+                let updateCounter = 0; //TODO: Remove
+                ws.addEventListener('message', (event) => {
+                    consoleOutput.textContent += '\nReceived message from log_watcher.js'
+                    const message = JSON.parse(event.data);
+
+                    if (message.type === 'fileContent') {
+                        const fileContent = message.content;
+                        // Process the file content here
+                        // console.log('File content:', fileContent);
+                        
+
+                        if (updateCounter === 0 && fileContent.length > 0) {
+                            updateCounter = 1;
+                            loadResultsFile_from_string(fileContent);
+                            // current time to time of first event
+                            currentEvent = 0;
+                            // now = events[events.length-1].time;
+                            now = Date.now();
+                            $("#time").text(easyTime(now));
+
+                            step(120);
+
+                            // const button = document.getElementById('play-pause');
+                            // console.log('clicking');
+                            // button.click();
+                        } else {
+                            loadResultsFile_from_string(fileContent);
+                            step(Date.now()-now+1200);
+                        }
+                    }
+                });
+            }
+
+        
+
+            //This script is used to enable and disable the live watcher
+            const liveWatcherSwitch = document.getElementById('live-watcher-switch');
+            // liveWatcherSwitch.checked = False;
+            liveWatcherSwitch.addEventListener('change', function() {
+                
+                const otherInputs = document.querySelectorAll('#results-file, #load-debug, #select-debug, #select-debug-button, #time-controls-text, #pub-life-text, #results-file-text, #load-debug-text, #select-text, #back, #play-pause, #forward, #pub-life');
+                const isLiveWatcherEnabled = liveWatcherSwitch.checked;
+                if (isLiveWatcherEnabled) {
+                    connect_live_visualiser_socket();
+                    consoleOutput.style.display = 'block'; // show the console
+                    consoleOutput.textContent += '\nLive watcher is enabled';
+                } else {
+                    consoleOutput.textContent += '\nLive watcher is disabled';
+                    // consoleOutput.style.display = 'none'; // hide the console
+                    location.reload();
+                }
+                for (let i = 0; i < otherInputs.length; i++) {
+                    // otherInputs[i].disabled = isLiveWatcherEnabled;
+                    if (isLiveWatcherEnabled) {
+                        otherInputs[i].classList.add('invisible-cell');
+                    } else {
+                        otherInputs[i].classList.remove('invisible-cell');
+                    }
+                }
+            });
+
+            init();
+
+        });
+
+    </script>
+
+</body>
+</html>

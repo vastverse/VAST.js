@@ -1,4 +1,4 @@
-# VON Peer
+# VON Peer (OUTDATED!)
 The underlying P2P network of VAST.js.  
 **Clients ARE NOT part of the VON, only matchers are.**
  

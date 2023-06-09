@@ -1,4 +1,4 @@
-# Matcher
+# Matcher (OUTDATED!)
 The spatial message broker for VAST.js.
  
 - [ Matcher](#vastjs)
