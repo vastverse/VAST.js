@@ -8,157 +8,109 @@ const readline = require('readline');
 const app = express();
 const server = http.createServer(app);
 const wss = new WebSocket.Server({ server });
+const logDirectoryPath = './logs_and_events/Matcher_event.txt';
+const eventFiles = [logDirectoryPath, './logs_and_events/Client_logs.txt', './logs_and_events/Matcher_logs.txt'];
+const Matcher_Event = { MATCHER_JOIN: 0, MATCHER_MOVE: 1, CLIENT_JOIN: 2, CLIENT_MOVE: 3, CLIENT_LEAVE: 4, SUB_NEW: 5, SUB_UPDATE: 6, SUB_DELETE: 7, PUB: 8 };
+let logs = [], logCount = 0, inputPaused = false, lastSaveTimestamp = Date.now(), saveInterval;
 
-const filePath = './logs_and_events/Matcher_events.txt';
-
-// Clear log and event files
-const files = [filePath, './logs_and_events/Client_logs.txt', './logs_and_events/Matcher_logs.txt'];
-
-let logList = []; // List to keep track of logs
-let logCounter = 0; // Counter to keep track of log entries
-
-var Matcher_Event = {
-  MATCHER_JOIN : 0,
-  MATCHER_MOVE : 1,
-  CLIENT_JOIN : 2,
-  CLIENT_MOVE : 3,   
-  CLIENT_LEAVE : 4,
-  SUB_NEW : 5,
-  SUB_UPDATE : 6, 
-  SUB_DELETE : 7, 
-  PUB : 8
-}
-
-files.forEach((filePath) => {
-  fs.writeFile(filePath, '', 'utf8', (err) => {
-    if (err) {
-      console.error(`Error while clearing the contents of ${filePath}:`, err);
-    } else {
-      console.log(`File contents of ${filePath} cleared successfully.`);
-    }
-  });
+eventFiles.forEach(filePath => {
+  fs.writeFile(filePath, '', 'utf8', error => error ? console.error(`Error while clearing the contents of ${filePath}:`, error) : console.log(`File contents of ${filePath} cleared successfully.`));
 });
 
-let isPaused = false; // Flag to track if input is paused
-
-// Function to handle commands from terminal input
-function handleCommand(command) {
+const commandHandler = command => {
   if (command === 'pause') {
-    isPaused = true;
+    inputPaused = true;
     console.log('Input paused');
   } else if (command === 'start') {
-    isPaused = false;
+    inputPaused = false;
     console.log('Input started');
   }
-}
+};
 
-// Set up readline interface to listen for terminal input
-const rl = readline.createInterface({
-  input: process.stdin,
-  output: process.stdout,
-});
+const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
+rl.on('line', input => commandHandler(input.trim()));
 
-// Listen for terminal input and handle commands
-rl.on('line', (input) => {
-  handleCommand(input.trim());
-});
-
-wss.on('connection', (ws) => {
+wss.on('connection', ws => {
   console.log('Client connected');
-
-  // Send the initial file content to the client
-  fs.readFile(filePath, 'utf8', (err, data) => {
-    if (err) {
-      console.error(`Error reading file: ${err}`);
-    } else {
-      ws.send(JSON.stringify({ type: 'fileContent', content: data }));
-    }
-  });
-
-  // Watch the file for changes and send updates to the client
-  const fileWatcher = fs.watch(filePath, (eventType) => {
-    if (eventType === 'change' && !isPaused) {
-      fs.readFile(filePath, 'utf8', (err, data) => {
-        if (err) {
-          console.error(`Error reading file: ${err}`);
-        } else {
-          ws.send(JSON.stringify({ type: 'fileContent', content: data }));
-        }
-      });
-    }
-  });
-
-  ws.on('close', () => {
-    console.log('Client disconnected');
-    fileWatcher.close(); // Stop watching the file when the client disconnects
-  });
+  fs.readFile(logDirectoryPath, 'utf8', (error, data) => error ? console.error(`Error reading file: ${error}`) : ws.send(JSON.stringify({ type: 'fileContent', content: data })));
 });
 
 app.use(express.json());
 
-app.post('/log', (req, res) => {
-  const logData = req.body.logData;
-  const filename = req.body.filename;
-  const directory = req.body.directory;
-  const extension = req.body.extension;
-
-  const parsedLog = JSON.parse(logData);
-  const event = parsedLog.event;
-  const time = parsedLog.time;
-  const subID = (parsedLog.sub && parsedLog.sub.subID) || (parsedLog.msg && parsedLog.msg.subID) || null;
-
-  console.log('Received log data:', logData); // Print the received log data
-
-  if (!fs.existsSync(directory)) {
-    fs.mkdirSync(directory, { recursive: true });
+const startSaveInterval = () => {
+  if (!saveInterval) {
+    saveInterval = setInterval(saveLogs, 100);
   }
+};
 
-  // Add the new log data to our logList and increase the logCounter
-  logList.push({event, time, logData, subID});
-  logCounter++;
+const stopSaveInterval = () => {
+  if (saveInterval) {
+    clearInterval(saveInterval);
+    saveInterval = null;
+  }
+};
 
-  // Check if we have received 50 logs and if so, purge the old logs
-  if (logCounter === 50) {
-    const currentTime = Date.now();
-    logList = logList.filter(log => {
-      // We want to keep the log if it is not a PUB event or if it is less than 2 seconds old
-      return !(log.event === Matcher_Event.PUB && (currentTime - log.time > 2000));
+const sendUpdateToClients = () => {
+  fs.readFile(logDirectoryPath, 'utf8', (error, data) => {
+    if (error) {
+      console.error(`Error reading file: ${error}`);
+    } else {
+      const fileSizeInBytes = Buffer.byteLength(data, 'utf8');
+      console.log(`Sending file of size: ${fileSizeInBytes} bytes`);
+      wss.clients.forEach(client => {
+        if (client.readyState === WebSocket.OPEN) {
+          client.send(JSON.stringify({ type: 'fileContent', content: data }));
+        }
+      });
+    }
+  });
+};
+
+const saveLogs = () => {
+  if (logs.length > 0) {
+    console.log('Saving logs...');
+    // logs = logs.filter(log => log.event !== Matcher_Event.SUB_DELETE);
+    fs.writeFile(logDirectoryPath, logs.slice(-20).map(log => log.logData).join(''), error => {
+      if (error) {
+        console.error(error);
+      } else {
+        console.log('Log data written to file');
+        sendUpdateToClients();
+      }
     });
+    console.log('Amount of lines in log-file: ', logs.length);
+    logs.length = 0;
+  }
+  stopSaveInterval();
+};
 
-    // If the event is a SUB_DELETE (7), remove all logs with the same subID
-    if (event === Matcher_Event.SUB_DELETE) {
-      const deleteSubID = subID;
-      logList = logList.filter(log => log.subID !== deleteSubID);
+app.post('/log', (req, res) => {
+  try {
+    const { logData, filename, directory, extension } = req.body;
+    const parsedLog = JSON.parse(logData);
+    const { event, time } = parsedLog;
+    const subID = (parsedLog.sub && parsedLog.sub.subID) || (parsedLog.msg && parsedLog.msg.subID) || null;
+
+    logCount++;
+    console.log('logCounter:', logCount);
+    console.log('Received log data:', logData);
+    if (!fs.existsSync(directory)) fs.mkdirSync(directory, { recursive: true });
+
+    logs.push({ event, time, logData, subID });
+
+    if (logCount >= 20) {
+      saveLogs();
+      logCount = 0;
+    } else if (!saveInterval) {
+      startSaveInterval();
     }
 
-    // Reset counter
-    logCounter = 0;
-
-    // Write the updated logList to the file
-    fs.writeFile(path.join(directory, filename + extension), logList.map(log => log.logData).join(''), (err) => {
-      if (err) {
-        console.error(err);
-        res.status(500).send('Error writing log data to file');
-      } else {
-        res.status(200).send('Log data written to file');
-      }
-    });
-    console.log('Amount of lines in log-file: ', logList.length);
-  } else {
-    // If we have not received 50 logs, simply append the log to the file
-    fs.appendFile(path.join(directory, filename + extension), logData, (err) => {
-      if (err) {
-        console.error(err);
-        res.status(500).send('Error writing log data to file');
-      } else {
-        res.status(200).send('Log data written to file');
-      }
-    });
+    res.status(200).send('Log data received successfully');
+  } catch (error) {
+    console.error('An error occurred:', error);
+    res.status(500).send('An error occurred');
   }
 });
 
-
 const PORT = process.env.PORT || 1111;
-server.listen(PORT, () => {
-  console.log(`Server started on port ${PORT}`);
-});
+server.listen(PORT, () => console.log(`Server started on port ${PORT}`));
