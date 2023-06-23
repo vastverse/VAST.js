@@ -343,7 +343,7 @@
                 }
 
                 //subscriptions (for each sub linked to current client id)
-                    for(var k in subscriptions){
+                for(var k in subscriptions){
                         var sub = subscriptions[k];
                         var aoi = sub.aoi;
 
@@ -386,7 +386,11 @@
                                 actualPacketArray[0] !== 36
                             ) {
                                 // console.log(pub.payload)
+<<<<<<< Updated upstream
                                 $('#information').prepend('<li>' + JSON.stringify(pub.payload.actualPacket) + '</li>');
+=======
+                                // $('#information').prepend('<li>' + JSON.stringify(pub.payload.actualPacket) + '</li>');
+>>>>>>> Stashed changes
                                 idx = 'C['+ pub.clientID +'] published'
 
                                 ctx.beginPath();
@@ -628,10 +632,16 @@
 
             function loadResultsFile_from_string(string) {
                 var lines = string.split('\n');
+                
+                // lines = lines.slice(-5); // TODO: Make larger
+                // // console.error(lines.length);
                 // console.log('called');
                 // console.log(lines);
+                // currentEvent = 0;
+                events.length = 0;
                 for (var line = 0; line < lines.length; line++) {
                     try {
+                        // console.log(JSON.parse(lines[line]))
                         events[line] = JSON.parse(lines[line]);
                     } catch (e) {
                         console.error(e);
@@ -719,7 +729,7 @@
                 });
 
                 ws.addEventListener('close', () => {
-                    consoleOutput.textContent += '\Disconnected from log_watcher.js'
+                    consoleOutput.textContent += '\nDisconnected from log_watcher.js'
                     disconnectPrompt();
                 });
 
@@ -749,6 +759,7 @@
                             // console.log('clicking');
                             // button.click();
                         } else {
+                            currentEvent = 0;
                             loadResultsFile_from_string(fileContent);
                             step(Date.now()-now+1200);
                         }
