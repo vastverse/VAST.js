@@ -39,7 +39,7 @@ app.use(express.json());
 
 const startSaveInterval = () => {
   if (!saveInterval) {
-    saveInterval = setInterval(saveLogs, 100);
+    saveInterval = setInterval(sendUpdateToClients, 100);
   }
 };
 
@@ -51,26 +51,42 @@ const stopSaveInterval = () => {
 };
 
 const sendUpdateToClients = () => {
-  fs.readFile(logDirectoryPath, 'utf8', (error, data) => {
-    if (error) {
-      console.error(`Error reading file: ${error}`);
-    } else {
-      const fileSizeInBytes = Buffer.byteLength(data, 'utf8');
-      console.log(`Sending file of size: ${fileSizeInBytes} bytes`);
-      wss.clients.forEach(client => {
-        if (client.readyState === WebSocket.OPEN) {
-          client.send(JSON.stringify({ type: 'fileContent', content: data }));
-        }
-      });
-    }
-  });
+  // fs.readFile(logDirectoryPath, 'utf8', (error, data) => {
+  //   if (error) {
+  //     console.error(`Error reading file: ${error}`);
+  //   } else {
+  //     const fileSizeInBytes = Buffer.byteLength(data, 'utf8');
+  //     console.log(`Sending file of size: ${fileSizeInBytes} bytes`);
+  //     wss.clients.forEach(client => {
+  //       if (client.readyState === WebSocket.OPEN) {
+  //         client.send(JSON.stringify({ type: 'fileContent', content: data }));
+  //         console.log(data)
+  //       }
+  //     });
+  //   }
+  // });
+
+  if (logs.length > 0) {
+    logtowrite = logs.slice(-40);
+    data = logtowrite.map(log => log.logData).join('');
+    wss.clients.forEach(client => {
+      if (client.readyState === WebSocket.OPEN) {
+        client.send(JSON.stringify({ type: 'fileContent', content: data }));
+        // console.log(data)
+      }
+    });
+    console.log('Amount of lines sent: ', logs.length);
+    logs.length = 0;
+  }
 };
 
 const saveLogs = () => {
   if (logs.length > 0) {
     console.log('Saving logs...');
     // logs = logs.filter(log => log.event !== Matcher_Event.SUB_DELETE);
-    fs.writeFile(logDirectoryPath, logs.slice(-20).map(log => log.logData).join(''), error => {
+    logtowrite = logs.slice(-40)
+    // console.log('Log data written to file: ' + JSON.stringify(logtowrite));
+    fs.writeFile(logDirectoryPath, logtowrite.map(log => log.logData).join(''), error => {
       if (error) {
         console.error(error);
       } else {
@@ -91,26 +107,33 @@ app.post('/log', (req, res) => {
     const { event, time } = parsedLog;
     const subID = (parsedLog.sub && parsedLog.sub.subID) || (parsedLog.msg && parsedLog.msg.subID) || null;
 
-    logCount++;
-    console.log('logCounter:', logCount);
-    console.log('Received log data:', logData);
-    if (!fs.existsSync(directory)) fs.mkdirSync(directory, { recursive: true });
+    if (parsedLog['event'] != undefined) { // Don't send msg logs TODO: Could readd this and print in info bar
+      logCount++;
+      // console.log('logCounter:', logCount);
+      // console.log('Received log data:', parsedLog);
 
-    logs.push({ event, time, logData, subID });
+      if (!fs.existsSync(directory)) fs.mkdirSync(directory, { recursive: true });
 
-    if (logCount >= 20) {
-      saveLogs();
-      logCount = 0;
-    } else if (!saveInterval) {
-      startSaveInterval();
+      logs.push({ event, time, logData, subID });
+
+      if (logCount >= 20) {
+        // saveLogs();
+        sendUpdateToClients();
+        logCount = 0;
+      } else if (!saveInterval) {
+        startSaveInterval();
+      }
+
+      res.status(200).send('Log data received successfully');
     }
-
-    res.status(200).send('Log data received successfully');
   } catch (error) {
     console.error('An error occurred:', error);
     res.status(500).send('An error occurred');
   }
+
 });
+
+
 
 const PORT = process.env.PORT || 1111;
 server.listen(PORT, () => console.log(`Server started on port ${PORT}`));
