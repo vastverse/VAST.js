@@ -187,6 +187,11 @@
         </div>
         <div id="text">
             <ul id="information"></ul>
+            <!-- <div id="client_information_div">
+                <ul id="client_information">
+
+                </ul>
+            </div> -->
         </div>
     </div>
     <form id="time-controls"> 
@@ -374,16 +379,16 @@
                             const actualPacketArray = JSON.parse(pub.payload.actualPacket);
                             if (
                                 actualPacketArray.length > 0 
-                                &&
-                                actualPacketArray[0] !== 95 &&
-                                actualPacketArray[0] !== 75 &&
-                                actualPacketArray[0] !== 94 &&
-                                actualPacketArray[0] !== 97 &&
-                                actualPacketArray[0] !== 96 &&
-                                actualPacketArray[0] !== 39 && //chunk data
-                                actualPacketArray[0] !== 38 && //chunk data?
-                                actualPacketArray[0] !== 44 && //Time?
-                                actualPacketArray[0] !== 36
+                                // &&
+                                // actualPacketArray[0] !== 95 &&
+                                // actualPacketArray[0] !== 75 &&
+                                // actualPacketArray[0] !== 94 &&
+                                // actualPacketArray[0] !== 97 &&
+                                // actualPacketArray[0] !== 96 &&
+                                // actualPacketArray[0] !== 39 && //chunk data
+                                // actualPacketArray[0] !== 38 && //chunk data?
+                                // actualPacketArray[0] !== 44 && //Time?
+                                // actualPacketArray[0] !== 36
                             ) {
                                 // console.log(pub.payload)
                                 // $('#information').prepend('<li>' + JSON.stringify(pub.payload.actualPacket) + '</li>');
@@ -524,6 +529,7 @@
 
                     case Matcher_Event.SUB_DELETE :{
                         var sub = data.sub;
+                        $('#information').prepend('<li> Delete event: ' + sub.subID + '</li>');
                         delete subscriptions[sub.subID];
                     }
                     break;
@@ -627,6 +633,7 @@
             }
 
             function loadResultsFile_from_string(string) {
+                // console.log(string)
                 var lines = string.split('\n');
                 
                 // lines = lines.slice(-5); // TODO: Make larger
@@ -639,6 +646,9 @@
                     try {
                         // console.log(JSON.parse(lines[line]))
                         events[line] = JSON.parse(lines[line]);
+                        // if (events[line]['event'] == 7) {
+                        //     console.log(events[line]['sub']['subID'])
+                        // }
                     } catch (e) {
                         console.error(e);
                     }
