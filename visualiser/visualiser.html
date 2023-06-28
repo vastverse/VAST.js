@@ -343,23 +343,47 @@
                 }
 
                 //subscriptions (for each sub linked to current client id)
-                    for(var k in subscriptions){
-                        var sub = subscriptions[k];
-                        var aoi = sub.aoi;
+                for(var k in subscriptions){
+                    var sub = subscriptions[k];
+                    var aoi = sub.aoi;
 
-                        ctx.beginPath();
-                        ctx.globalAlpha = 0.1;
-                        ctx.fillStyle = 'green';
+                    ctx.beginPath();
+                    ctx.globalAlpha = 0.1;
+                    ctx.fillStyle = 'green';
+
+                    if (aoi.hasOwnProperty('radius')) {
+                        // circular area
                         ctx.arc(aoi.center.x, aoi.center.y, aoi.radius, 0, 2*Math.PI);
-                        ctx.fill();
+                    } else if (aoi.hasOwnProperty('points')) {
+                        // polygonal area
+                        var avgX = aoi.points.reduce((sum, p) => sum + p.x, 0) / aoi.points.length;
+                        var avgY = aoi.points.reduce((sum, p) => sum + p.y, 0) / aoi.points.length;
+                        // var sortedPoints = aoi.points.sort(function(a, b) {
+                        //     return Math.atan2(a.y - avgY, a.x - avgX) - Math.atan2(b.y - avgY, b.x - avgX);
+                        // });
 
-                        ctx.beginPath();
-                        ctx.globalAlpha = 1;
-                        ctx.font = "15px Verdana";
+                        ctx.moveTo(aoi.points[0].x, aoi.points[0].y);
+                        for (var i = 1; i < aoi.points.length; i++) {
+                            ctx.lineTo(aoi.points[i].x, aoi.points[i].y);
+                        }
+                        ctx.closePath();
+                    }
+
+                    ctx.fill();
+
+                    ctx.beginPath();
+                    ctx.globalAlpha = 1;
+                    ctx.font = "15px Verdana";
+                    if (aoi.hasOwnProperty('radius')) {
+                        // for circular area
                         ctx.fillText(sub.subID, aoi.center.x/SCALING_FACTOR-20,(aoi.center.y+aoi.radius)/SCALING_FACTOR+7);
-                        ctx.stroke();
-                        ctx.fill();
-                    }      
+                    } else if (aoi.hasOwnProperty('points')) {
+                        // for polygonal area, use the average of the points as the center for the text
+                        ctx.fillText(sub.subID, avgX/SCALING_FACTOR-20, avgY/SCALING_FACTOR+7);
+                    }
+                    ctx.stroke();
+                    ctx.fill();
+                }
                 
                     //publications
                     for(var k in publications){
