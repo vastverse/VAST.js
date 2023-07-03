@@ -73,11 +73,21 @@ function processInput(input) {
             const radius = parseFloat(args[2]);
             const channel = args[3];
 
-            C.subscribe(x, y, radius, channel);
+            C.subscribe({x: x, y: y, radius: radius}, channel);
             console.log(`Subscribed to channel '${channel}' at AoI [${x}; ${y}; ${radius}]`);
         } else {
             console.log('Invalid arguments. Usage: subscribe <x> <y> <radius> <channel>');
         }
+    } else if (command === 'square_sub') {
+        const test_points = [
+            { x: 50, y: 50 },
+            { x: 300, y: 50 },
+            { x: 50, y: 300 },
+            { x: 300, y: 300 }
+        ];
+
+        C.subscribe(test_points, "clientBound");
+
     } else if (command === 'publish') {
         if (args.length === 5) {
             const x = parseFloat(args[0]);
