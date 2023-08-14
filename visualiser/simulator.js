@@ -27,14 +27,14 @@ if (filename.length > 4 && filename.slice(-4) != ".txt") {
 }
 
 // Interpret and execute instruction
-async function executeInstruction(instruction, step, success, fail){   
+async function executeInstruction(instruction, step, success, fail) {   
     var opts = instruction.opts;
     var type = instruction.type;
     
-    switch (type){
+    switch (type) {
 
         case 'wait' : {
-            delay(opts.waitTime, function(){
+            delay(opts.waitTime, function() {
                 success('waited for ' + opts.waitTime + ' milliseconds');
             });
         }
@@ -42,7 +42,7 @@ async function executeInstruction(instruction, step, success, fail){
 
         case 'newMatcher' : {
 
-            if (!matchers.hasOwnProperty(opts.alias)){       
+            if (!matchers.hasOwnProperty(opts.alias)) {       
 
                 matchers[opts.alias]= new matcher(opts.x, opts.y, opts.radius, 
                     {
@@ -59,29 +59,29 @@ async function executeInstruction(instruction, step, success, fail){
                         eventDisplayLevel : 0,
                         eventRecordLevel : 5
                     },
-                    function(id){
+                    function(id) {
                         matcherIDs2alias[id] = opts.alias;
                         success('Matcher: ' + opts.alias + ' created with ID: ' + id);
                     }
                 );
             }
-            else{
+            else {
                 fail('Matcher already exists with alias: ' + opts.alias);
             }
         }
         break;
 
         case 'newClient' : {
-            if (!clients.hasOwnProperty(opts.alias)){
+            if (!clients.hasOwnProperty(opts.alias)) {
                 
-                clients[opts.alias] = new  client(null, opts.host, opts.port, opts.alias, opts.x, opts.y, opts.radius, function(id){
+                clients[opts.alias] = new client(null, opts.host, opts.port, opts.alias, opts.x, opts.y, opts.radius, function(id){
                     clientIDs2alias[id] = opts.alias;
                     clients[opts.alias].setAlias = opts.alias;
                     let m = clients[opts.alias].getMatcherID();
                     success('Client ' + opts.alias + ' assigned to matcher: ' + matcherIDs2alias[m]);
                 });
             }
-            else{
+            else {
                 fail('client already exists with alias: ' + alias);
             }
         }
