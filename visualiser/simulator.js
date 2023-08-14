@@ -72,9 +72,9 @@ async function executeInstruction(instruction, step, success, fail){
         break;
 
         case 'newClient' : {
-            if(!clients.hasOwnProperty(opts.alias)){
+            if (!clients.hasOwnProperty(opts.alias)){
                 
-                clients[opts.alias] = new  client(opts.host, opts.port, opts.alias, opts.x, opts.y, opts.radius, function(id){
+                clients[opts.alias] = new  client(null, opts.host, opts.port, opts.alias, opts.x, opts.y, opts.radius, function(id){
                     clientIDs2alias[id] = opts.alias;
                     clients[opts.alias].setAlias = opts.alias;
                     let m = clients[opts.alias].getMatcherID();
