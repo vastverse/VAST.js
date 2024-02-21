@@ -7,7 +7,7 @@
 //  --------------------------------------------------------------------
 //  Command:    "newMatcher"    
 //  Arg1:       "alias"         --> This is the name of the matcher, and how to refer to it in other commands 
-//  Arg2:       "isGateway"     --> Sets whether the matcher to create is the gateway or not. (only single gateway is currently supported)
+//  Arg2:       "isGateway"     --> Sets whether the matcher to create is the gateway or not. (Note that only single gateway is currently supported)
 //  Arg3:       "GW_host"       --> The address of the GW peer to connect to
 //  Arg4:       "GW_port"       --> The port the GW is listening on for other Matcher connections
 //  Arg5:       "VON_port"      --> The port we are listening on for other matchers. Will automatically increment if in use.
@@ -65,7 +65,7 @@
 // EXAMPLE INSTRUCTION SCRIPT FOR VAST.js Simulator
 //___________________________________________________________________
 
-//Start the Gateway matcher
+// Start the Gateway matcher
 newMatcher GW true localhost 8000 8001 20000 500 500 100
 wait 100
 
