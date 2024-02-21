@@ -2,6 +2,7 @@ node_modules/
 test/logs
 test/logs_and_events
 visualiser/logs_and_events
+visualiser/Aedes_PubSub/aedes_logs_and_events
 ./package-lock.json
 .eslintrc.json
 simulator/visualiser copy.html

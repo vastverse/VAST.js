@@ -1,0 +1,53 @@
+// Start the Gateway matcher
+// newMatcher GW true localhost 8000 8001 20000 500 500 100
+// wait 10000
+
+//Start other matchers
+//newMatcher M2 false localhost 8000 8010 20010 167 500 100
+//wait 200
+//newMatcher M3 false localhost 8000 8020 20020 833 500 100
+
+newClient C1 localhost 1883 300 100 100
+wait 200
+subscribe C1 400 500 150 temp
+wait 500
+
+newClient C2 localhost 1883 300 100 100
+//wait 10 seconds before pulishing
+wait 5000
+
+publish C2 400 500 150 temp "hello1 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello2 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello3 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello4 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello5 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello6 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello7 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello8 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello9 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello10 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello11 from C2!"
+wait 500
+
+newClient C2 localhost 1883 300 100 100
+wait 200
