@@ -187,6 +187,11 @@
         </div>
         <div id="text">
             <ul id="information"></ul>
+            <!-- <div id="client_information_div">
+                <ul id="client_information">
+
+                </ul>
+            </div> -->
         </div>
     </div>
     <form id="time-controls"> 
@@ -347,6 +352,7 @@
                     var sub = subscriptions[k];
                     var aoi = sub.aoi;
 
+
                     ctx.beginPath();
                     ctx.globalAlpha = 0.1;
                     ctx.fillStyle = 'green';
@@ -390,42 +396,47 @@
                         var pub = publications[k].pub;
                         var aoi = pub.aoi;
 
-                        // 95 &75
+                        if ( //Minecraft packet things
+                            // pub.channel === "serverBound" &&
+                            // pub.payload.actualPacket &&
+                            typeof pub.payload.actualPacket === "string"
+                        ) {
+                            const actualPacketArray = JSON.parse(pub.payload.actualPacket);
+                            if (
+                                actualPacketArray.length > 0 
+                                // &&
+                                // actualPacketArray[0] !== 95 &&
+                                // actualPacketArray[0] !== 75 &&
+                                // actualPacketArray[0] !== 94 &&
+                                // actualPacketArray[0] !== 97 &&
+                                // actualPacketArray[0] !== 96 &&
+                                // actualPacketArray[0] !== 39 && //chunk data
+                                // actualPacketArray[0] !== 38 && //chunk data?
+                                // actualPacketArray[0] !== 44 && //Time?
+                                // actualPacketArray[0] !== 36
+                            ) {
+                                // console.log(pub.payload)
+                                // $('#information').prepend('<li>' + JSON.stringify(pub.payload.actualPacket) + '</li>');
+                                idx = 'C['+ pub.clientID +'] published'
 
-                        // if (
-                        //     // pub.channel === "serverBound" &&
-                        //     // pub.payload.actualPacket &&
-                        //     typeof pub.payload.actualPacket === "string"
-                        // ) {
-                        // const actualPacketArray = JSON.parse(pub.payload.actualPacket);
-                        // if (
-                        //     actualPacketArray.length > 0 
-                            // &&
-                            // actualPacketArray[0] !== 95 &&
-                            // actualPacketArray[0] !== 75 &&
-                            // actualPacketArray[0] !== 94 &&
-                            // actualPacketArray[0] !== 97 &&
-                            // actualPacketArray[0] !== 96
-                        // ) {
-                        // console.log(pub.payload)
+                                ctx.beginPath();
+                                ctx.globalAlpha = 0.1;
+                                ctx.fillStyle = 'red';
+                                ctx.arc(aoi.center.x, aoi.center.y, aoi.radius, 0, 2*Math.PI);
+                                ctx.fill();
+                                
 
-                        idx = 'C['+ pub.clientID +'] published'
-
-                        ctx.beginPath();
-                        ctx.globalAlpha = 0.1;
-                        ctx.fillStyle = 'red';
-                        ctx.arc(aoi.center.x, aoi.center.y, aoi.radius, 0, 2*Math.PI);
-                        ctx.fill();
-                        
-
-                        ctx.beginPath();
-                        ctx.globalAlpha = 1;
-                        ctx.font = "15px Verdana";
-                        ctx.fillText(idx, aoi.center.x/SCALING_FACTOR-20,(aoi.center.y+aoi.radius)/SCALING_FACTOR+7);
-                        ctx.stroke();
-                        ctx.fill();
-                        // }
-                    // }
+                                ctx.beginPath();
+                                ctx.globalAlpha = 1;
+                                ctx.font = "15px Verdana";
+                                ctx.fillText(idx, aoi.center.x/SCALING_FACTOR-20,(aoi.center.y+aoi.radius)/SCALING_FACTOR+7);
+                                ctx.stroke();
+                                ctx.fill();
+                            } else {
+                                // idx = 'C['+ pub.clientID +'] published'
+                                // $('#information').prepend(pub.payload);
+                            }
+                    }
                     }
             }
 
@@ -543,6 +554,7 @@
 
                     case Matcher_Event.SUB_DELETE :{
                         var sub = data.sub;
+                        $('#information').prepend('<li> Delete event: ' + sub.subID + '</li>');
                         delete subscriptions[sub.subID];
                     }
                     break;
@@ -646,12 +658,22 @@
             }
 
             function loadResultsFile_from_string(string) {
+                // console.log(string)
                 var lines = string.split('\n');
+                
+                // lines = lines.slice(-5); // TODO: Make larger
+                // // console.error(lines.length);
                 // console.log('called');
                 // console.log(lines);
+                // currentEvent = 0;
+                events.length = 0;
                 for (var line = 0; line < lines.length; line++) {
                     try {
+                        // console.log(JSON.parse(lines[line]))
                         events[line] = JSON.parse(lines[line]);
+                        // if (events[line]['event'] == 7) {
+                        //     console.log(events[line]['sub']['subID'])
+                        // }
                     } catch (e) {
                         console.error(e);
                     }
@@ -738,7 +760,7 @@
                 });
 
                 ws.addEventListener('close', () => {
-                    consoleOutput.textContent += '\Disconnected from log_watcher.js'
+                    consoleOutput.textContent += '\nDisconnected from log_watcher.js'
                     disconnectPrompt();
                 });
 
@@ -768,6 +790,7 @@
                             // console.log('clicking');
                             // button.click();
                         } else {
+                            currentEvent = 0;
                             loadResultsFile_from_string(fileContent);
                             step(Date.now()-now+1200);
                         }
