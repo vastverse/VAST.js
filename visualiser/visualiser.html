@@ -351,12 +351,11 @@
                 for(var k in subscriptions){
                     var sub = subscriptions[k];
                     var aoi = sub.aoi;
-
-
+                  
                     ctx.beginPath();
                     ctx.globalAlpha = 0.1;
                     ctx.fillStyle = 'green';
-
+                  
                     if (aoi.hasOwnProperty('radius')) {
                         // circular area
                         ctx.arc(aoi.center.x, aoi.center.y, aoi.radius, 0, 2*Math.PI);
