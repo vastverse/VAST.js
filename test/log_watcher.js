@@ -84,9 +84,9 @@ const saveLogs = () => {
   if (logs.length > 0) {
     console.log('Saving logs...');
     // logs = logs.filter(log => log.event !== Matcher_Event.SUB_DELETE);
-    logtowrite = logs.slice(-40)
+    let logtowrite = logs.slice(-40);
     // console.log('Log data written to file: ' + JSON.stringify(logtowrite));
-    fs.writeFile(logDirectoryPath, logtowrite.map(log => log.logData).join(''), error => {
+    fs.appendFile(logDirectoryPath, logtowrite.map(log => log.logData).join(''), error => {
       if (error) {
         console.error(error);
       } else {
@@ -107,7 +107,9 @@ app.post('/log', (req, res) => {
     const { event, time } = parsedLog;
     const subID = (parsedLog.sub && parsedLog.sub.subID) || (parsedLog.msg && parsedLog.msg.subID) || null;
 
-    if (parsedLog['event'] != undefined) { // Don't send msg logs TODO: Could readd this and print in info bar
+    // console.log('Received log data1:', parsedLog['msg']); //|| parsedLog.msg.includes("clients:")
+
+    if (parsedLog['event'] != undefined || parsedLog['msg'].includes("clients:")) { // Don't send msg logs to HTML TODO: Could readd this and print in info bar
       logCount++;
       // console.log('logCounter:', logCount);
       // console.log('Received log data:', parsedLog);
