@@ -508,25 +508,25 @@
 
                 // prepare all events that occured between last time step and now
                 var event;
-                for (currentEvent; currentEvent < events.length; currentEvent++){
+                for (currentEvent; currentEvent < events.length; currentEvent++) {
                     event = events[currentEvent];
 
                     if (event.time <= now){
                     prepareEvent(event);
-                    }else{
+                    } else {
                         break;
                     }
                 }
 
                 //add all relevant debug lines to information feed
                 var line;
-                for (currentDebug; currentDebug < debugLines.length; currentDebug++){
+                for (currentDebug; currentDebug < debugLines.length; currentDebug++) {
                     line = debugLines[currentDebug];
 
-                    if (line.time <= now){
+                    if (line.time <= now) {
                         var content = '<li>' + easyTime(line.time) + ' - ' + line.msg + '</li>';
                         $('#information').prepend(content);
-                    }else{
+                    } else {
                         break;
                     }
                 }
@@ -536,7 +536,7 @@
             }
 
             // publications should not be rendered past pubTime + pubLife
-            var clearPublications = function(){
+            var clearPublications = function() {
                 var i;
                 for (i = 0; i < publications.length; i ++){
                     if ((now-500) - publications[i].time < pubLife){
