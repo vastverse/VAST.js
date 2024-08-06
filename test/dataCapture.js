@@ -70,7 +70,6 @@ function getFilenameByCategory(category, logDir) {
         // Together with PROXYBOUND_ClENT_PING_OUT, this is the full round trip time
 
 
-
         // MATCHER_PING_IN: "MATCHER_PING_IN.csv",
         // MATCHER_PING_OUT: "MATCHER_PING_OUT.csv",
         // MATCHER_PONG_OUT: "MATCHER_PONG_OUT.csv",
