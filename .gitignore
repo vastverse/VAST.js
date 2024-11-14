@@ -8,3 +8,6 @@ docs.ai.json
 .gitignore
 package-lock.json
 .vscode/settings.json
+test/VastPackets/MATCHER_C_out_packet_log.csv
+test/VastPackets/MATCHER_C_in_packet_log.csv
+.idea/
