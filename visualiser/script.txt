@@ -1,0 +1,3017 @@
+//Start the Gateway matcher
+newMatcher GW true localhost 8000 8001 20000 500 500 100
+wait 10000
+
+//Start other matchers
+//newMatcher M2 false localhost 8000 8010 20010 167 500 100
+//wait 200
+//newMatcher M3 false localhost 8000 8020 20020 833 500 100
+
+newClient C1 localhost 20000 300 100 100
+wait 200
+subscribe C1 400 500 150 temp
+wait 500
+
+newClient C2 localhost 20000 300 100 100
+//wait 10 seconds before pulishing
+wait 5000
+
+publish C2 400 500 150 temp "hello1 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello2 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello3 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello4 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello5 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello6 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello7 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello8 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello9 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello10 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello11 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello12 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello13 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello14 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello15 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello16 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello17 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello18 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello19 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello20 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello21 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello22 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello23 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello24 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello25 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello26 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello27 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello28 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello29 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello30 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello31 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello32 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello33 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello34 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello35 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello36 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello37 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello38 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello39 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello40 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello41 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello42 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello43 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello44 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello45 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello46 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello47 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello48 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello49 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello50 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello51 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello52 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello53 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello54 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello55 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello56 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello57 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello58 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello59 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello60 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello61 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello62 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello63 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello64 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello65 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello66 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello67 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello68 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello69 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello70 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello71 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello72 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello73 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello74 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello75 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello76 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello77 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello78 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello79 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello80 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello81 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello82 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello83 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello84 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello85 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello86 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello87 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello88 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello89 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello90 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello91 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello92 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello93 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello94 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello95 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello96 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello97 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello98 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello99 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello100 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello101 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello102 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello103 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello104 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello105 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello106 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello107 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello108 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello109 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello110 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello111 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello112 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello113 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello114 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello115 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello116 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello117 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello118 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello119 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello120 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello121 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello122 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello123 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello124 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello125 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello126 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello127 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello128 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello129 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello130 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello131 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello132 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello133 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello134 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello135 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello136 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello137 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello138 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello139 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello140 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello141 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello142 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello143 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello144 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello145 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello146 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello147 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello148 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello149 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello150 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello151 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello152 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello153 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello154 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello155 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello156 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello157 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello158 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello159 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello160 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello161 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello162 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello163 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello164 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello165 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello166 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello167 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello168 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello169 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello170 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello171 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello172 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello173 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello174 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello175 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello176 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello177 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello178 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello179 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello180 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello181 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello182 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello183 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello184 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello185 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello186 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello187 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello188 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello189 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello190 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello191 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello192 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello193 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello194 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello195 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello196 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello197 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello198 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello199 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello200 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello201 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello202 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello203 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello204 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello205 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello206 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello207 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello208 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello209 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello210 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello211 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello212 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello213 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello214 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello215 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello216 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello217 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello218 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello219 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello220 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello221 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello222 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello223 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello224 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello225 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello226 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello227 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello228 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello229 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello230 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello231 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello232 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello233 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello234 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello235 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello236 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello237 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello238 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello239 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello240 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello241 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello242 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello243 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello244 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello245 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello246 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello247 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello248 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello249 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello250 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello251 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello252 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello253 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello254 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello255 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello256 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello257 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello258 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello259 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello260 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello261 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello262 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello263 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello264 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello265 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello266 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello267 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello268 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello269 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello270 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello271 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello272 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello273 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello274 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello275 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello276 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello277 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello278 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello279 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello280 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello281 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello282 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello283 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello284 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello285 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello286 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello287 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello288 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello289 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello290 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello291 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello292 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello293 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello294 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello295 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello296 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello297 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello298 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello299 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello300 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello301 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello302 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello303 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello304 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello305 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello306 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello307 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello308 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello309 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello310 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello311 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello312 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello313 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello314 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello315 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello316 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello317 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello318 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello319 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello320 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello321 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello322 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello323 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello324 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello325 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello326 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello327 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello328 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello329 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello330 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello331 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello332 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello333 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello334 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello335 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello336 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello337 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello338 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello339 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello340 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello341 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello342 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello343 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello344 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello345 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello346 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello347 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello348 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello349 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello350 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello351 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello352 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello353 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello354 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello355 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello356 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello357 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello358 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello359 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello360 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello361 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello362 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello363 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello364 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello365 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello366 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello367 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello368 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello369 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello370 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello371 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello372 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello373 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello374 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello375 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello376 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello377 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello378 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello379 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello380 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello381 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello382 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello383 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello384 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello385 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello386 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello387 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello388 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello389 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello390 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello391 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello392 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello393 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello394 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello395 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello396 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello397 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello398 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello399 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello400 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello401 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello402 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello403 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello404 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello405 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello406 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello407 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello408 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello409 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello410 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello411 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello412 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello413 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello414 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello415 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello416 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello417 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello418 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello419 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello420 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello421 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello422 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello423 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello424 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello425 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello426 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello427 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello428 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello429 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello430 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello431 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello432 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello433 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello434 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello435 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello436 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello437 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello438 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello439 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello440 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello441 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello442 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello443 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello444 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello445 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello446 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello447 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello448 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello449 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello450 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello451 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello452 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello453 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello454 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello455 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello456 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello457 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello458 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello459 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello460 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello461 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello462 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello463 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello464 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello465 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello466 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello467 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello468 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello469 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello470 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello471 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello472 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello473 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello474 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello475 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello476 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello477 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello478 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello479 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello480 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello481 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello482 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello483 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello484 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello485 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello486 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello487 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello488 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello489 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello490 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello491 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello492 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello493 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello494 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello495 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello496 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello497 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello498 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello499 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello500 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello501 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello502 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello503 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello504 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello505 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello506 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello507 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello508 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello509 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello510 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello511 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello512 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello513 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello514 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello515 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello516 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello517 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello518 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello519 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello520 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello521 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello522 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello523 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello524 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello525 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello526 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello527 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello528 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello529 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello530 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello531 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello532 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello533 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello534 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello535 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello536 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello537 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello538 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello539 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello540 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello541 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello542 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello543 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello544 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello545 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello546 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello547 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello548 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello549 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello550 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello551 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello552 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello553 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello554 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello555 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello556 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello557 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello558 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello559 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello560 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello561 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello562 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello563 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello564 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello565 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello566 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello567 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello568 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello569 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello570 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello571 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello572 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello573 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello574 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello575 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello576 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello577 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello578 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello579 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello580 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello581 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello582 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello583 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello584 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello585 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello586 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello587 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello588 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello589 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello590 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello591 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello592 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello593 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello594 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello595 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello596 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello597 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello598 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello599 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello600 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello601 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello602 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello603 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello604 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello605 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello606 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello607 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello608 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello609 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello610 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello611 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello612 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello613 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello614 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello615 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello616 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello617 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello618 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello619 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello620 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello621 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello622 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello623 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello624 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello625 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello626 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello627 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello628 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello629 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello630 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello631 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello632 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello633 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello634 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello635 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello636 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello637 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello638 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello639 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello640 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello641 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello642 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello643 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello644 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello645 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello646 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello647 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello648 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello649 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello650 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello651 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello652 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello653 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello654 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello655 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello656 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello657 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello658 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello659 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello660 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello661 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello662 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello663 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello664 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello665 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello666 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello667 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello668 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello669 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello670 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello671 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello672 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello673 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello674 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello675 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello676 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello677 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello678 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello679 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello680 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello681 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello682 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello683 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello684 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello685 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello686 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello687 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello688 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello689 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello690 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello691 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello692 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello693 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello694 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello695 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello696 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello697 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello698 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello699 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello700 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello701 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello702 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello703 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello704 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello705 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello706 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello707 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello708 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello709 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello710 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello711 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello712 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello713 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello714 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello715 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello716 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello717 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello718 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello719 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello720 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello721 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello722 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello723 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello724 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello725 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello726 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello727 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello728 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello729 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello730 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello731 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello732 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello733 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello734 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello735 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello736 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello737 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello738 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello739 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello740 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello741 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello742 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello743 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello744 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello745 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello746 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello747 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello748 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello749 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello750 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello751 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello752 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello753 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello754 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello755 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello756 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello757 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello758 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello759 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello760 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello761 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello762 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello763 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello764 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello765 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello766 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello767 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello768 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello769 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello770 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello771 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello772 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello773 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello774 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello775 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello776 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello777 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello778 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello779 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello780 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello781 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello782 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello783 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello784 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello785 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello786 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello787 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello788 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello789 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello790 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello791 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello792 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello793 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello794 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello795 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello796 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello797 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello798 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello799 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello800 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello801 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello802 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello803 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello804 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello805 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello806 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello807 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello808 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello809 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello810 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello811 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello812 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello813 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello814 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello815 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello816 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello817 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello818 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello819 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello820 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello821 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello822 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello823 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello824 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello825 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello826 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello827 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello828 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello829 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello830 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello831 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello832 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello833 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello834 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello835 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello836 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello837 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello838 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello839 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello840 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello841 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello842 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello843 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello844 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello845 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello846 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello847 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello848 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello849 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello850 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello851 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello852 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello853 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello854 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello855 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello856 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello857 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello858 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello859 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello860 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello861 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello862 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello863 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello864 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello865 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello866 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello867 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello868 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello869 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello870 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello871 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello872 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello873 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello874 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello875 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello876 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello877 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello878 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello879 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello880 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello881 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello882 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello883 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello884 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello885 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello886 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello887 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello888 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello889 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello890 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello891 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello892 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello893 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello894 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello895 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello896 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello897 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello898 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello899 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello900 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello901 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello902 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello903 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello904 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello905 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello906 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello907 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello908 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello909 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello910 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello911 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello912 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello913 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello914 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello915 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello916 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello917 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello918 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello919 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello920 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello921 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello922 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello923 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello924 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello925 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello926 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello927 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello928 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello929 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello930 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello931 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello932 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello933 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello934 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello935 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello936 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello937 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello938 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello939 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello940 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello941 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello942 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello943 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello944 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello945 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello946 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello947 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello948 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello949 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello950 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello951 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello952 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello953 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello954 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello955 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello956 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello957 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello958 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello959 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello960 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello961 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello962 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello963 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello964 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello965 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello966 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello967 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello968 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello969 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello970 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello971 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello972 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello973 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello974 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello975 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello976 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello977 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello978 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello979 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello980 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello981 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello982 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello983 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello984 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello985 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello986 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello987 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello988 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello989 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello990 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello991 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello992 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello993 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello994 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello995 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello996 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello997 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello998 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello999 from C2!"
+wait 500
+
+publish C2 400 500 150 temp "hello1000 from C2!"
+wait 500
