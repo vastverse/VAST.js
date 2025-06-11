@@ -43,7 +43,7 @@ function generateSimulationScript({ mode, worldSize, numCustomers, numTrucks, nu
 
     // Start Gateway (if centralized mode is chosen)
     if (mode === 'centralized') {
-        script += `newMatcher GW true localhost 8000 8001 20000 500 500 100\nwait 100\n`;
+        script += `newMatcher GW true localhost 8000 8001 8000 500 500 100\nwait 100\n`;
     }
 
     // Create clients
@@ -52,25 +52,25 @@ function generateSimulationScript({ mode, worldSize, numCustomers, numTrucks, nu
 
     // Create Warehouses (WH)
     for (let i = 0; i < numWarehouses; i++) {
-        let xCoord = Math.round(Math.random() * worldSize);
-        let yCoord = Math.round(Math.random() * worldSize);
-        clients.push(`newClient WH${i + 1} localhost 20000 ${xCoord} ${yCoord} 100\n`);
+        let xCoord = Math.random() * worldSize;
+        let yCoord = Math.random() * worldSize;
+        clients.push(`newClient WH${i + 1} localhost 8000 ${xCoord} ${yCoord} 100\n`);
         clientCounter++;
     }
 
     // Create Trucks (TR)
     for (let i = 0; i < numTrucks; i++) {
-        let xCoord = Math.round(Math.random() * worldSize);
-        let yCoord = Math.round(Math.random() * worldSize);
-        clients.push(`newClient TR${i + 1} localhost 20000 ${xCoord} ${yCoord} 100\n`);
+        let xCoord = Math.random() * worldSize;
+        let yCoord = Math.random() * worldSize;
+        clients.push(`newClient TR${i + 1} localhost 8000 ${xCoord} ${yCoord} 100\n`);
         clientCounter++;
     }
 
     // Create Customers (CS)
     for (let i = 0; i < numCustomers; i++) {
-        let xCoord = Math.round(Math.random() * worldSize);
-        let yCoord = Math.round(Math.random() * worldSize);
-        clients.push(`newClient CS${i + 1} localhost 20000 ${xCoord} ${yCoord} 100\n`);
+        let xCoord = Math.random() * worldSize;
+        let yCoord = Math.random() * worldSize;
+        clients.push(`newClient CS${i + 1} localhost 8000 ${xCoord} ${yCoord} 100\n`);
         clientCounter++;
     }
 
@@ -79,42 +79,42 @@ function generateSimulationScript({ mode, worldSize, numCustomers, numTrucks, nu
     subscriptions += "wait 500\n";
     for (let i = 0; i < numCustomers; i++) {
         // subscriptions += 'wait 500\n'; // Add a delay before subscriptions
-        subscriptions += `\nsubscribe CS${i + 1} ${Math.round(Math.random() * 1000)} ${Math.round(Math.random() * 1000)} 100 packageshipped\n`;
-        subscriptions += `subscribe CS${i + 1} ${Math.round(Math.random() * 1000)} ${Math.round(Math.random() * 1000)} 100 packageintransit\n`;
-        subscriptions += `subscribe CS${i + 1} ${Math.round(Math.random() * 1000)} ${Math.round(Math.random() * 1000)} 100 packagedelivered\n`;
-        subscriptions += `subscribe CS${i + 1} ${Math.round(Math.random() * 1000)} ${Math.round(Math.random() * 1000)} 100 packagereadyforpickup\n\n`; // Added subscription for readyforpickup
+        subscriptions += `\nsubscribe CS${i + 1} ${Math.random() * 1000} ${Math.random() * 1000} 100 package/shipped\n`;
+        subscriptions += `subscribe CS${i + 1} ${Math.random() * 1000} ${Math.random() * 1000} 100 package/in_transit\n`;
+        subscriptions += `subscribe CS${i + 1} ${Math.random() * 1000} ${Math.random() * 1000} 100 package/delivered\n`;
+        subscriptions += `subscribe CS${i + 1} ${Math.random() * 1000} ${Math.random() * 1000} 100 package/ready_for_pickup\n\n`; // Added subscription for ready_for_pickup
     }
 
     for (let i = 0; i < numWarehouses; i++) {
-        subscriptions += `subscribe WH${i + 1} ${Math.round(Math.random() * 1000)} ${Math.round(Math.random() * 1000)} 100 packageshipped\n`;
-        subscriptions += `subscribe WH${i + 1} ${Math.round(Math.random() * 1000)} ${Math.round(Math.random() * 1000)} 100 packageintransit\n`;
-        subscriptions += `subscribe WH${i + 1} ${Math.round(Math.random() * 1000)} ${Math.round(Math.random() * 1000)} 100 packagereadyforpickup\n\n`; // Added subscription for readyforpickup
+        subscriptions += `subscribe WH${i + 1} ${Math.random() * 1000} ${Math.random() * 1000} 100 package/shipped\n`;
+        subscriptions += `subscribe WH${i + 1} ${Math.random() * 1000} ${Math.random() * 1000} 100 package/in_transit\n`;
+        subscriptions += `subscribe WH${i + 1} ${Math.random() * 1000} ${Math.random() * 1000} 100 package/ready_for_pickup\n\n`; // Added subscription for ready_for_pickup
     }
 
     for (let i = 0; i < numTrucks; i++) {
-        subscriptions += `subscribe TR${i + 1} ${Math.round(Math.random() * 1000)} ${Math.round(Math.random() * 1000)} 100 packagereadyforpickup\n`;
-        // subscriptions += `subscribe TR${i + 1} ${Math.round(Math.random() * 1000)} ${Math.round(Math.random() * 1000)} 100 packageshipped\n`;
-        // subscriptions += `subscribe TR${i + 1} ${Math.round(Math.random() * 1000)} ${Math.round(Math.random() * 1000)} 100 packageintransit\n`;
-        // subscriptions += `subscribe TR${i + 1} ${Math.round(Math.random() * 1000)} ${Math.round(Math.random() * 1000)} 100 packagedelivered\n`;
-        // subscriptions += `subscribe TR${i + 1} ${Math.round(Math.random() * 1000)} ${Math.round(Math.random() * 1000)} 100 packagereturntowarehouse\n`;
+        subscriptions += `subscribe TR${i + 1} ${Math.random() * 1000} ${Math.random() * 1000} 100 package/ready_for_pickup\n`;
+        // subscriptions += `subscribe TR${i + 1} ${Math.random() * 1000} ${Math.random() * 1000} 100 package/shipped\n`;
+        // subscriptions += `subscribe TR${i + 1} ${Math.random() * 1000} ${Math.random() * 1000} 100 package/in_transit\n`;
+        // subscriptions += `subscribe TR${i + 1} ${Math.random() * 1000} ${Math.random() * 1000} 100 package/delivered\n`;
+        // subscriptions += `subscribe TR${i + 1} ${Math.random() * 1000} ${Math.random() * 1000} 100 package/return_to_warehouse\n`;
     }
 
     // Add publications (simulating events)
     let publications = '';
     publications += "wait 500\n";
     for (let i = 0; i < numWarehouses; i++) {
-        publications += `publish WH${i + 1} ${Math.round(Math.random() * 1000)} ${Math.round(Math.random() * 1000)} 10 packagereadyforpickup "Package ready for pickup"\n`;
+        publications += `publish WH${i + 1} ${Math.random() * 1000} ${Math.random() * 1000} 10 package/ready_for_pickup "Package ready for pickup"\n`;
         publications += 'wait 100\n'; // Add a delay after each publication
-        publications += `publish WH${i + 1} ${Math.round(Math.random() * 1000)} ${Math.round(Math.random() * 1000)} 10 packageshipped "Package shipped"\n`;
+        publications += `publish WH${i + 1} ${Math.random() * 1000} ${Math.random() * 1000} 10 package/shipped "Package shipped"\n`;
         publications += 'wait 100\n'; // Add a delay after each publication
     }
 
     for (let i = 0; i < numTrucks; i++) {
-        publications += `publish TR${i + 1} ${Math.round(Math.random() * 1000)} ${Math.round(Math.random() * 1000)} 10 packageintransit "Package in transit"\n`;
+        publications += `publish TR${i + 1} ${Math.random() * 1000} ${Math.random() * 1000} 10 package/in_transit "Package in transit"\n`;
         publications += 'wait 100\n'; // Add a delay after each publication
-        publications += `publish TR${i + 1} ${Math.round(Math.random() * 1000)} ${Math.round(Math.random() * 1000)} 10 packagedelivered "Package delivered"\n`;
+        publications += `publish TR${i + 1} ${Math.random() * 1000} ${Math.random() * 1000} 10 package/delivered "Package delivered"\n`;
         publications += 'wait 100\n'; // Add a delay after each publication
-        publications += `publish TR${i + 1} ${Math.round(Math.random() * 1000)} ${Math.round(Math.random() * 1000)} 10 packagereturntowarehouse "Truck returning to warehouse"\n`;
+        publications += `publish TR${i + 1} ${Math.random() * 1000} ${Math.random() * 1000} 10 package/return_to_warehouse "Truck returning to warehouse"\n`;
         publications += 'wait 100\n'; // Add a delay after each publication
     }
 

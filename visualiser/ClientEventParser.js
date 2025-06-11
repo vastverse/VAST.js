@@ -5,7 +5,9 @@ require('../lib/common');
 const readline = require('readline');
 
 
-var filename = process.argv[2] || "./simulator/example_script.txt";
+var filename = process.argv[2] || "/Users/vo/Documents/vast_dev/vast_js_experiments/VAST.js/test/sps-and-mqtt/logs/spmqtt_events.txt"; //sps mqtt
+// var filename = process.argv[2] || "/Users/vo/Documents/vast_dev/vast_js_experiments/VAST.js/test/sps-and-mqtt/logs/mqtt_client_events.txt"; //mqtt
+// var filename = process.argv[2] || "/Users/vo/Documents/vast_dev/vast_js_experiments/VAST.js/visualiser/logs_and_events/Client_events.txt"; //sps
 if (filename.length > 4 && filename.slice(-4) != ".txt") {
 	error("Please Provide A Text File");
 }
