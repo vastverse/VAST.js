@@ -4,7 +4,25 @@ const aedes = require('aedes');
 const net = require('net');
 const mqtt = require('mqtt');
 
-// Event type definitions to match ClientEventParser
+// Create logs directory structure
+const LOGS_DIR = path.join(__dirname, '../logs');
+const MQTT_LOGS_DIR = path.join(LOGS_DIR, 'mqtt_events');
+const CLIENT_LOGS_DIR = path.join(MQTT_LOGS_DIR, 'clients');
+const BROKER_LOG_PATH = path.join(MQTT_LOGS_DIR, 'broker.txt');
+const EVENTS_LOG_PATH = path.join(MQTT_LOGS_DIR, 'mqtt_client_events.txt');
+const CLIENT_EVENTS_LOG_PATH = path.join(MQTT_LOGS_DIR, 'mqtt_client_events_no_broker.txt');  // New file for client-only events
+
+// Ensure directories exist
+fs.mkdirSync(LOGS_DIR, { recursive: true });
+fs.mkdirSync(MQTT_LOGS_DIR, { recursive: true });
+fs.mkdirSync(CLIENT_LOGS_DIR, { recursive: true });
+
+const SCRIPT_FILE = '/Users/vo/Documents/vast_dev/vast_js_experiments/VAST.js/test/sps-and-mqtt/simulationScript.txt';
+
+// Store clients
+const clients = {};
+
+// VAST event types
 const Client_Event = {
     CLIENT_JOIN: 0,
     CLIENT_LEAVE: 1,
@@ -19,197 +37,115 @@ const Client_Event = {
     RECEIVE_PUB: 10
 };
 
-// Add random string generation function
-function _randomString(length) {
-    var result = '';
-    var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    var charactersLength = characters.length;
-    for (var i = 0; i < length; i++) {
-        result += characters.charAt(Math.floor(Math.random() * charactersLength));
-    }
-    return result;
+// Helper to generate unique IDs
+function generateId(prefix) {
+    return prefix + '-' + Math.random().toString(36).substr(2, 5);
 }
 
-// Add subID generation function
-function _generate_subID(clientID) {
-    return clientID + '-' + _randomString(5);
+// Store pub-ids for each publish (clientId+topic+payload -> pubId)
+const pubIdMap = new Map();
+// Store sub-ids for each subscription (clientId+topic -> subId)
+const subIdMap = new Map();
+
+// VAST-style logger
+function logVastEvent(eventObj) {
+    const line = JSON.stringify(eventObj) + '\n';
+    fs.appendFileSync(EVENTS_LOG_PATH, line);
 }
 
-// Ensure logs directory exists
-const LOGS_DIR = path.join(__dirname, '../logs');
-const CENTRAL_CLIENT_LOG_PATH = path.join(LOGS_DIR, 'mqtt_client_events.txt');
-const CLIENT_MESSAGES_LOG_PATH = path.join(LOGS_DIR, 'mqtt_client_messages.txt');
-fs.mkdirSync(LOGS_DIR, { recursive: true });
-
-const SCRIPT_FILE = '/Users/vo/Documents/vast_dev/vast_js_experiments/VAST.js/test/sps-and-mqtt/simulationScript.txt';
-
-// Function to get client-specific log path
-function getClientLogPath(clientId) {
-    return path.join(LOGS_DIR, `client_${clientId}.log`);
+// VAST-style logger for client events only
+function logClientEvent(eventObj) {
+    const line = JSON.stringify(eventObj) + '\n';
+    fs.appendFileSync(CLIENT_EVENTS_LOG_PATH, line);
 }
 
-// Add matcher ID tracking
-const matcherIDs = new Map(); // Map of host -> numeric ID
-let nextMatcherID = 0;
-
-function getMatcherID(host) {
-    if (!matcherIDs.has(host)) {
-        matcherIDs.set(host, nextMatcherID++);
-    }
-    return matcherIDs.get(host);
-}
-
-// Function to log client-specific events
-function logClientSpecificEvent(clientId, eventType, data = {}) {
-    const matcherID = getMatcherID(data.matcher || 'localhost');
-    const logEntry = JSON.stringify({
-        time: Date.now(),
-        event: eventType,
-        id: clientId,
-        alias: "unnamed_client",
-        matcher: matcherID,
-        pos: data.pos || { x: simulatedClients[clientId]?.x || 0, y: simulatedClients[clientId]?.y || 0 },
-        ...data
-    }) + '\n';
-
-    const clientLogPath = getClientLogPath(clientId);
-    fs.appendFile(clientLogPath, logEntry, (err) => {
-        if (err) {
-            console.error(`Error writing to client ${clientId} log:`, err);
-        }
-    });
-}
-
-// Centralized logging functions
-function logToFile(message) {
-    const timestamp = Date.now();
+function logBroker(message) {
+    const timestamp = new Date().toISOString();
     const line = `[${timestamp}] ${message}\n`;
-    console.log(line.trim());
-    
-    const logPath = path.join(LOGS_DIR, 'mqtt_broker.txt');
-    fs.appendFile(logPath, line, (err) => {
+    console.log(`[BROKER] ${line.trim()}`);
+    fs.appendFile(BROKER_LOG_PATH, line, (err) => {
         if (err) console.error('Error writing to broker log:', err);
     });
-}
-
-function logClientEvent(clientId, eventType, data = {}) {
-    const matcherID = getMatcherID(data.matcher || 'localhost');
-    const logEntry = JSON.stringify({
-        time: Date.now(),
-        event: eventType,
-        id: clientId,
-        alias: "unnamed_client",
-        matcher: matcherID,
-        pos: data.pos || { x: simulatedClients[clientId]?.x || 0, y: simulatedClients[clientId]?.y || 0 },
-        ...data
-    }) + '\n';
-
-    // Write to central log
-    fs.appendFile(CENTRAL_CLIENT_LOG_PATH, logEntry, (err) => {
-        if (err) {
-            console.error('Error writing to central client log:', err);
-        }
-    });
-
-    // Write to client-specific log
-    logClientSpecificEvent(clientId, eventType, data);
-}
-
-function logClientMessage(clientId, topic, message) {
-    const timestamp = Date.now();
-    const logEntry = JSON.stringify({
-        time: timestamp,
-        clientId,
-        topic,
-        message: message.toString()
-    }) + '\n';
-
-    // Write to central messages log
-    fs.appendFile(CLIENT_MESSAGES_LOG_PATH, logEntry, (err) => {
-        if (err) {
-            console.error('Error writing to client messages log:', err);
-        }
-    });
-
-    // Write to client-specific log
-    const clientLogPath = getClientLogPath(clientId);
-    fs.appendFile(clientLogPath, logEntry, (err) => {
-        if (err) {
-            console.error(`Error writing to client ${clientId} log:`, err);
-        }
+    fs.appendFile(EVENTS_LOG_PATH, line, (err) => {
+        if (err) console.error('Error writing to events log:', err);
     });
 }
 
-// Store clients for later use
-const simulatedClients = {};
-
-// Track received messages to prevent duplicates
-const receivedMessages = new Map(); // Map of clientId -> Set of received pubIDs
-
-// Track client connection states
-const clientConnectionStates = new Map();
-
-// Add subscription tracking
-const subscriptions = new Map(); // Map of clientId -> Set of {topic, aoi, heartbeat}
-
-// Add heartbeat interval
-const HEARTBEAT_INTERVAL = 5000; // 5 seconds
-let heartbeatTimer = null;
-
-// Function to start heartbeat
-function startHeartbeat() {
-    if (heartbeatTimer) return;
-    
-    heartbeatTimer = setInterval(() => {
-        const now = Date.now();
-        for (const [clientId, subs] of subscriptions.entries()) {
-            for (const sub of subs) {
-                // Update heartbeat
-                sub.heartbeat = now;
-                
-                // Log heartbeat update
-                logClientEvent(clientId, Client_Event.SUB_UPDATE, {
-                    sub: {
-                        subID: sub.subID,
-                        clientID: clientId,
-                        channel: sub.topic,
-                        aoi: sub.aoi,
-                        heartbeat: now
-                    },
-                    matcher: simulatedClients[clientId].host
-                });
-            }
-        }
-    }, HEARTBEAT_INTERVAL);
-}
-
-// Function to stop heartbeat
-function stopHeartbeat() {
-    if (heartbeatTimer) {
-        clearInterval(heartbeatTimer);
-        heartbeatTimer = null;
-    }
+function logClient(clientId, message) {
+    const timestamp = new Date().toISOString();
+    const line = `[${timestamp}] ${message}\n`;
+    console.log(`[CLIENT ${clientId}] ${line.trim()}`);
+    const clientLogPath = path.join(CLIENT_LOGS_DIR, `client_${clientId}.txt`);
+    fs.appendFile(clientLogPath, line, (err) => {
+        if (err) console.error(`Error writing to client ${clientId} log:`, err);
+    });
+    fs.appendFile(EVENTS_LOG_PATH, line, (err) => {
+        if (err) console.error('Error writing to events log:', err);
+    });
 }
 
 function startBroker(port = 1883) {
     const broker = aedes();
+    const BROKER_POS = { x: 500, y: 500 };  // Fixed broker position
 
     broker.on('subscribe', (subscriptions, client) => {
-        subscriptions.forEach(sub => {
-            logToFile(`Client ${client ? client.id : 'unknown'} subscribed to ${sub.topic}`);
-        });
+        if (client) {
+            subscriptions.forEach(sub => {
+                const subKey = client.id + ':' + sub.topic;
+                let subId = subIdMap.get(subKey);
+                if (!subId) {
+                    subId = `${client.id}-${generateId('')}`;  // Format: C1-8nhMU
+                    subIdMap.set(subKey, subId);
+                }
+                // Log SUB_NEW event to client events only
+                logClientEvent({
+                    time: Date.now(),
+                    event: Client_Event.SUB_NEW,
+                    id: client.id,
+                    alias: "unnamed_client",
+                    matcher: 1,
+                    sub: {
+                        hostID: 1,
+                        hostPos: BROKER_POS,
+                        clientID: client.id,
+                        subID: subId,
+                        channel: sub.topic,
+                        aoi: { center: BROKER_POS, radius: 100 },  // Default radius
+                        recipients: [],
+                        heartbeat: Date.now()
+                    }
+                });
+            });
+        }
     });
 
     broker.on('publish', (packet, client) => {
-        if (!packet.topic.startsWith('$SYS')) {
-            logToFile(`${client ? client.id : 'BROKER'} published to ${packet.topic}: ${packet.payload.toString()}`);
+        if (!packet.topic.startsWith('$SYS') && client) {
+            // Try to extract pub-id from payload
+            let payloadStr = packet.payload.toString();
+            let pubIdMatch = payloadStr.match(/\[pub-id: ([^\]]+)\]$/);
+            let pubId = pubIdMatch ? pubIdMatch[1] : `${client.id}-${Object.keys(pubIdMap).length + 1}`;
+            
+            // Log PUB event to client events only
+            logClientEvent({
+                time: Date.now(),
+                event: Client_Event.PUB,
+                id: client.id,
+                alias: "unnamed_client",
+                matcher: 1,
+                pub: {
+                    pubID: pubId,
+                    aoi: { center: BROKER_POS, radius: 10 },  // Default radius
+                    channel: packet.topic,
+                    payload: payloadStr
+                }
+            });
         }
     });
 
     const server = net.createServer(broker.handle);
-
     server.listen(port, () => {
-        logToFile(`Aedes broker started on port ${port}`);
+        // Optionally log broker start event
     });
 
     return { broker, server };
@@ -218,134 +154,93 @@ function startBroker(port = 1883) {
 function createClient(clientId, host, port, x, y, r) {
     return new Promise((resolve, reject) => {
         const url = `mqtt://${host}:${port}`;
-        const options = { 
-            clientId,
-            qos: 1  // Set default QoS level for this client
-        };
-        const client = mqtt.connect(url, options);
+        const client = mqtt.connect(url, { clientId });
+        const clientPos = { x, y };
 
-        // Initialize connection state as false
-        clientConnectionStates.set(clientId, false);
-        
-        // Initialize subscriptions for this client
-        subscriptions.set(clientId, new Set());
-
-        logClientEvent(clientId, Client_Event.CLIENT_JOIN, {
-            pos: { x, y },
-            radius: r,
-            matcher: host
+        // Log CLIENT_JOIN event
+        logClientEvent({
+            time: Date.now(),
+            event: Client_Event.CLIENT_JOIN,
+            id: clientId,
+            alias: "unnamed_client",
+            pos: clientPos,
+            matcher: 0
         });
 
-        // Set a connection timeout
-        const connectionTimeout = setTimeout(() => {
-            reject(new Error(`Connection timeout for client ${clientId}`));
-        }, 10000); // 10 second timeout
-
         client.on('connect', () => {
-            clearTimeout(connectionTimeout);
-            clientConnectionStates.set(clientId, true);
-            
-            // Log JOIN event
-            logClientEvent(clientId, Client_Event.CLIENT_JOIN, {
-                pos: { x, y },
-                matcher: host
+            // Log CLIENT_CONNECT event
+            logClientEvent({
+                time: Date.now(),
+                event: Client_Event.CLIENT_CONNECT,
+                id: clientId,
+                alias: "unnamed_client",
+                pos: clientPos,
+                matcher: 0
             });
-            
-            // Log CONNECT event
-            logClientEvent(clientId, Client_Event.CLIENT_CONNECT, {
-                pos: { x, y },
-                matcher: host
+            // Log CLIENT_MIGRATE event
+            logClientEvent({
+                time: Date.now(),
+                event: Client_Event.CLIENT_MIGRATE,
+                id: clientId,
+                alias: "unnamed_client",
+                pos: clientPos,
+                matcher: 1
             });
-            
-            // Log MIGRATE event
-            logClientEvent(clientId, Client_Event.CLIENT_MIGRATE, {
-                pos: { x, y },
-                matcher: host
-            });
-            
-            simulatedClients[clientId] = { client, x, y, r, host };
-            logToFile(`Client ${clientId} successfully connected to broker`);
+            clients[clientId] = client;
             resolve(client);
         });
 
         client.on('error', (err) => {
-            clearTimeout(connectionTimeout);
-            // Set connection state to false on error
-            clientConnectionStates.set(clientId, false);
-            logClientEvent(clientId, Client_Event.CLIENT_DISCONNECT, {
-                error: err.message,
-                pos: { x, y },
-                radius: r,
-                matcher: host
+            // Log CLIENT_DISCONNECT event
+            logClientEvent({
+                time: Date.now(),
+                event: Client_Event.CLIENT_DISCONNECT,
+                id: clientId,
+                alias: "unnamed_client",
+                pos: clientPos,
+                matcher: 1,
+                error: err.message
             });
             reject(err);
         });
 
         client.on('close', () => {
-            // Set connection state to false on close
-            clientConnectionStates.set(clientId, false);
-            logClientEvent(clientId, Client_Event.CLIENT_LEAVE, {
-                pos: { x, y },
-                radius: r,
-                matcher: host
+            // Log CLIENT_LEAVE event
+            logClientEvent({
+                time: Date.now(),
+                event: Client_Event.CLIENT_LEAVE,
+                id: clientId,
+                alias: "unnamed_client",
+                pos: clientPos,
+                matcher: 1
             });
-            // Clear subscriptions on close
-            subscriptions.delete(clientId);
         });
 
         client.on('message', (topic, message) => {
-            try {
-                const messageStr = message.toString();
-                console.log(`Client ${clientId} received message on topic ${topic}: ${messageStr}`);
-                
-                let pubId, payload;
-                if (messageStr.includes(':')) {
-                    [pubId, payload] = messageStr.split(':');
-                } else {
-                    pubId = 'unknown';
-                    payload = messageStr;
+            let msgStr = message.toString();
+            let pubIdMatch = msgStr.match(/\[pub-id: ([^\]]+)\]$/);
+            let pubId = pubIdMatch ? pubIdMatch[1] : `${clientId}-${Object.keys(pubIdMap).length + 1}`;
+            
+            // Log RECEIVE_PUB event
+            logClientEvent({
+                time: Date.now(),
+                event: Client_Event.RECEIVE_PUB,
+                id: clientId,
+                alias: "unnamed_client",
+                matcher: 1,
+                pub: {
+                    matcherID: 1,
+                    clientID: clientId,
+                    pubID: pubId,
+                    aoi: { center: clientPos, radius: r },
+                    payload: msgStr,
+                    channel: topic,
+                    recipients: [1],
+                    chain: [1]
                 }
-
-                logClientMessage(clientId, topic, message);
-                
-                logClientEvent(clientId, Client_Event.RECEIVE_PUB, {
-                    pub: {
-                        matcherID: getMatcherID(simulatedClients[clientId].host),
-                        clientID: clientId,
-                        pubID: pubId,
-                        channel: topic,
-                        aoi: {
-                            center: { x: simulatedClients[clientId].x, y: simulatedClients[clientId].y },
-                            radius: 10  // Match VAST system's radius
-                        },
-                        payload: payload,
-                        recipients: [getMatcherID(simulatedClients[clientId].host)],
-                        chain: [getMatcherID(simulatedClients[clientId].host)]
-                    },
-                    matcher: simulatedClients[clientId].host
-                });
-            } catch (err) {
-                console.error(`Error handling message for client ${clientId}:`, err);
-                logToFile(`Error handling message for client ${clientId}: ${err.message}`);
-            }
+            });
         });
     });
-}
-
-// Helper function to check if client is connected
-function isClientConnected(clientId) {
-    return clientConnectionStates.get(clientId) === true;
-}
-
-// Helper function to wait for client connection
-async function waitForClientConnection(clientId, timeout = 30000) {
-    const startTime = Date.now();
-    while (!isClientConnected(clientId)) {
-        if (Date.now() - startTime > timeout) {
-            throw new Error(`Timeout waiting for client ${clientId} to connect`);
-        }
-        await new Promise(resolve => setTimeout(resolve, 100));
-    }
 }
 
 async function processScript(scriptPath) {
@@ -355,12 +250,11 @@ async function processScript(scriptPath) {
 
         for (let index = 0; index < lines.length; index++) {
             const line = lines[index].trim();
-            // Skip empty lines and comment lines
             if (line === '' || line.startsWith('//')) continue;
             await processLine(line, index + 1);
         }
     } catch (err) {
-        logToFile(`Error reading script: ${err.message}`);
+        console.error(`Error reading script: ${err.message}`);
     }
 }
 
@@ -370,11 +264,10 @@ async function processLine(line, lineNumber) {
 
     switch (command) {
         case 'newMatcher':
-            const label = parts[1];
             const host = parts[3];
-            const pubPort = 1883;
-            logToFile(`Starting broker (${label}) at ${host}:${pubPort}`);
-            startBroker(pubPort);
+            const port = 1883;
+            logBroker(`Starting at ${host}:${port}`);
+            startBroker(port);
             break;
 
         case 'newClient':
@@ -384,179 +277,99 @@ async function processLine(line, lineNumber) {
             const x = parseFloat(parts[4]);
             const y = parseFloat(parts[5]);
             const r = parseFloat(parts[6]);
-            logToFile(`Creating client ${clientId} connecting to ${clientHost}:${clientPort}`);
+            logClient(clientId, `Creating connection to ${clientHost}:${clientPort}`);
             try {
                 await createClient(clientId, clientHost, clientPort, x, y, r);
-                logToFile(`Client ${clientId} connection completed successfully`);
             } catch (err) {
-                logToFile(`Failed to create client ${clientId}: ${err.message}`);
-                throw err; // Re-throw to stop script execution on client creation failure
+                logClient(clientId, `Failed to create: ${err.message}`);
+                throw err;
             }
             break;
 
         case 'wait':
             const waitTime = parseInt(parts[1]);
-            logToFile(`Waiting for ${waitTime} ms`);
+            logBroker(`Waiting for ${waitTime} ms`);
             await new Promise(resolve => setTimeout(resolve, waitTime));
             break;
 
         case 'subscribe':
-            {
-                const clientId = parts[1];
-                const topic = parts.slice(5).join(' ');
-                if (simulatedClients[clientId]) {
-                    try {
-                        await waitForClientConnection(clientId);
-                        
-                        const { client, x, y, r, host } = simulatedClients[clientId];
-                        await new Promise((resolve, reject) => {
-                            client.subscribe(topic, (err) => {
-                                if (err) {
-                                    console.error(`Failed to subscribe to ${topic}: ${err.message}`);
-                                    logToFile(`Client ${clientId} failed to subscribe to ${topic}: ${err.message}`);
-                                    reject(err);
-                                } else {
-                                    const subID = _generate_subID(clientId);
-                                    const aoi = {
-                                        center: { x, y },
-                                        radius: r
-                                    };
-                                    
-                                    // Add subscription to tracking
-                                    const clientSubs = subscriptions.get(clientId);
-                                    clientSubs.add({
-                                        subID,
-                                        topic,
-                                        aoi,
-                                        heartbeat: Date.now()
-                                    });
-                                    
-                                    logClientEvent(clientId, Client_Event.SUB_NEW, {
-                                        sub: {
-                                            hostID: getMatcherID(host),
-                                            hostPos: { x: 500, y: 500 }, // Default host position
-                                            clientID: clientId,
-                                            subID: subID,
-                                            channel: topic,
-                                            aoi: aoi,
-                                            recipients: [],
-                                            heartbeat: Date.now()
-                                        },
-                                        matcher: host
-                                    });
-                                    logToFile(`Client ${clientId} successfully subscribed to ${topic}`);
-                                    resolve();
-                                }
-                            });
-                        });
-                    } catch (error) {
-                        logToFile(`Error waiting for client ${clientId} connection: ${error.message}`);
-                    }
-                } else {
-                    logToFile(`Client ${clientId} not found for subscribe`);
+            const subClientId = parts[1];
+            const topic = parts.slice(5).join(' ');
+            if (clients[subClientId]) {
+                // Generate sub-id for this client/topic
+                const subKey = subClientId + ':' + topic;
+                let subId = subIdMap.get(subKey);
+                if (!subId) {
+                    subId = generateId('SUB');
+                    subIdMap.set(subKey, subId);
                 }
+                clients[subClientId].subscribe(topic, (err) => {
+                    if (err) {
+                        logClient(subClientId, `Failed to subscribe to ${topic}: ${err.message}`);
+                    } else {
+                        logClient(subClientId, `Subscribing to ${topic} [sub-id: ${subId}]`);
+                    }
+                });
+            } else {
+                logBroker(`Client ${subClientId} not found for subscribe`);
             }
             break;
 
         case 'publish':
-            {
-                const clientId = parts[1];
-                const topic = parts[5];
-                const message = parts.slice(6).join(' ').replace(/^"|"$/g, '');
-                if (simulatedClients[clientId]) {
-                    try {
-                        await waitForClientConnection(clientId);
-                        
-                        const { client, x, y, r, host } = simulatedClients[clientId];
-                        const pubID = clientId + '-' + _randomString(5);
-                        const fullMessage = `${pubID}:${message}`;
-                        client.publish(topic, fullMessage, { qos: 1 }, (err) => {
-                            if (err) {
-                                console.error(`Failed to publish to ${topic}: ${err.message}`);
-                                logToFile(`Failed to publish to ${topic}: ${err.message}`);
-                            } else {
-                                console.log(`Client ${clientId} published to ${topic}: ${fullMessage}`);
-                                logClientEvent(clientId, Client_Event.PUB, {
-                                    pub: {
-                                        pubID: pubID,
-                                        channel: topic,
-                                        aoi: {
-                                            center: { x, y },
-                                            radius: 10  // Match VAST system's radius
-                                        },
-                                        payload: message
-                                    },
-                                    matcher: host
-                                });
-                            }
-                        });
-                    } catch (error) {
-                        logToFile(`Error waiting for client ${clientId} connection: ${error.message}`);
-                    }
-                } else {
-                    logToFile(`Client ${clientId} not found for publish`);
+            const pubClientId = parts[1];
+            const pubTopic = parts[5];
+            const message = parts.slice(6).join(' ').replace(/^"|"$/g, '');
+            if (clients[pubClientId]) {
+                // Generate pub-id for this publish
+                const pubKey = pubClientId + ':' + pubTopic + ':' + message;
+                let pubId = pubIdMap.get(pubKey);
+                if (!pubId) {
+                    pubId = generateId('PUB');
+                    pubIdMap.set(pubKey, pubId);
                 }
+                const payloadWithId = `${message} [pub-id: ${pubId}]`;
+                clients[pubClientId].publish(pubTopic, payloadWithId, { qos: 1 }, (err) => {
+                    if (err) {
+                        logClient(pubClientId, `Failed to publish to ${pubTopic}: ${err.message}`);
+                    } else {
+                        logClient(pubClientId, `Publishing to ${pubTopic}: ${message} [pub-id: ${pubId}]`);
+                    }
+                });
+            } else {
+                logBroker(`Client ${pubClientId} not found for publish`);
             }
             break;
 
         case 'end':
-            logToFile("Simulation ended.");
+            logBroker("Simulation ended.");
             await cleanup();
             process.exit(0);
             break;
 
         default:
-            logToFile(`Unknown command at line ${lineNumber}: ${command}`);
+            logBroker(`Unknown command at line ${lineNumber}: ${command}`);
     }
 }
 
-// Add cleanup function
 async function cleanup() {
-    logToFile("Starting cleanup...");
-    
-    // Stop heartbeat
-    stopHeartbeat();
-    
-    // Log subscription deletions
-    for (const [clientId, clientData] of Object.entries(simulatedClients)) {
-        const clientSubs = subscriptions.get(clientId);
-        if (clientSubs) {
-            for (const sub of clientSubs) {
-                logClientEvent(clientId, Client_Event.SUB_DELETE, {
-                    subID: sub.subID,
-                    matcher: clientData.host
-                });
-            }
-        }
-    }
+    logBroker("Starting cleanup...");
     
     // Disconnect all clients
-    for (const [clientId, clientData] of Object.entries(simulatedClients)) {
-        if (clientData.client) {
-            try {
-                await new Promise((resolve) => {
-                    clientData.client.end(true, () => {
-                        logToFile(`Client ${clientId} disconnected`);
-                        resolve();
-                    });
+    for (const [clientId, client] of Object.entries(clients)) {
+        try {
+            await new Promise((resolve) => {
+                client.end(true, () => {
+                    logClient(clientId, 'Disconnected');
+                    resolve();
                 });
-            } catch (err) {
-                logToFile(`Error disconnecting client ${clientId}: ${err.message}`);
-            }
+            });
+        } catch (err) {
+            logBroker(`Error disconnecting client ${clientId}: ${err.message}`);
         }
     }
     
-    // Clear all data structures
-    Object.keys(simulatedClients).forEach(key => delete simulatedClients[key]);
-    receivedMessages.clear();
-    clientConnectionStates.clear();
-    subscriptions.clear();
-    
-    logToFile("Cleanup completed");
+    logBroker("Cleanup completed");
 }
-
-// Start heartbeat when the script starts
-startHeartbeat();
 
 // Start processing the simulation script
 processScript(SCRIPT_FILE);

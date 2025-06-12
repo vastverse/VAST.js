@@ -10,3 +10,6 @@ docs.ai.json
 .gitignore
 package-lock.json
 .vscode/settings.json
+test/sps-and-mqtt/simulationScript.txt
+test/sps-and-mqtt/logs
+test/sps-and-mqtt/client_logs

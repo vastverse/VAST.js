@@ -1,0 +1,81 @@
+newMatcher GW true localhost 8000 8001 20000 500 500 100
+wait 100
+newClient WH1 localhost 20000 265 36 100
+newClient TR1 localhost 20000 888 12 100
+newClient TR2 localhost 20000 358 8 100
+newClient TR3 localhost 20000 106 373 100
+newClient CS1 localhost 20000 377 336 100
+newClient CS2 localhost 20000 617 873 100
+newClient CS3 localhost 20000 775 131 100
+newClient CS4 localhost 20000 875 508 100
+newClient CS5 localhost 20000 447 35 100
+newClient CS6 localhost 20000 584 79 100
+wait 500
+
+subscribe CS1 373 766 100 packageshipped
+subscribe CS1 691 942 100 packageintransit
+subscribe CS1 88 471 100 packagedelivered
+subscribe CS1 91 423 100 packagereadyforpickup
+
+
+subscribe CS2 889 35 100 packageshipped
+subscribe CS2 581 860 100 packageintransit
+subscribe CS2 121 351 100 packagedelivered
+subscribe CS2 539 635 100 packagereadyforpickup
+
+
+subscribe CS3 898 664 100 packageshipped
+subscribe CS3 118 784 100 packageintransit
+subscribe CS3 731 135 100 packagedelivered
+subscribe CS3 980 306 100 packagereadyforpickup
+
+
+subscribe CS4 128 635 100 packageshipped
+subscribe CS4 367 209 100 packageintransit
+subscribe CS4 775 533 100 packagedelivered
+subscribe CS4 347 489 100 packagereadyforpickup
+
+
+subscribe CS5 686 848 100 packageshipped
+subscribe CS5 559 783 100 packageintransit
+subscribe CS5 296 795 100 packagedelivered
+subscribe CS5 748 228 100 packagereadyforpickup
+
+
+subscribe CS6 356 62 100 packageshipped
+subscribe CS6 715 454 100 packageintransit
+subscribe CS6 956 631 100 packagedelivered
+subscribe CS6 403 857 100 packagereadyforpickup
+
+subscribe WH1 643 483 100 packageshipped
+subscribe WH1 268 962 100 packageintransit
+subscribe WH1 146 974 100 packagereadyforpickup
+
+subscribe TR1 676 2 100 packagereadyforpickup
+subscribe TR2 922 42 100 packagereadyforpickup
+subscribe TR3 861 891 100 packagereadyforpickup
+wait 500
+publish WH1 242 501 10 packagereadyforpickup "Package ready for pickup"
+wait 100
+publish WH1 986 135 10 packageshipped "Package shipped"
+wait 100
+publish TR1 81 282 10 packageintransit "Package in transit"
+wait 100
+publish TR1 592 913 10 packagedelivered "Package delivered"
+wait 100
+publish TR1 759 900 10 packagereturntowarehouse "Truck returning to warehouse"
+wait 100
+publish TR2 839 602 10 packageintransit "Package in transit"
+wait 100
+publish TR2 969 388 10 packagedelivered "Package delivered"
+wait 100
+publish TR2 67 953 10 packagereturntowarehouse "Truck returning to warehouse"
+wait 100
+publish TR3 472 89 10 packageintransit "Package in transit"
+wait 100
+publish TR3 621 167 10 packagedelivered "Package delivered"
+wait 100
+publish TR3 439 658 10 packagereturntowarehouse "Truck returning to warehouse"
+wait 100
+wait 1000
+end

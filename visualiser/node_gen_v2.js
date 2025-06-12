@@ -76,9 +76,7 @@ function generateSimulationScript({ mode, worldSize, numCustomers, numTrucks, nu
 
     // Add subscriptions (each customer and warehouse subscribes to events)
     let subscriptions = '';
-    subscriptions += "wait 500\n";
     for (let i = 0; i < numCustomers; i++) {
-        // subscriptions += 'wait 500\n'; // Add a delay before subscriptions
         subscriptions += `\nsubscribe CS${i + 1} ${Math.random() * 1000} ${Math.random() * 1000} 100 package/shipped\n`;
         subscriptions += `subscribe CS${i + 1} ${Math.random() * 1000} ${Math.random() * 1000} 100 package/in_transit\n`;
         subscriptions += `subscribe CS${i + 1} ${Math.random() * 1000} ${Math.random() * 1000} 100 package/delivered\n`;
@@ -101,7 +99,7 @@ function generateSimulationScript({ mode, worldSize, numCustomers, numTrucks, nu
 
     // Add publications (simulating events)
     let publications = '';
-    publications += "wait 500\n";
+    publications += "// Wait for 10 minutes\n";
     for (let i = 0; i < numWarehouses; i++) {
         publications += `publish WH${i + 1} ${Math.random() * 1000} ${Math.random() * 1000} 10 package/ready_for_pickup "Package ready for pickup"\n`;
         publications += 'wait 100\n'; // Add a delay after each publication
@@ -135,6 +133,6 @@ if (simulationDetails) {
     const simulationScript = generateSimulationScript(simulationDetails);
 
     // Save to file
-    fs.writeFileSync('simulationScript.txt', simulationScript);
+    fs.writeFileSync('/sps-and-mqtt/simulationScript.txt', simulationScript);
     console.log('Simulation script generated and saved to simulationScript.txt.');
 }
