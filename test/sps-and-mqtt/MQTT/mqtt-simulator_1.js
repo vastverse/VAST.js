@@ -3,6 +3,7 @@ const path = require('path');
 const aedes = require('aedes');
 const net = require('net');
 const mqtt = require('mqtt');
+require('../../../lib/common');  // This will make Client_Event available globally
 
 // Create logs directory structure
 const LOGS_DIR = path.join(__dirname, '../logs');
@@ -12,30 +13,20 @@ const BROKER_LOG_PATH = path.join(MQTT_LOGS_DIR, 'broker.txt');
 const EVENTS_LOG_PATH = path.join(MQTT_LOGS_DIR, 'mqtt_client_events.txt');
 const CLIENT_EVENTS_LOG_PATH = path.join(MQTT_LOGS_DIR, 'mqtt_client_events_no_broker.txt');  // New file for client-only events
 
+// Configuration flags
+const ENABLE_CLIENT_LOGS = false;  // Set to true to enable individual client log files
+
 // Ensure directories exist
 fs.mkdirSync(LOGS_DIR, { recursive: true });
 fs.mkdirSync(MQTT_LOGS_DIR, { recursive: true });
 fs.mkdirSync(CLIENT_LOGS_DIR, { recursive: true });
 
-const SCRIPT_FILE = '/Users/vo/Documents/vast_dev/vast_js_experiments/VAST.js/test/sps-and-mqtt/simulationScript.txt';
+// Dynamic script file path
+const SCRIPT_FILE = path.join(__dirname, '..', 'simulationScript.txt');
 
 // Store clients
 const clients = {};
-
-// VAST event types
-const Client_Event = {
-    CLIENT_JOIN: 0,
-    CLIENT_LEAVE: 1,
-    CLIENT_CONNECT: 2,
-    CLIENT_DISCONNECT: 3,
-    CLIENT_MIGRATE: 4,
-    CLIENT_MOVE: 5,
-    SUB_NEW: 6,
-    SUB_UPDATE: 7,
-    SUB_DELETE: 8,
-    PUB: 9,
-    RECEIVE_PUB: 10
-};
+let brokerPort = 1883;  // Default port, will be updated when broker starts
 
 // Helper to generate unique IDs
 function generateId(prefix) {
@@ -75,10 +66,16 @@ function logClient(clientId, message) {
     const timestamp = new Date().toISOString();
     const line = `[${timestamp}] ${message}\n`;
     console.log(`[CLIENT ${clientId}] ${line.trim()}`);
+    
+    // Only write to individual client log files if enabled
+    if (ENABLE_CLIENT_LOGS) {
     const clientLogPath = path.join(CLIENT_LOGS_DIR, `client_${clientId}.txt`);
     fs.appendFile(clientLogPath, line, (err) => {
         if (err) console.error(`Error writing to client ${clientId} log:`, err);
     });
+    }
+    
+    // Always write to events log
     fs.appendFile(EVENTS_LOG_PATH, line, (err) => {
         if (err) console.error('Error writing to events log:', err);
     });
@@ -119,6 +116,29 @@ function startBroker(port = 1883) {
         }
     });
 
+    // Add unsubscribe handler
+    broker.on('unsubscribe', (subscriptions, client) => {
+        if (client) {
+            subscriptions.forEach(topic => {
+                const subKey = client.id + ':' + topic;
+                const subId = subIdMap.get(subKey);
+                if (subId) {
+                    // Log SUB_DELETE event to client events only
+                    logClientEvent({
+                        time: Date.now(),
+                        event: Client_Event.SUB_DELETE,
+                        id: client.id,
+                        alias: "unnamed_client",
+                        matcher: 1,
+                        subID: subId
+                    });
+                    // Remove the subscription from the map
+                    subIdMap.delete(subKey);
+                }
+            });
+        }
+    });
+
     broker.on('publish', (packet, client) => {
         if (!packet.topic.startsWith('$SYS') && client) {
             // Try to extract pub-id from payload
@@ -144,11 +164,30 @@ function startBroker(port = 1883) {
     });
 
     const server = net.createServer(broker.handle);
-    server.listen(port, () => {
-        // Optionally log broker start event
-    });
+    
+    // Try to start the server with error handling
+    const startServer = (port) => {
+        return new Promise((resolve, reject) => {
+            server.once('error', (err) => {
+                if (err.code === 'EADDRINUSE') {
+                    logBroker(`Port ${port} is in use, trying port ${port + 1}`);
+                    server.close();
+                    resolve(startServer(port + 1));
+                } else {
+                    reject(err);
+                }
+            });
 
-    return { broker, server };
+    server.listen(port, () => {
+                logBroker(`Broker started on port ${port}`);
+                resolve(port);
+            });
+        });
+    };
+
+    return startServer(port).then(actualPort => {
+        return { broker, server, port: actualPort };
+    });
 }
 
 function createClient(clientId, host, port, x, y, r) {
@@ -267,19 +306,19 @@ async function processLine(line, lineNumber) {
             const host = parts[3];
             const port = 1883;
             logBroker(`Starting at ${host}:${port}`);
-            startBroker(port);
+            const { port: actualPort } = await startBroker(port);
+            brokerPort = actualPort;  // Update the broker port
             break;
 
         case 'newClient':
             const clientId = parts[1];
             const clientHost = parts[2];
-            const clientPort = 1883;
             const x = parseFloat(parts[4]);
             const y = parseFloat(parts[5]);
             const r = parseFloat(parts[6]);
-            logClient(clientId, `Creating connection to ${clientHost}:${clientPort}`);
+            logClient(clientId, `Creating connection to ${clientHost}:${brokerPort}`);
             try {
-                await createClient(clientId, clientHost, clientPort, x, y, r);
+                await createClient(clientId, clientHost, brokerPort, x, y, r);
             } catch (err) {
                 logClient(clientId, `Failed to create: ${err.message}`);
                 throw err;
@@ -315,6 +354,28 @@ async function processLine(line, lineNumber) {
             }
             break;
 
+        case 'unsubscribe':
+            const unsubClientId = parts[1];
+            const unsubTopic = parts.slice(5).join(' ');
+            if (clients[unsubClientId]) {
+                const subKey = unsubClientId + ':' + unsubTopic;
+                const subId = subIdMap.get(subKey);
+                if (subId) {
+                    clients[unsubClientId].unsubscribe(unsubTopic, (err) => {
+                        if (err) {
+                            logClient(unsubClientId, `Failed to unsubscribe from ${unsubTopic}: ${err.message}`);
+                        } else {
+                            logClient(unsubClientId, `Unsubscribing from ${unsubTopic} [sub-id: ${subId}]`);
+                        }
+                    });
+                } else {
+                    logClient(unsubClientId, `No subscription found for topic ${unsubTopic}`);
+                }
+            } else {
+                logBroker(`Client ${unsubClientId} not found for unsubscribe`);
+            }
+            break;
+
         case 'publish':
             const pubClientId = parts[1];
             const pubTopic = parts[5];
@@ -328,7 +389,7 @@ async function processLine(line, lineNumber) {
                     pubIdMap.set(pubKey, pubId);
                 }
                 const payloadWithId = `${message} [pub-id: ${pubId}]`;
-                clients[pubClientId].publish(pubTopic, payloadWithId, { qos: 1 }, (err) => {
+                clients[pubClientId].publish(pubTopic, payloadWithId, { qos: 0 }, (err) => {
                     if (err) {
                         logClient(pubClientId, `Failed to publish to ${pubTopic}: ${err.message}`);
                     } else {
@@ -342,7 +403,6 @@ async function processLine(line, lineNumber) {
 
         case 'end':
             logBroker("Simulation ended.");
-            await cleanup();
             process.exit(0);
             break;
 

@@ -1,0 +1,18 @@
+{"time":1750143148456,"msg":"Matcher[1]: VON peer joined successfully"}
+{"time":1750143148456,"msg":"Matcher[1]: listening on 20000"}
+{"time":1750143148617,"msg":"Matcher[1]: a new client has joined GW. Send MOVE request"}
+{"time":1750143148617,"msg":"Matcher[1]: move client[C1] to pos[300; 100]"}
+{"time":1750143148828,"msg":"Matcher[1]: Received subscribe message from client[C1] with subscription ID [C1-dYsig]"}
+{"time":1750143148830,"msg":"Matcher[1]: New Sub from Matcher[1]"}
+{"time":1750143148839,"msg":"Matcher[1]: a new client has joined GW. Send MOVE request"}
+{"time":1750143148839,"msg":"Matcher[1]: move client[C2] to pos[200; 200]"}
+{"time":1750143149149,"msg":"Matcher[1]: Received subscribe message from client[C2] with subscription ID [C2-0Hjm2]"}
+{"time":1750143149149,"msg":"Matcher[1]: New Sub from Matcher[1]"}
+{"time":1750143149153,"msg":"Matcher[1]: a new client has joined GW. Send MOVE request"}
+{"time":1750143149153,"msg":"Matcher[1]: move client[C3] to pos[500; 200]"}
+{"time":1750143149562,"msg":"Matcher[1]: Received subscribe message from client[C3] with subscription ID [C3-C8YIb]"}
+{"time":1750143149562,"msg":"Matcher[1]: New Sub from Matcher[1]"}
+{"time":1750143149564,"msg":"Matcher[1]: Received Publication from Matcher[1]"}
+{"time":1750143149566,"msg":"Matcher[1]: Received Publication from Matcher[1]"}
+{"time":1750143149567,"msg":"Matcher[1]: Received Publication from Matcher[1]"}
+{"time":1750143149663,"msg":"Matcher[1]: Received Publication from Matcher[1]"}

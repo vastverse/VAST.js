@@ -1,0 +1,27 @@
+{"time":1750143148622,"msg":"Client[C1]: socket connected"}
+{"time":1750143148622,"msg":"Client[C1]: assigned to matcher[1]"}
+{"time":1750143148824,"msg":"Client[C1]: subscribing to channel[channel1] at AoI[300; 100; 100]"}
+{"time":1750143148831,"msg":"Client[C1]: added a subscription:"}
+{"time":1750143148831,"msg":{"hostID":1,"hostPos":{"x":500,"y":500},"clientID":"C1","subID":"C1-dYsig","channel":"channel1","aoi":{"center":{"x":300,"y":100},"radius":100},"recipients":[],"heartbeat":1750143148829}}
+{"time":1750143148843,"msg":"Client[C2]: socket connected"}
+{"time":1750143148844,"msg":"Client[C2]: assigned to matcher[1]"}
+{"time":1750143149147,"msg":"Client[C2]: subscribing to channel[channel1] at AoI[200; 200; 100]"}
+{"time":1750143149149,"msg":"Client[C2]: added a subscription:"}
+{"time":1750143149149,"msg":{"hostID":1,"hostPos":{"x":500,"y":500},"clientID":"C2","subID":"C2-0Hjm2","channel":"channel1","aoi":{"center":{"x":200,"y":200},"radius":100},"recipients":[],"heartbeat":1750143149149}}
+{"time":1750143149156,"msg":"Client[C3]: socket connected"}
+{"time":1750143149156,"msg":"Client[C3]: assigned to matcher[1]"}
+{"time":1750143149559,"msg":"Client[C3]: subscribing to channel[channel1] at AoI[500; 500; 500]"}
+{"time":1750143149559,"msg":"Client[C1]: publishing to channel[channel1] with payload: hello from C1!"}
+{"time":1750143149560,"msg":"Client[C2]: publishing to channel[channel1] with payload: Hi to C1/C3"}
+{"time":1750143149560,"msg":"Client[C2]: publishing to channel[channel1] with payload: C2/C3 hello"}
+{"time":1750143149567,"msg":"Client[C3]: added a subscription:"}
+{"time":1750143149568,"msg":{"hostID":1,"hostPos":{"x":500,"y":500},"clientID":"C3","subID":"C3-C8YIb","channel":"channel1","aoi":{"center":{"x":500,"y":500},"radius":500},"recipients":[],"heartbeat":1750143149562}}
+{"time":1750143149568,"msg":"Client[C3]: received publication from Client[C1] with payload: hello from C1!"}
+{"time":1750143149568,"msg":"Client[C3]: received publication from Client[C2] with payload: Hi to C1/C3"}
+{"time":1750143149568,"msg":"Client[C3]: received publication from Client[C2] with payload: C2/C3 hello"}
+{"time":1750143149568,"msg":"Client[C1]: received publication from Client[C1] with payload: hello from C1!"}
+{"time":1750143149569,"msg":"Client[C2]: received publication from Client[C2] with payload: C2/C3 hello"}
+{"time":1750143149662,"msg":"Client[C2]: publishing to channel[channel1] with payload: global hello"}
+{"time":1750143149664,"msg":"Client[C1]: received publication from Client[C2] with payload: global hello"}
+{"time":1750143149664,"msg":"Client[C2]: received publication from Client[C2] with payload: global hello"}
+{"time":1750143149665,"msg":"Client[C3]: received publication from Client[C2] with payload: global hello"}
