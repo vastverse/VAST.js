@@ -1,94 +1,95 @@
-# SPS and MQTT Simulator
+# SPS-and-MQTT
 
-This directory contains simulators for testing both MQTT and SPS (Spatial Publish/Subscribe) functionality in the VAST system.
+## Overview
 
-## Directory Structure
+This folder contains tools, scripts, and simulations for comparing and demonstrating the benefits of SPS-MQTT (Spatial Publish/Subscribe over MQTT), standard MQTT, and pure SPS (Spatial Publish/Subscribe).
 
-```
-sps-and-mqtt/
-├── MQTT/                    # MQTT-specific simulator
-│   └── mqtt-simulator_1.js  # Main MQTT simulator implementation
-├── SPMQTT/                  # Combined SPS and MQTT simulator
-│   ├── aedes-sps-mqtt-simulator.js    # Main SPS-MQTT simulator
-│   └── aedes-mqtt-simulator_2.js      # Alternative MQTT implementation
-├── logs/                    # Directory for simulation logs
-├── node_generator.js        # Tool for generating node configurations
-└── simulationScript.txt     # Example simulation script
-```
+**SPS-MQTT** extends the MQTT protocol by allowing clients to subscribe and publish based on spatial regions, enabling efficient, context-aware communication for applications like IoT, smart cities, and multiplayer games.
 
-## Components
+## Folder Structure
 
-### MQTT Simulator
-The MQTT simulator (`mqtt-simulator_1.js`) implements a basic MQTT broker with:
-- Client connection management
-- Topic-based publish/subscribe
-- QoS1 message delivery
-- Area of Interest (AOI) tracking
-- Event logging compatible with VAST system
+- **MQTT/**: Standard MQTT simulation scripts.
+- **SPMQTT/**: SPS-MQTT (Spatial Publish/Subscribe over MQTT) simulation scripts.
+- **SPS/**: Pure SPS (Spatial Publish/Subscribe) simulation scripts and logs.
+- **parsers/**: Scripts for parsing and analyzing simulation logs.
+- **simScripts/**: 
+  - Example simulation scripts for different scenarios.
+  - **Node generator scripts** (e.g., `generator.js`, `node_gen.js`, `interactiveGenerator.js`, `scriptGenerator.js`) for creating custom simulation scenarios.
+- **logs_and_events/**: Output logs and event traces from simulations.
+- **processMultipleFilesV2.js**: Batch processing and analysis of simulation results.
+- **analyze_latency.js**: Tool for analyzing message latency.
+- **README.md**: (You are here!)
 
-### SPS-MQTT Simulator
-The SPS-MQTT simulator combines spatial publish/subscribe with MQTT functionality:
-- Spatial subscription management
-- MQTT message routing
-- AOI-based message delivery
-- Matcher coordination
-- Event logging
+## Key Scripts
 
-## Usage
+- `MQTT/mqtt-simulator_1.js`: Runs a standard MQTT simulation.
+- `SPMQTT/aedes-sps-mqtt-simulator.js`: Runs an SPS-MQTT simulation.
+- `SPS/simulator.js`: Runs a pure SPS simulation.
+- `SPS/logs_and_events/`: Contains logs and events from SPS simulations.
+- `simScripts/`: 
+  - Example simulation scenarios (e.g., grid, clusters, hotspots).
+  - **Node generator scripts**:
+    - `generator.js`, `node_gen.js`, `interactiveGenerator.js`, `scriptGenerator.js`: Generate node/client configurations and simulation scripts.
+- `parsers/`: Tools for parsing and comparing event logs.
+- `processMultipleFilesV2.js`: Aggregates and compares results from multiple simulation runs.
 
-1. **Running the MQTT Simulator**:
+## How to Use
+
+### 1. Install Dependencies
+
+From the project root:
+
 ```bash
-node MQTT/mqtt-simulator_1.js
+npm install
 ```
 
-2. **Running the SPS-MQTT Simulator**:
+### 2. Generate Simulation Scripts
+
+Use node generator scripts in `simScripts/` to create custom scenarios:
+
 ```bash
-node SPMQTT/aedes-sps-mqtt-simulator.js
+node simScripts/generator.js
+node simScripts/node_gen.js
+node simScripts/interactiveGenerator.js
+node simScripts/scriptGenerator.js
 ```
 
-3. **Using the Node Generator**:
+### 3. Run a Simulation
+
+**Standard MQTT:**
 ```bash
-node node_generator.js
+node MQTT/mqtt-simulator_1.js simScripts/example1_mixed.txt
 ```
 
-## Simulation Scripts
+**SPS-MQTT:**
+```bash
+node SPMQTT/aedes-sps-mqtt-simulator.js simScripts/example1_mixed.txt
+```
 
-The `simulationScript.txt` file defines the simulation scenario with commands like:
-- `newMatcher`: Create a new matcher node
-- `newClient`: Create a new client
-- `subscribe`: Subscribe to a topic with AOI
-- `publish`: Publish a message to a topic
-- `wait`: Add delay between operations
-- `end`: End the simulation
+**Pure SPS:**
+```bash
+node SPS/simulator.js simScripts/example1_mixed.txt
+```
 
-## Logging
+### 4. Analyze Results
 
-Simulation logs are stored in the `logs/` directory:
-- `mqtt_client_events.txt`: Client event logs
-- `mqtt_client_messages.txt`: Message delivery logs
-- Individual client logs: `client_[ID].log`
+Parse and compare logs:
 
-## Event Types
+```bash
+node parsers/runAllParsers.js
+node processMultipleFilesV2.js
+```
 
-The simulators log events compatible with the VAST system:
-- `CLIENT_JOIN` (0): Client joins the system
-- `CLIENT_CONNECT` (2): Client connects to broker
-- `CLIENT_MIGRATE` (4): Client migrates between matchers
-- `SUB_NEW` (6): New subscription
-- `SUB_DELETE` (8): Subscription deletion
-- `PUB` (9): Message publication
-- `RECEIVE_PUB` (10): Message reception
+### 5. Example Scenarios
 
-## Dependencies
+Try different scripts in `simScripts/` to see how spatial filtering affects message delivery and bandwidth.
 
-- aedes: MQTT broker implementation
-- mqtt: MQTT client library
-- fs: File system operations
-- path: Path manipulation utilities
+## Benefits of SPS-MQTT
 
-## Notes
+- Reduces unnecessary message delivery by filtering based on spatial relevance.
+- Scales better for large, dynamic networks (e.g., mobile clients, IoT).
+- Enables context-aware applications (e.g., only notify users/devices in a specific area).
 
-- The simulators use QoS1 for reliable message delivery
-- AOI radius is set to 10 units by default
-- Matcher IDs are assigned numerically starting from 0
-- Client positions are tracked in 2D space (x, y coordinates) 
+## Contributing
+
+Feel free to add new scenarios, improve parsers, or enhance the simulations! 

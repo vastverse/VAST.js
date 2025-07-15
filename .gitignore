@@ -13,3 +13,4 @@ package-lock.json
 test/sps-and-mqtt/simulationScript.txt
 test/sps-and-mqtt/logs
 test/sps-and-mqtt/client_logs
+test/sps-and-mqtt/SPS/logs_and_events/
