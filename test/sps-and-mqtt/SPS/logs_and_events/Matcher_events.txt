@@ -1,14 +1,86 @@
-{"time":1750143148457,"event":0,"id":1,"alias":"GW","aoi":{"center":{"x":500,"y":500},"radius":100},"pos":{"x":500,"y":500}}
-{"time":1750143148617,"event":2,"id":1,"alias":"GW","client":{"id":"C1","pos":{"x":300,"y":100},"matcherID":1,"matcherPos":{"x":500,"y":500}}}
-{"time":1750143148618,"event":3,"id":1,"alias":"GW","client":{"id":"C1","pos":{"x":300,"y":100},"matcherID":1,"matcherPos":{"x":500,"y":500}}}
-{"time":1750143148830,"event":5,"id":1,"alias":"GW","sub":{"hostID":1,"hostPos":{"x":500,"y":500},"clientID":"C1","subID":"C1-dYsig","channel":"channel1","aoi":{"center":{"x":300,"y":100},"radius":100},"recipients":[],"heartbeat":1750143148829}}
-{"time":1750143148839,"event":2,"id":1,"alias":"GW","client":{"id":"C2","pos":{"x":200,"y":200},"matcherID":1,"matcherPos":{"x":500,"y":500}}}
-{"time":1750143148839,"event":3,"id":1,"alias":"GW","client":{"id":"C2","pos":{"x":200,"y":200},"matcherID":1,"matcherPos":{"x":500,"y":500}}}
-{"time":1750143149149,"event":5,"id":1,"alias":"GW","sub":{"hostID":1,"hostPos":{"x":500,"y":500},"clientID":"C2","subID":"C2-0Hjm2","channel":"channel1","aoi":{"center":{"x":200,"y":200},"radius":100},"recipients":[],"heartbeat":1750143149149}}
-{"time":1750143149153,"event":2,"id":1,"alias":"GW","client":{"id":"C3","pos":{"x":500,"y":200},"matcherID":1,"matcherPos":{"x":500,"y":500}}}
-{"time":1750143149153,"event":3,"id":1,"alias":"GW","client":{"id":"C3","pos":{"x":500,"y":200},"matcherID":1,"matcherPos":{"x":500,"y":500}}}
-{"time":1750143149563,"event":5,"id":1,"alias":"GW","sub":{"hostID":1,"hostPos":{"x":500,"y":500},"clientID":"C3","subID":"C3-C8YIb","channel":"channel1","aoi":{"center":{"x":500,"y":500},"radius":500},"recipients":[],"heartbeat":1750143149562}}
-{"time":1750143149566,"event":8,"id":1,"alias":"GW","pub":{"matcherID":1,"clientID":"C1","pubID":"C1-1","aoi":{"center":{"x":300,"y":100},"radius":10},"payload":"hello from C1!","channel":"channel1","recipients":[1],"chain":[1]}}
-{"time":1750143149567,"event":8,"id":1,"alias":"GW","pub":{"matcherID":1,"clientID":"C2","pubID":"C2-1","aoi":{"center":{"x":400,"y":600},"radius":10},"payload":"Hi to C1/C3","channel":"channel1","recipients":[1],"chain":[1]}}
-{"time":1750143149567,"event":8,"id":1,"alias":"GW","pub":{"matcherID":1,"clientID":"C2","pubID":"C2-2","aoi":{"center":{"x":200,"y":200},"radius":10},"payload":"C2/C3 hello","channel":"channel1","recipients":[1],"chain":[1]}}
-{"time":1750143149664,"event":8,"id":1,"alias":"GW","pub":{"matcherID":1,"clientID":"C2","pubID":"C2-3","aoi":{"center":{"x":500,"y":500},"radius":1000},"payload":"global hello","channel":"channel1","recipients":[1],"chain":[1]}}
+{"time":1752187575059,"event":0,"id":1,"alias":"GW","aoi":{"center":{"x":500,"y":500},"radius":1500},"pos":{"x":500,"y":500}}
+{"time":1752187575228,"event":2,"id":1,"alias":"GW","client":{"id":"C1","pos":{"x":100,"y":100},"matcherID":1,"matcherPos":{"x":500,"y":500}}}
+{"time":1752187575228,"event":3,"id":1,"alias":"GW","client":{"id":"C1","pos":{"x":100,"y":100},"matcherID":1,"matcherPos":{"x":500,"y":500}}}
+{"time":1752187575340,"event":2,"id":1,"alias":"GW","client":{"id":"C2","pos":{"x":300,"y":100},"matcherID":1,"matcherPos":{"x":500,"y":500}}}
+{"time":1752187575340,"event":3,"id":1,"alias":"GW","client":{"id":"C2","pos":{"x":300,"y":100},"matcherID":1,"matcherPos":{"x":500,"y":500}}}
+{"time":1752187575451,"event":2,"id":1,"alias":"GW","client":{"id":"C3","pos":{"x":500,"y":100},"matcherID":1,"matcherPos":{"x":500,"y":500}}}
+{"time":1752187575451,"event":3,"id":1,"alias":"GW","client":{"id":"C3","pos":{"x":500,"y":100},"matcherID":1,"matcherPos":{"x":500,"y":500}}}
+{"time":1752187575563,"event":2,"id":1,"alias":"GW","client":{"id":"C4","pos":{"x":700,"y":100},"matcherID":1,"matcherPos":{"x":500,"y":500}}}
+{"time":1752187575563,"event":3,"id":1,"alias":"GW","client":{"id":"C4","pos":{"x":700,"y":100},"matcherID":1,"matcherPos":{"x":500,"y":500}}}
+{"time":1752187575674,"event":2,"id":1,"alias":"GW","client":{"id":"C5","pos":{"x":900,"y":100},"matcherID":1,"matcherPos":{"x":500,"y":500}}}
+{"time":1752187575674,"event":3,"id":1,"alias":"GW","client":{"id":"C5","pos":{"x":900,"y":100},"matcherID":1,"matcherPos":{"x":500,"y":500}}}
+{"time":1752187575786,"event":2,"id":1,"alias":"GW","client":{"id":"C6","pos":{"x":100,"y":300},"matcherID":1,"matcherPos":{"x":500,"y":500}}}
+{"time":1752187575786,"event":3,"id":1,"alias":"GW","client":{"id":"C6","pos":{"x":100,"y":300},"matcherID":1,"matcherPos":{"x":500,"y":500}}}
+{"time":1752187575897,"event":2,"id":1,"alias":"GW","client":{"id":"C7","pos":{"x":300,"y":300},"matcherID":1,"matcherPos":{"x":500,"y":500}}}
+{"time":1752187575898,"event":3,"id":1,"alias":"GW","client":{"id":"C7","pos":{"x":300,"y":300},"matcherID":1,"matcherPos":{"x":500,"y":500}}}
+{"time":1752187576010,"event":2,"id":1,"alias":"GW","client":{"id":"C8","pos":{"x":500,"y":300},"matcherID":1,"matcherPos":{"x":500,"y":500}}}
+{"time":1752187576010,"event":3,"id":1,"alias":"GW","client":{"id":"C8","pos":{"x":500,"y":300},"matcherID":1,"matcherPos":{"x":500,"y":500}}}
+{"time":1752187576127,"event":2,"id":1,"alias":"GW","client":{"id":"C9","pos":{"x":700,"y":300},"matcherID":1,"matcherPos":{"x":500,"y":500}}}
+{"time":1752187576128,"event":3,"id":1,"alias":"GW","client":{"id":"C9","pos":{"x":700,"y":300},"matcherID":1,"matcherPos":{"x":500,"y":500}}}
+{"time":1752187576240,"event":2,"id":1,"alias":"GW","client":{"id":"C10","pos":{"x":900,"y":300},"matcherID":1,"matcherPos":{"x":500,"y":500}}}
+{"time":1752187576240,"event":3,"id":1,"alias":"GW","client":{"id":"C10","pos":{"x":900,"y":300},"matcherID":1,"matcherPos":{"x":500,"y":500}}}
+{"time":1752187576352,"event":2,"id":1,"alias":"GW","client":{"id":"C11","pos":{"x":100,"y":500},"matcherID":1,"matcherPos":{"x":500,"y":500}}}
+{"time":1752187576352,"event":3,"id":1,"alias":"GW","client":{"id":"C11","pos":{"x":100,"y":500},"matcherID":1,"matcherPos":{"x":500,"y":500}}}
+{"time":1752187576460,"event":2,"id":1,"alias":"GW","client":{"id":"C12","pos":{"x":300,"y":500},"matcherID":1,"matcherPos":{"x":500,"y":500}}}
+{"time":1752187576460,"event":3,"id":1,"alias":"GW","client":{"id":"C12","pos":{"x":300,"y":500},"matcherID":1,"matcherPos":{"x":500,"y":500}}}
+{"time":1752187576572,"event":2,"id":1,"alias":"GW","client":{"id":"C13","pos":{"x":500,"y":500},"matcherID":1,"matcherPos":{"x":500,"y":500}}}
+{"time":1752187576572,"event":3,"id":1,"alias":"GW","client":{"id":"C13","pos":{"x":500,"y":500},"matcherID":1,"matcherPos":{"x":500,"y":500}}}
+{"time":1752187576683,"event":2,"id":1,"alias":"GW","client":{"id":"C14","pos":{"x":700,"y":500},"matcherID":1,"matcherPos":{"x":500,"y":500}}}
+{"time":1752187576684,"event":3,"id":1,"alias":"GW","client":{"id":"C14","pos":{"x":700,"y":500},"matcherID":1,"matcherPos":{"x":500,"y":500}}}
+{"time":1752187576792,"event":2,"id":1,"alias":"GW","client":{"id":"C15","pos":{"x":900,"y":500},"matcherID":1,"matcherPos":{"x":500,"y":500}}}
+{"time":1752187576792,"event":3,"id":1,"alias":"GW","client":{"id":"C15","pos":{"x":900,"y":500},"matcherID":1,"matcherPos":{"x":500,"y":500}}}
+{"time":1752187576902,"event":2,"id":1,"alias":"GW","client":{"id":"C16","pos":{"x":100,"y":700},"matcherID":1,"matcherPos":{"x":500,"y":500}}}
+{"time":1752187576903,"event":3,"id":1,"alias":"GW","client":{"id":"C16","pos":{"x":100,"y":700},"matcherID":1,"matcherPos":{"x":500,"y":500}}}
+{"time":1752187577010,"event":2,"id":1,"alias":"GW","client":{"id":"C17","pos":{"x":300,"y":700},"matcherID":1,"matcherPos":{"x":500,"y":500}}}
+{"time":1752187577011,"event":3,"id":1,"alias":"GW","client":{"id":"C17","pos":{"x":300,"y":700},"matcherID":1,"matcherPos":{"x":500,"y":500}}}
+{"time":1752187577122,"event":2,"id":1,"alias":"GW","client":{"id":"C18","pos":{"x":500,"y":700},"matcherID":1,"matcherPos":{"x":500,"y":500}}}
+{"time":1752187577123,"event":3,"id":1,"alias":"GW","client":{"id":"C18","pos":{"x":500,"y":700},"matcherID":1,"matcherPos":{"x":500,"y":500}}}
+{"time":1752187577234,"event":2,"id":1,"alias":"GW","client":{"id":"C19","pos":{"x":700,"y":700},"matcherID":1,"matcherPos":{"x":500,"y":500}}}
+{"time":1752187577235,"event":3,"id":1,"alias":"GW","client":{"id":"C19","pos":{"x":700,"y":700},"matcherID":1,"matcherPos":{"x":500,"y":500}}}
+{"time":1752187577344,"event":2,"id":1,"alias":"GW","client":{"id":"C20","pos":{"x":900,"y":700},"matcherID":1,"matcherPos":{"x":500,"y":500}}}
+{"time":1752187577345,"event":3,"id":1,"alias":"GW","client":{"id":"C20","pos":{"x":900,"y":700},"matcherID":1,"matcherPos":{"x":500,"y":500}}}
+{"time":1752187577454,"event":2,"id":1,"alias":"GW","client":{"id":"C21","pos":{"x":100,"y":900},"matcherID":1,"matcherPos":{"x":500,"y":500}}}
+{"time":1752187577455,"event":3,"id":1,"alias":"GW","client":{"id":"C21","pos":{"x":100,"y":900},"matcherID":1,"matcherPos":{"x":500,"y":500}}}
+{"time":1752187577566,"event":2,"id":1,"alias":"GW","client":{"id":"C22","pos":{"x":300,"y":900},"matcherID":1,"matcherPos":{"x":500,"y":500}}}
+{"time":1752187577566,"event":3,"id":1,"alias":"GW","client":{"id":"C22","pos":{"x":300,"y":900},"matcherID":1,"matcherPos":{"x":500,"y":500}}}
+{"time":1752187577675,"event":2,"id":1,"alias":"GW","client":{"id":"C23","pos":{"x":500,"y":900},"matcherID":1,"matcherPos":{"x":500,"y":500}}}
+{"time":1752187577675,"event":3,"id":1,"alias":"GW","client":{"id":"C23","pos":{"x":500,"y":900},"matcherID":1,"matcherPos":{"x":500,"y":500}}}
+{"time":1752187577780,"event":2,"id":1,"alias":"GW","client":{"id":"C24","pos":{"x":700,"y":900},"matcherID":1,"matcherPos":{"x":500,"y":500}}}
+{"time":1752187577780,"event":3,"id":1,"alias":"GW","client":{"id":"C24","pos":{"x":700,"y":900},"matcherID":1,"matcherPos":{"x":500,"y":500}}}
+{"time":1752187577884,"event":2,"id":1,"alias":"GW","client":{"id":"C25","pos":{"x":900,"y":900},"matcherID":1,"matcherPos":{"x":500,"y":500}}}
+{"time":1752187577884,"event":3,"id":1,"alias":"GW","client":{"id":"C25","pos":{"x":900,"y":900},"matcherID":1,"matcherPos":{"x":500,"y":500}}}
+{"time":1752187577989,"event":5,"id":1,"alias":"GW","sub":{"hostID":1,"hostPos":{"x":500,"y":500},"clientID":"C1","subID":"C1-hptPl","channel":"channel1","aoi":{"center":{"x":100,"y":100},"radius":100},"recipients":[],"heartbeat":1752187577988}}
+{"time":1752187578189,"event":5,"id":1,"alias":"GW","sub":{"hostID":1,"hostPos":{"x":500,"y":500},"clientID":"C2","subID":"C2-afTB2","channel":"channel1","aoi":{"center":{"x":300,"y":100},"radius":100},"recipients":[],"heartbeat":1752187578189}}
+{"time":1752187578391,"event":5,"id":1,"alias":"GW","sub":{"hostID":1,"hostPos":{"x":500,"y":500},"clientID":"C3","subID":"C3-qGMxi","channel":"channel1","aoi":{"center":{"x":500,"y":100},"radius":100},"recipients":[],"heartbeat":1752187578391}}
+{"time":1752187578594,"event":5,"id":1,"alias":"GW","sub":{"hostID":1,"hostPos":{"x":500,"y":500},"clientID":"C4","subID":"C4-I5Lho","channel":"channel1","aoi":{"center":{"x":700,"y":100},"radius":100},"recipients":[],"heartbeat":1752187578594}}
+{"time":1752187578796,"event":5,"id":1,"alias":"GW","sub":{"hostID":1,"hostPos":{"x":500,"y":500},"clientID":"C5","subID":"C5-u3N6Y","channel":"channel1","aoi":{"center":{"x":900,"y":100},"radius":100},"recipients":[],"heartbeat":1752187578796}}
+{"time":1752187578998,"event":5,"id":1,"alias":"GW","sub":{"hostID":1,"hostPos":{"x":500,"y":500},"clientID":"C6","subID":"C6-DeatB","channel":"channel1","aoi":{"center":{"x":100,"y":300},"radius":100},"recipients":[],"heartbeat":1752187578997}}
+{"time":1752187579199,"event":5,"id":1,"alias":"GW","sub":{"hostID":1,"hostPos":{"x":500,"y":500},"clientID":"C7","subID":"C7-SiT8q","channel":"channel1","aoi":{"center":{"x":300,"y":300},"radius":100},"recipients":[],"heartbeat":1752187579199}}
+{"time":1752187579402,"event":5,"id":1,"alias":"GW","sub":{"hostID":1,"hostPos":{"x":500,"y":500},"clientID":"C8","subID":"C8-hdSuJ","channel":"channel1","aoi":{"center":{"x":500,"y":300},"radius":100},"recipients":[],"heartbeat":1752187579401}}
+{"time":1752187579605,"event":5,"id":1,"alias":"GW","sub":{"hostID":1,"hostPos":{"x":500,"y":500},"clientID":"C9","subID":"C9-TQR5D","channel":"channel1","aoi":{"center":{"x":700,"y":300},"radius":100},"recipients":[],"heartbeat":1752187579605}}
+{"time":1752187579807,"event":5,"id":1,"alias":"GW","sub":{"hostID":1,"hostPos":{"x":500,"y":500},"clientID":"C10","subID":"C10-uuBVz","channel":"channel1","aoi":{"center":{"x":900,"y":300},"radius":100},"recipients":[],"heartbeat":1752187579806}}
+{"time":1752187580009,"event":5,"id":1,"alias":"GW","sub":{"hostID":1,"hostPos":{"x":500,"y":500},"clientID":"C11","subID":"C11-jd2Q2","channel":"channel1","aoi":{"center":{"x":100,"y":500},"radius":100},"recipients":[],"heartbeat":1752187580009}}
+{"time":1752187580211,"event":5,"id":1,"alias":"GW","sub":{"hostID":1,"hostPos":{"x":500,"y":500},"clientID":"C12","subID":"C12-mZZVl","channel":"channel1","aoi":{"center":{"x":300,"y":500},"radius":100},"recipients":[],"heartbeat":1752187580210}}
+{"time":1752187580413,"event":5,"id":1,"alias":"GW","sub":{"hostID":1,"hostPos":{"x":500,"y":500},"clientID":"C13","subID":"C13-lKqrW","channel":"channel1","aoi":{"center":{"x":500,"y":500},"radius":100},"recipients":[],"heartbeat":1752187580413}}
+{"time":1752187580614,"event":5,"id":1,"alias":"GW","sub":{"hostID":1,"hostPos":{"x":500,"y":500},"clientID":"C14","subID":"C14-bCFFw","channel":"channel1","aoi":{"center":{"x":700,"y":500},"radius":100},"recipients":[],"heartbeat":1752187580614}}
+{"time":1752187580818,"event":5,"id":1,"alias":"GW","sub":{"hostID":1,"hostPos":{"x":500,"y":500},"clientID":"C15","subID":"C15-RHAKk","channel":"channel1","aoi":{"center":{"x":900,"y":500},"radius":100},"recipients":[],"heartbeat":1752187580817}}
+{"time":1752187581018,"event":5,"id":1,"alias":"GW","sub":{"hostID":1,"hostPos":{"x":500,"y":500},"clientID":"C16","subID":"C16-D5EdS","channel":"channel1","aoi":{"center":{"x":100,"y":700},"radius":100},"recipients":[],"heartbeat":1752187581018}}
+{"time":1752187581221,"event":5,"id":1,"alias":"GW","sub":{"hostID":1,"hostPos":{"x":500,"y":500},"clientID":"C17","subID":"C17-9YcOB","channel":"channel1","aoi":{"center":{"x":300,"y":700},"radius":100},"recipients":[],"heartbeat":1752187581221}}
+{"time":1752187581423,"event":5,"id":1,"alias":"GW","sub":{"hostID":1,"hostPos":{"x":500,"y":500},"clientID":"C18","subID":"C18-u0EOO","channel":"channel1","aoi":{"center":{"x":500,"y":700},"radius":100},"recipients":[],"heartbeat":1752187581422}}
+{"time":1752187581626,"event":5,"id":1,"alias":"GW","sub":{"hostID":1,"hostPos":{"x":500,"y":500},"clientID":"C19","subID":"C19-LTuRk","channel":"channel1","aoi":{"center":{"x":700,"y":700},"radius":100},"recipients":[],"heartbeat":1752187581625}}
+{"time":1752187581828,"event":5,"id":1,"alias":"GW","sub":{"hostID":1,"hostPos":{"x":500,"y":500},"clientID":"C20","subID":"C20-A7lGH","channel":"channel1","aoi":{"center":{"x":900,"y":700},"radius":100},"recipients":[],"heartbeat":1752187581828}}
+{"time":1752187582030,"event":5,"id":1,"alias":"GW","sub":{"hostID":1,"hostPos":{"x":500,"y":500},"clientID":"C21","subID":"C21-qrrGY","channel":"channel1","aoi":{"center":{"x":100,"y":900},"radius":100},"recipients":[],"heartbeat":1752187582030}}
+{"time":1752187582233,"event":5,"id":1,"alias":"GW","sub":{"hostID":1,"hostPos":{"x":500,"y":500},"clientID":"C22","subID":"C22-5FS4f","channel":"channel1","aoi":{"center":{"x":300,"y":900},"radius":100},"recipients":[],"heartbeat":1752187582233}}
+{"time":1752187582436,"event":5,"id":1,"alias":"GW","sub":{"hostID":1,"hostPos":{"x":500,"y":500},"clientID":"C23","subID":"C23-qkYLS","channel":"channel1","aoi":{"center":{"x":500,"y":900},"radius":100},"recipients":[],"heartbeat":1752187582436}}
+{"time":1752187582639,"event":5,"id":1,"alias":"GW","sub":{"hostID":1,"hostPos":{"x":500,"y":500},"clientID":"C24","subID":"C24-kFzM6","channel":"channel1","aoi":{"center":{"x":700,"y":900},"radius":100},"recipients":[],"heartbeat":1752187582639}}
+{"time":1752187582841,"event":5,"id":1,"alias":"GW","sub":{"hostID":1,"hostPos":{"x":500,"y":500},"clientID":"C25","subID":"C25-Qyvae","channel":"channel1","aoi":{"center":{"x":900,"y":900},"radius":100},"recipients":[],"heartbeat":1752187582841}}
+{"time":1752187583045,"event":8,"id":1,"alias":"GW","pub":{"matcherID":1,"clientID":"C1","pubID":"C1-1","aoi":{"center":{"x":100,"y":100},"radius":66},"payload":"Grid message from C1","channel":"channel1","recipients":[1],"chain":[1]}}
+{"time":1752187583547,"event":8,"id":1,"alias":"GW","pub":{"matcherID":1,"clientID":"C2","pubID":"C2-1","aoi":{"center":{"x":300,"y":100},"radius":66},"payload":"Grid message from C2","channel":"channel1","recipients":[1],"chain":[1]}}
+{"time":1752187584050,"event":8,"id":1,"alias":"GW","pub":{"matcherID":1,"clientID":"C3","pubID":"C3-1","aoi":{"center":{"x":500,"y":100},"radius":66},"payload":"Grid message from C3","channel":"channel1","recipients":[1],"chain":[1]}}
+{"time":1752187584553,"event":8,"id":1,"alias":"GW","pub":{"matcherID":1,"clientID":"C4","pubID":"C4-1","aoi":{"center":{"x":700,"y":100},"radius":66},"payload":"Grid message from C4","channel":"channel1","recipients":[1],"chain":[1]}}
+{"time":1752187585054,"event":8,"id":1,"alias":"GW","pub":{"matcherID":1,"clientID":"C5","pubID":"C5-1","aoi":{"center":{"x":900,"y":100},"radius":66},"payload":"Grid message from C5","channel":"channel1","recipients":[1],"chain":[1]}}
+{"time":1752187585557,"event":8,"id":1,"alias":"GW","pub":{"matcherID":1,"clientID":"C6","pubID":"C6-1","aoi":{"center":{"x":100,"y":300},"radius":66},"payload":"Grid message from C6","channel":"channel1","recipients":[1],"chain":[1]}}
+{"time":1752187586060,"event":8,"id":1,"alias":"GW","pub":{"matcherID":1,"clientID":"C7","pubID":"C7-1","aoi":{"center":{"x":300,"y":300},"radius":66},"payload":"Grid message from C7","channel":"channel1","recipients":[1],"chain":[1]}}
+{"time":1752187586562,"event":8,"id":1,"alias":"GW","pub":{"matcherID":1,"clientID":"C8","pubID":"C8-1","aoi":{"center":{"x":500,"y":300},"radius":66},"payload":"Grid message from C8","channel":"channel1","recipients":[1],"chain":[1]}}
+{"time":1752187587065,"event":8,"id":1,"alias":"GW","pub":{"matcherID":1,"clientID":"C9","pubID":"C9-1","aoi":{"center":{"x":700,"y":300},"radius":66},"payload":"Grid message from C9","channel":"channel1","recipients":[1],"chain":[1]}}
+{"time":1752187587567,"event":8,"id":1,"alias":"GW","pub":{"matcherID":1,"clientID":"C10","pubID":"C10-1","aoi":{"center":{"x":900,"y":300},"radius":66},"payload":"Grid message from C10","channel":"channel1","recipients":[1],"chain":[1]}}

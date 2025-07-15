@@ -1,0 +1,62 @@
+// Auto-generated simulation script
+// World size: 800x800
+// Generated at: 2025-07-11T09:20:46.709Z
+
+// Start the Gateway matcher
+newMatcher GW true localhost 8000 8001 20000 400 400 1500
+wait 100
+
+newClient R1 localhost 20000 700 400 100
+wait 100
+newClient R2 localhost 20000 659 550 100
+wait 100
+newClient R3 localhost 20000 550 659 100
+wait 100
+newClient R4 localhost 20000 400 700 100
+wait 100
+newClient R5 localhost 20000 250 659 100
+wait 100
+newClient R6 localhost 20000 140 550 100
+wait 100
+newClient R7 localhost 20000 100 400 100
+wait 100
+newClient R8 localhost 20000 140 250 100
+wait 100
+newClient R9 localhost 20000 249 140 100
+wait 100
+newClient R10 localhost 20000 399 100 100
+wait 100
+newClient R11 localhost 20000 550 140 100
+wait 100
+newClient R12 localhost 20000 659 249 100
+wait 100
+subscribe R1 400 400 400 channel1
+wait 100
+subscribe R2 400 400 400 channel1
+wait 100
+subscribe R3 400 400 400 channel1
+wait 100
+subscribe R4 400 400 400 channel1
+wait 100
+subscribe R5 400 400 400 channel1
+wait 100
+subscribe R6 400 400 400 channel1
+wait 100
+subscribe R7 100 400 150 channel1
+wait 100
+subscribe R8 140 250 150 channel1
+wait 100
+subscribe R9 249 140 150 channel1
+wait 100
+subscribe R10 399 100 150 channel1
+wait 100
+subscribe R11 550 140 150 channel1
+wait 100
+subscribe R12 659 249 150 channel1
+wait 100
+publish R1 400 400 350 channel1 "Message from R1"
+wait 500
+
+// End of simulation
+wait 10000
+end

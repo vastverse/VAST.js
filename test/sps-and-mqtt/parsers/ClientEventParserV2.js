@@ -1,7 +1,7 @@
 //importing data from text file
 const fs = require('fs');
 const path = require('path');
-const common = require('../../lib/common');
+const common = require('../../../lib/common');
 
 const readline = require('readline');
 

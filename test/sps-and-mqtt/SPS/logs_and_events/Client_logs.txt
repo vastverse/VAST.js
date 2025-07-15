@@ -1,27 +1,145 @@
-{"time":1750143148622,"msg":"Client[C1]: socket connected"}
-{"time":1750143148622,"msg":"Client[C1]: assigned to matcher[1]"}
-{"time":1750143148824,"msg":"Client[C1]: subscribing to channel[channel1] at AoI[300; 100; 100]"}
-{"time":1750143148831,"msg":"Client[C1]: added a subscription:"}
-{"time":1750143148831,"msg":{"hostID":1,"hostPos":{"x":500,"y":500},"clientID":"C1","subID":"C1-dYsig","channel":"channel1","aoi":{"center":{"x":300,"y":100},"radius":100},"recipients":[],"heartbeat":1750143148829}}
-{"time":1750143148843,"msg":"Client[C2]: socket connected"}
-{"time":1750143148844,"msg":"Client[C2]: assigned to matcher[1]"}
-{"time":1750143149147,"msg":"Client[C2]: subscribing to channel[channel1] at AoI[200; 200; 100]"}
-{"time":1750143149149,"msg":"Client[C2]: added a subscription:"}
-{"time":1750143149149,"msg":{"hostID":1,"hostPos":{"x":500,"y":500},"clientID":"C2","subID":"C2-0Hjm2","channel":"channel1","aoi":{"center":{"x":200,"y":200},"radius":100},"recipients":[],"heartbeat":1750143149149}}
-{"time":1750143149156,"msg":"Client[C3]: socket connected"}
-{"time":1750143149156,"msg":"Client[C3]: assigned to matcher[1]"}
-{"time":1750143149559,"msg":"Client[C3]: subscribing to channel[channel1] at AoI[500; 500; 500]"}
-{"time":1750143149559,"msg":"Client[C1]: publishing to channel[channel1] with payload: hello from C1!"}
-{"time":1750143149560,"msg":"Client[C2]: publishing to channel[channel1] with payload: Hi to C1/C3"}
-{"time":1750143149560,"msg":"Client[C2]: publishing to channel[channel1] with payload: C2/C3 hello"}
-{"time":1750143149567,"msg":"Client[C3]: added a subscription:"}
-{"time":1750143149568,"msg":{"hostID":1,"hostPos":{"x":500,"y":500},"clientID":"C3","subID":"C3-C8YIb","channel":"channel1","aoi":{"center":{"x":500,"y":500},"radius":500},"recipients":[],"heartbeat":1750143149562}}
-{"time":1750143149568,"msg":"Client[C3]: received publication from Client[C1] with payload: hello from C1!"}
-{"time":1750143149568,"msg":"Client[C3]: received publication from Client[C2] with payload: Hi to C1/C3"}
-{"time":1750143149568,"msg":"Client[C3]: received publication from Client[C2] with payload: C2/C3 hello"}
-{"time":1750143149568,"msg":"Client[C1]: received publication from Client[C1] with payload: hello from C1!"}
-{"time":1750143149569,"msg":"Client[C2]: received publication from Client[C2] with payload: C2/C3 hello"}
-{"time":1750143149662,"msg":"Client[C2]: publishing to channel[channel1] with payload: global hello"}
-{"time":1750143149664,"msg":"Client[C1]: received publication from Client[C2] with payload: global hello"}
-{"time":1750143149664,"msg":"Client[C2]: received publication from Client[C2] with payload: global hello"}
-{"time":1750143149665,"msg":"Client[C3]: received publication from Client[C2] with payload: global hello"}
+{"time":1752187575232,"msg":"Client[C1]: socket connected"}
+{"time":1752187575233,"msg":"Client[C1]: assigned to matcher[1]"}
+{"time":1752187575342,"msg":"Client[C2]: socket connected"}
+{"time":1752187575342,"msg":"Client[C2]: assigned to matcher[1]"}
+{"time":1752187575452,"msg":"Client[C3]: socket connected"}
+{"time":1752187575452,"msg":"Client[C3]: assigned to matcher[1]"}
+{"time":1752187575565,"msg":"Client[C4]: socket connected"}
+{"time":1752187575565,"msg":"Client[C4]: assigned to matcher[1]"}
+{"time":1752187575676,"msg":"Client[C5]: socket connected"}
+{"time":1752187575676,"msg":"Client[C5]: assigned to matcher[1]"}
+{"time":1752187575787,"msg":"Client[C6]: socket connected"}
+{"time":1752187575787,"msg":"Client[C6]: assigned to matcher[1]"}
+{"time":1752187575899,"msg":"Client[C7]: socket connected"}
+{"time":1752187575899,"msg":"Client[C7]: assigned to matcher[1]"}
+{"time":1752187576012,"msg":"Client[C8]: socket connected"}
+{"time":1752187576012,"msg":"Client[C8]: assigned to matcher[1]"}
+{"time":1752187576130,"msg":"Client[C9]: socket connected"}
+{"time":1752187576130,"msg":"Client[C9]: assigned to matcher[1]"}
+{"time":1752187576241,"msg":"Client[C10]: socket connected"}
+{"time":1752187576241,"msg":"Client[C10]: assigned to matcher[1]"}
+{"time":1752187576353,"msg":"Client[C11]: socket connected"}
+{"time":1752187576353,"msg":"Client[C11]: assigned to matcher[1]"}
+{"time":1752187576463,"msg":"Client[C12]: socket connected"}
+{"time":1752187576463,"msg":"Client[C12]: assigned to matcher[1]"}
+{"time":1752187576574,"msg":"Client[C13]: socket connected"}
+{"time":1752187576574,"msg":"Client[C13]: assigned to matcher[1]"}
+{"time":1752187576684,"msg":"Client[C14]: socket connected"}
+{"time":1752187576684,"msg":"Client[C14]: assigned to matcher[1]"}
+{"time":1752187576794,"msg":"Client[C15]: socket connected"}
+{"time":1752187576794,"msg":"Client[C15]: assigned to matcher[1]"}
+{"time":1752187576904,"msg":"Client[C16]: socket connected"}
+{"time":1752187576904,"msg":"Client[C16]: assigned to matcher[1]"}
+{"time":1752187577013,"msg":"Client[C17]: socket connected"}
+{"time":1752187577013,"msg":"Client[C17]: assigned to matcher[1]"}
+{"time":1752187577125,"msg":"Client[C18]: socket connected"}
+{"time":1752187577125,"msg":"Client[C18]: assigned to matcher[1]"}
+{"time":1752187577236,"msg":"Client[C19]: socket connected"}
+{"time":1752187577236,"msg":"Client[C19]: assigned to matcher[1]"}
+{"time":1752187577347,"msg":"Client[C20]: socket connected"}
+{"time":1752187577347,"msg":"Client[C20]: assigned to matcher[1]"}
+{"time":1752187577457,"msg":"Client[C21]: socket connected"}
+{"time":1752187577457,"msg":"Client[C21]: assigned to matcher[1]"}
+{"time":1752187577567,"msg":"Client[C22]: socket connected"}
+{"time":1752187577567,"msg":"Client[C22]: assigned to matcher[1]"}
+{"time":1752187577676,"msg":"Client[C23]: socket connected"}
+{"time":1752187577676,"msg":"Client[C23]: assigned to matcher[1]"}
+{"time":1752187577780,"msg":"Client[C24]: socket connected"}
+{"time":1752187577780,"msg":"Client[C24]: assigned to matcher[1]"}
+{"time":1752187577885,"msg":"Client[C25]: socket connected"}
+{"time":1752187577885,"msg":"Client[C25]: assigned to matcher[1]"}
+{"time":1752187577986,"msg":"Client[C1]: subscribing to channel[channel1] at AoI[100; 100; 100]"}
+{"time":1752187577990,"msg":"Client[C1]: added a subscription:"}
+{"time":1752187577990,"msg":{"hostID":1,"hostPos":{"x":500,"y":500},"clientID":"C1","subID":"C1-hptPl","channel":"channel1","aoi":{"center":{"x":100,"y":100},"radius":100},"recipients":[],"heartbeat":1752187577988}}
+{"time":1752187578187,"msg":"Client[C2]: subscribing to channel[channel1] at AoI[300; 100; 100]"}
+{"time":1752187578190,"msg":"Client[C2]: added a subscription:"}
+{"time":1752187578190,"msg":{"hostID":1,"hostPos":{"x":500,"y":500},"clientID":"C2","subID":"C2-afTB2","channel":"channel1","aoi":{"center":{"x":300,"y":100},"radius":100},"recipients":[],"heartbeat":1752187578189}}
+{"time":1752187578390,"msg":"Client[C3]: subscribing to channel[channel1] at AoI[500; 100; 100]"}
+{"time":1752187578392,"msg":"Client[C3]: added a subscription:"}
+{"time":1752187578392,"msg":{"hostID":1,"hostPos":{"x":500,"y":500},"clientID":"C3","subID":"C3-qGMxi","channel":"channel1","aoi":{"center":{"x":500,"y":100},"radius":100},"recipients":[],"heartbeat":1752187578391}}
+{"time":1752187578593,"msg":"Client[C4]: subscribing to channel[channel1] at AoI[700; 100; 100]"}
+{"time":1752187578594,"msg":"Client[C4]: added a subscription:"}
+{"time":1752187578594,"msg":{"hostID":1,"hostPos":{"x":500,"y":500},"clientID":"C4","subID":"C4-I5Lho","channel":"channel1","aoi":{"center":{"x":700,"y":100},"radius":100},"recipients":[],"heartbeat":1752187578594}}
+{"time":1752187578794,"msg":"Client[C5]: subscribing to channel[channel1] at AoI[900; 100; 100]"}
+{"time":1752187578796,"msg":"Client[C5]: added a subscription:"}
+{"time":1752187578796,"msg":{"hostID":1,"hostPos":{"x":500,"y":500},"clientID":"C5","subID":"C5-u3N6Y","channel":"channel1","aoi":{"center":{"x":900,"y":100},"radius":100},"recipients":[],"heartbeat":1752187578796}}
+{"time":1752187578996,"msg":"Client[C6]: subscribing to channel[channel1] at AoI[100; 300; 100]"}
+{"time":1752187578998,"msg":"Client[C6]: added a subscription:"}
+{"time":1752187578998,"msg":{"hostID":1,"hostPos":{"x":500,"y":500},"clientID":"C6","subID":"C6-DeatB","channel":"channel1","aoi":{"center":{"x":100,"y":300},"radius":100},"recipients":[],"heartbeat":1752187578997}}
+{"time":1752187579198,"msg":"Client[C7]: subscribing to channel[channel1] at AoI[300; 300; 100]"}
+{"time":1752187579200,"msg":"Client[C7]: added a subscription:"}
+{"time":1752187579200,"msg":{"hostID":1,"hostPos":{"x":500,"y":500},"clientID":"C7","subID":"C7-SiT8q","channel":"channel1","aoi":{"center":{"x":300,"y":300},"radius":100},"recipients":[],"heartbeat":1752187579199}}
+{"time":1752187579400,"msg":"Client[C8]: subscribing to channel[channel1] at AoI[500; 300; 100]"}
+{"time":1752187579402,"msg":"Client[C8]: added a subscription:"}
+{"time":1752187579402,"msg":{"hostID":1,"hostPos":{"x":500,"y":500},"clientID":"C8","subID":"C8-hdSuJ","channel":"channel1","aoi":{"center":{"x":500,"y":300},"radius":100},"recipients":[],"heartbeat":1752187579401}}
+{"time":1752187579602,"msg":"Client[C9]: subscribing to channel[channel1] at AoI[700; 300; 100]"}
+{"time":1752187579606,"msg":"Client[C9]: added a subscription:"}
+{"time":1752187579606,"msg":{"hostID":1,"hostPos":{"x":500,"y":500},"clientID":"C9","subID":"C9-TQR5D","channel":"channel1","aoi":{"center":{"x":700,"y":300},"radius":100},"recipients":[],"heartbeat":1752187579605}}
+{"time":1752187579804,"msg":"Client[C10]: subscribing to channel[channel1] at AoI[900; 300; 100]"}
+{"time":1752187579808,"msg":"Client[C10]: added a subscription:"}
+{"time":1752187579808,"msg":{"hostID":1,"hostPos":{"x":500,"y":500},"clientID":"C10","subID":"C10-uuBVz","channel":"channel1","aoi":{"center":{"x":900,"y":300},"radius":100},"recipients":[],"heartbeat":1752187579806}}
+{"time":1752187580007,"msg":"Client[C11]: subscribing to channel[channel1] at AoI[100; 500; 100]"}
+{"time":1752187580009,"msg":"Client[C11]: added a subscription:"}
+{"time":1752187580009,"msg":{"hostID":1,"hostPos":{"x":500,"y":500},"clientID":"C11","subID":"C11-jd2Q2","channel":"channel1","aoi":{"center":{"x":100,"y":500},"radius":100},"recipients":[],"heartbeat":1752187580009}}
+{"time":1752187580209,"msg":"Client[C12]: subscribing to channel[channel1] at AoI[300; 500; 100]"}
+{"time":1752187580214,"msg":"Client[C12]: added a subscription:"}
+{"time":1752187580214,"msg":{"hostID":1,"hostPos":{"x":500,"y":500},"clientID":"C12","subID":"C12-mZZVl","channel":"channel1","aoi":{"center":{"x":300,"y":500},"radius":100},"recipients":[],"heartbeat":1752187580210}}
+{"time":1752187580411,"msg":"Client[C13]: subscribing to channel[channel1] at AoI[500; 500; 100]"}
+{"time":1752187580413,"msg":"Client[C13]: added a subscription:"}
+{"time":1752187580413,"msg":{"hostID":1,"hostPos":{"x":500,"y":500},"clientID":"C13","subID":"C13-lKqrW","channel":"channel1","aoi":{"center":{"x":500,"y":500},"radius":100},"recipients":[],"heartbeat":1752187580413}}
+{"time":1752187580613,"msg":"Client[C14]: subscribing to channel[channel1] at AoI[700; 500; 100]"}
+{"time":1752187580615,"msg":"Client[C14]: added a subscription:"}
+{"time":1752187580615,"msg":{"hostID":1,"hostPos":{"x":500,"y":500},"clientID":"C14","subID":"C14-bCFFw","channel":"channel1","aoi":{"center":{"x":700,"y":500},"radius":100},"recipients":[],"heartbeat":1752187580614}}
+{"time":1752187580815,"msg":"Client[C15]: subscribing to channel[channel1] at AoI[900; 500; 100]"}
+{"time":1752187580819,"msg":"Client[C15]: added a subscription:"}
+{"time":1752187580819,"msg":{"hostID":1,"hostPos":{"x":500,"y":500},"clientID":"C15","subID":"C15-RHAKk","channel":"channel1","aoi":{"center":{"x":900,"y":500},"radius":100},"recipients":[],"heartbeat":1752187580817}}
+{"time":1752187581017,"msg":"Client[C16]: subscribing to channel[channel1] at AoI[100; 700; 100]"}
+{"time":1752187581018,"msg":"Client[C16]: added a subscription:"}
+{"time":1752187581018,"msg":{"hostID":1,"hostPos":{"x":500,"y":500},"clientID":"C16","subID":"C16-D5EdS","channel":"channel1","aoi":{"center":{"x":100,"y":700},"radius":100},"recipients":[],"heartbeat":1752187581018}}
+{"time":1752187581220,"msg":"Client[C17]: subscribing to channel[channel1] at AoI[300; 700; 100]"}
+{"time":1752187581222,"msg":"Client[C17]: added a subscription:"}
+{"time":1752187581222,"msg":{"hostID":1,"hostPos":{"x":500,"y":500},"clientID":"C17","subID":"C17-9YcOB","channel":"channel1","aoi":{"center":{"x":300,"y":700},"radius":100},"recipients":[],"heartbeat":1752187581221}}
+{"time":1752187581421,"msg":"Client[C18]: subscribing to channel[channel1] at AoI[500; 700; 100]"}
+{"time":1752187581423,"msg":"Client[C18]: added a subscription:"}
+{"time":1752187581423,"msg":{"hostID":1,"hostPos":{"x":500,"y":500},"clientID":"C18","subID":"C18-u0EOO","channel":"channel1","aoi":{"center":{"x":500,"y":700},"radius":100},"recipients":[],"heartbeat":1752187581422}}
+{"time":1752187581624,"msg":"Client[C19]: subscribing to channel[channel1] at AoI[700; 700; 100]"}
+{"time":1752187581626,"msg":"Client[C19]: added a subscription:"}
+{"time":1752187581626,"msg":{"hostID":1,"hostPos":{"x":500,"y":500},"clientID":"C19","subID":"C19-LTuRk","channel":"channel1","aoi":{"center":{"x":700,"y":700},"radius":100},"recipients":[],"heartbeat":1752187581625}}
+{"time":1752187581826,"msg":"Client[C20]: subscribing to channel[channel1] at AoI[900; 700; 100]"}
+{"time":1752187581828,"msg":"Client[C20]: added a subscription:"}
+{"time":1752187581828,"msg":{"hostID":1,"hostPos":{"x":500,"y":500},"clientID":"C20","subID":"C20-A7lGH","channel":"channel1","aoi":{"center":{"x":900,"y":700},"radius":100},"recipients":[],"heartbeat":1752187581828}}
+{"time":1752187582029,"msg":"Client[C21]: subscribing to channel[channel1] at AoI[100; 900; 100]"}
+{"time":1752187582031,"msg":"Client[C21]: added a subscription:"}
+{"time":1752187582031,"msg":{"hostID":1,"hostPos":{"x":500,"y":500},"clientID":"C21","subID":"C21-qrrGY","channel":"channel1","aoi":{"center":{"x":100,"y":900},"radius":100},"recipients":[],"heartbeat":1752187582030}}
+{"time":1752187582232,"msg":"Client[C22]: subscribing to channel[channel1] at AoI[300; 900; 100]"}
+{"time":1752187582233,"msg":"Client[C22]: added a subscription:"}
+{"time":1752187582233,"msg":{"hostID":1,"hostPos":{"x":500,"y":500},"clientID":"C22","subID":"C22-5FS4f","channel":"channel1","aoi":{"center":{"x":300,"y":900},"radius":100},"recipients":[],"heartbeat":1752187582233}}
+{"time":1752187582435,"msg":"Client[C23]: subscribing to channel[channel1] at AoI[500; 900; 100]"}
+{"time":1752187582436,"msg":"Client[C23]: added a subscription:"}
+{"time":1752187582436,"msg":{"hostID":1,"hostPos":{"x":500,"y":500},"clientID":"C23","subID":"C23-qkYLS","channel":"channel1","aoi":{"center":{"x":500,"y":900},"radius":100},"recipients":[],"heartbeat":1752187582436}}
+{"time":1752187582638,"msg":"Client[C24]: subscribing to channel[channel1] at AoI[700; 900; 100]"}
+{"time":1752187582640,"msg":"Client[C24]: added a subscription:"}
+{"time":1752187582640,"msg":{"hostID":1,"hostPos":{"x":500,"y":500},"clientID":"C24","subID":"C24-kFzM6","channel":"channel1","aoi":{"center":{"x":700,"y":900},"radius":100},"recipients":[],"heartbeat":1752187582639}}
+{"time":1752187582840,"msg":"Client[C25]: subscribing to channel[channel1] at AoI[900; 900; 100]"}
+{"time":1752187582842,"msg":"Client[C25]: added a subscription:"}
+{"time":1752187582842,"msg":{"hostID":1,"hostPos":{"x":500,"y":500},"clientID":"C25","subID":"C25-Qyvae","channel":"channel1","aoi":{"center":{"x":900,"y":900},"radius":100},"recipients":[],"heartbeat":1752187582841}}
+{"time":1752187583042,"msg":"Client[C1]: publishing to channel[channel1] with payload: Grid message from C1"}
+{"time":1752187583046,"msg":"Client[C1]: received publication from Client[C1] with payload: Grid message from C1"}
+{"time":1752187583545,"msg":"Client[C2]: publishing to channel[channel1] with payload: Grid message from C2"}
+{"time":1752187583547,"msg":"Client[C2]: received publication from Client[C2] with payload: Grid message from C2"}
+{"time":1752187584048,"msg":"Client[C3]: publishing to channel[channel1] with payload: Grid message from C3"}
+{"time":1752187584051,"msg":"Client[C3]: received publication from Client[C3] with payload: Grid message from C3"}
+{"time":1752187584551,"msg":"Client[C4]: publishing to channel[channel1] with payload: Grid message from C4"}
+{"time":1752187584553,"msg":"Client[C4]: received publication from Client[C4] with payload: Grid message from C4"}
+{"time":1752187585052,"msg":"Client[C5]: publishing to channel[channel1] with payload: Grid message from C5"}
+{"time":1752187585054,"msg":"Client[C5]: received publication from Client[C5] with payload: Grid message from C5"}
+{"time":1752187585555,"msg":"Client[C6]: publishing to channel[channel1] with payload: Grid message from C6"}
+{"time":1752187585557,"msg":"Client[C6]: received publication from Client[C6] with payload: Grid message from C6"}
+{"time":1752187586058,"msg":"Client[C7]: publishing to channel[channel1] with payload: Grid message from C7"}
+{"time":1752187586060,"msg":"Client[C7]: received publication from Client[C7] with payload: Grid message from C7"}
+{"time":1752187586560,"msg":"Client[C8]: publishing to channel[channel1] with payload: Grid message from C8"}
+{"time":1752187586563,"msg":"Client[C8]: received publication from Client[C8] with payload: Grid message from C8"}
+{"time":1752187587063,"msg":"Client[C9]: publishing to channel[channel1] with payload: Grid message from C9"}
+{"time":1752187587066,"msg":"Client[C9]: received publication from Client[C9] with payload: Grid message from C9"}
+{"time":1752187587565,"msg":"Client[C10]: publishing to channel[channel1] with payload: Grid message from C10"}
+{"time":1752187587567,"msg":"Client[C10]: received publication from Client[C10] with payload: Grid message from C10"}

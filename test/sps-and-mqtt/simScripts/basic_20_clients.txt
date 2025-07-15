@@ -1,0 +1,104 @@
+// Auto-generated simulation script
+// Generated at: 2025-07-10T22:39:02.207Z
+// World size: 1000x1000
+
+// Start the Gateway matcher
+newMatcher GW true localhost 8000 8001 20000 500 500 1500
+wait 100
+
+newClient C1 localhost 20000 711 355 100
+wait 100
+newClient C2 localhost 20000 446 276 100
+wait 100
+newClient C3 localhost 20000 690 931 100
+wait 100
+newClient C4 localhost 20000 540 692 100
+wait 100
+newClient C5 localhost 20000 610 806 100
+wait 100
+newClient C6 localhost 20000 679 559 100
+wait 100
+newClient C7 localhost 20000 88 907 100
+wait 100
+newClient C8 localhost 20000 177 652 100
+wait 100
+newClient C9 localhost 20000 464 422 100
+wait 100
+newClient C10 localhost 20000 322 263 100
+wait 100
+newClient C11 localhost 20000 508 607 100
+wait 100
+newClient C12 localhost 20000 846 296 100
+wait 100
+newClient C13 localhost 20000 356 407 100
+wait 100
+newClient C14 localhost 20000 664 232 100
+wait 100
+newClient C15 localhost 20000 533 364 100
+wait 100
+newClient C16 localhost 20000 52 272 100
+wait 100
+newClient C17 localhost 20000 296 211 100
+wait 100
+newClient C18 localhost 20000 807 575 100
+wait 100
+newClient C19 localhost 20000 188 138 100
+wait 100
+newClient C20 localhost 20000 191 215 100
+
+// Subscriptions
+subscribe C1 208 582 344 channel1
+wait 200
+subscribe C2 716 837 294 channel1
+wait 200
+subscribe C3 402 435 276 channel1
+wait 200
+subscribe C4 669 463 274 channel1
+wait 200
+subscribe C5 600 267 295 channel1
+wait 200
+subscribe C6 248 645 258 channel1
+wait 200
+subscribe C7 280 564 258 channel1
+wait 200
+subscribe C8 162 577 318 channel1
+wait 200
+subscribe C9 293 677 245 channel1
+wait 200
+subscribe C10 98 934 169 channel1
+wait 200
+subscribe C11 134 339 204 channel1
+wait 200
+subscribe C12 764 343 326 channel1
+wait 200
+subscribe C13 487 349 176 channel1
+wait 200
+subscribe C14 828 456 375 channel1
+wait 200
+subscribe C15 601 396 272 channel1
+wait 200
+subscribe C16 609 689 297 channel1
+wait 200
+subscribe C17 831 725 316 channel1
+wait 200
+subscribe C18 346 81 160 channel1
+wait 200
+subscribe C19 469 744 130 channel1
+wait 200
+subscribe C20 544 442 394 channel1
+wait 200
+
+// Publications
+publish C1 763 814 230 channel1 "Message from C1"
+wait 500
+publish C2 897 242 138 channel1 "Message from C2"
+wait 500
+publish C3 89 275 291 channel1 "Message from C3"
+wait 500
+publish C4 943 627 166 channel1 "Message from C4"
+wait 500
+publish C5 573 798 239 channel1 "Message from C5"
+
+// End of simulation; wait for pending operations
+wait 10000
+end

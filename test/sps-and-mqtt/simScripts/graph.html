@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Spatial Pub/Sub Visualization</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        canvas {
+            border: 1px solid #ccc;
+            margin-top: 20px;
+        }
+        .legend {
+            margin-top: 20px;
+        }
+        .legend-item {
+            display: inline-block;
+            margin-right: 20px;
+        }
+        .color-box {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            margin-right: 5px;
+            vertical-align: middle;
+            border: 1px solid #000;
+        }
+        .file-input {
+            margin-bottom: 20px;
+        }
+        .controls {
+            margin: 10px 0;
+        }
+        .error {
+            color: red;
+            margin-top: 10px;
+        }
+        .success {
+            color: green;
+            margin-top: 10px;
+        }
+        label.toggle {
+            margin-left: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h2>Spatial Publish/Subscribe System Visualization</h2>
+    
+    <div class="file-input">
+        <label for="fileInput">Load simulation script: </label>
+        <input type="file" id="fileInput" accept=".txt">
+        <button onclick="loadDefaultFile()">Load simulationScript.txt</button>
+    </div>
+    
+    <div class="controls">
+        <label class="toggle">
+            <input type="checkbox" id="showClients" onchange="redraw()"> Show client positions
+        </label>
+        <label class="toggle">
+            <input type="checkbox" id="showGateway" onchange="redraw()"> Show gateway
+        </label>
+    </div>
+    
+    <div id="status"></div>
+    
+    <canvas id="canvas" width="1200" height="1200" style="display:none;"></canvas>
+    <div class="legend" id="legend"></div>
+
+    <script>
+        // Data structures
+        let matcher = {};
+        let clients = {};
+        let subscriptions = [];
+        let publications = [];
+        let scriptData = '';
+
+        // Colors for different subscription/publication areas
+        const colors = [
+            'rgba(255, 0, 0, 0.3)',    // Red
+            'rgba(0, 255, 0, 0.3)',    // Green
+            'rgba(0, 0, 255, 0.3)',    // Blue
+            'rgba(255, 255, 0, 0.3)',  // Yellow
+            'rgba(255, 0, 255, 0.3)',  // Magenta
+            'rgba(0, 255, 255, 0.3)',  // Cyan
+            'rgba(255, 128, 0, 0.3)',  // Orange
+            'rgba(128, 0, 255, 0.3)',  // Purple
+            'rgba(0, 128, 255, 0.3)',  // Light Blue
+            'rgba(255, 0, 128, 0.3)',  // Pink
+            'rgba(128, 255, 0, 0.3)',  // Lime
+        ];
+
+        // Function to parse script
+        function parseScript(data) {
+            scriptData = data;
+            
+            // Reset data structures
+            matcher = {};
+            clients = {};
+            subscriptions = [];
+            publications = [];
+
+            // Parse the script
+            const lines = scriptData.trim().split('\n');
+            let colorIndex = 0;
+
+            lines.forEach(line => {
+                line = line.trim();
+                if (line.startsWith('//') || line === '') return;
+
+                const parts = line.split(/\s+/);
+                const command = parts[0];
+
+                if (command === 'newMatcher') {
+                    matcher.name = parts[1];
+                    matcher.x = parseInt(parts[7]);
+                    matcher.y = parseInt(parts[8]);
+                } else if (command === 'newClient') {
+                    const name = parts[1];
+                    clients[name] = {
+                        name: name,
+                        x: parseInt(parts[4]),
+                        y: parseInt(parts[5])
+                    };
+                } else if (command === 'subscribe') {
+                    subscriptions.push({
+                        client: parts[1],
+                        x: parseInt(parts[2]),
+                        y: parseInt(parts[3]),
+                        radius: parseInt(parts[4]),
+                        channel: parts[5],
+                        color: colors[colorIndex % colors.length]
+                    });
+                    colorIndex++;
+                } else if (command === 'publish') {
+                    publications.push({
+                        client: parts[1],
+                        x: parseInt(parts[2]),
+                        y: parseInt(parts[3]),
+                        radius: parseInt(parts[4]),
+                        channel: parts[5],
+                        message: parts.slice(6).join(' '),
+                        color: colors[colorIndex % colors.length]
+                    });
+                    colorIndex++;
+                }
+            });
+        }
+
+        // Function to draw visualization
+        function draw() {
+            const canvas = document.getElementById('canvas');
+            const ctx = canvas.getContext('2d');
+            
+            // Clear canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Show canvas
+            canvas.style.display = 'block';
+
+            // Draw grid for reference
+            ctx.strokeStyle = '#f0f0f0';
+            ctx.lineWidth = 1;
+            for (let i = 0; i <= 1200; i += 100) {
+                ctx.beginPath();
+                ctx.moveTo(i, 0);
+                ctx.lineTo(i, 1200);
+                ctx.stroke();
+                ctx.beginPath();
+                ctx.moveTo(0, i);
+                ctx.lineTo(1200, i);
+                ctx.stroke();
+            }
+
+            // Draw subscriptions (circles with fill)
+            subscriptions.forEach(sub => {
+                // Draw filled circle
+                ctx.beginPath();
+                ctx.arc(sub.x, sub.y, sub.radius, 0, 2 * Math.PI);
+                ctx.fillStyle = sub.color;
+                ctx.fill();
+                ctx.strokeStyle = sub.color.replace('0.3', '0.8');
+                ctx.lineWidth = 2;
+                ctx.stroke();
+
+                // Draw center point
+                ctx.beginPath();
+                ctx.arc(sub.x, sub.y, 4, 0, 2 * Math.PI);
+                ctx.fillStyle = 'black';
+                ctx.fill();
+                
+                // Label
+                ctx.fillStyle = 'black';
+                ctx.font = 'bold 14px Arial';
+                ctx.fillText(`Sub: ${sub.client}`, sub.x + 10, sub.y - 5);
+                ctx.font = '12px Arial';
+                ctx.fillText(`(${sub.x}, ${sub.y}) r=${sub.radius}`, sub.x + 10, sub.y + 10);
+            });
+
+            // Draw publications (dashed circles)
+            publications.forEach(pub => {
+                // Draw dashed circle
+                ctx.beginPath();
+                ctx.arc(pub.x, pub.y, pub.radius, 0, 2 * Math.PI);
+                ctx.strokeStyle = 'red';
+                ctx.lineWidth = 4;
+                ctx.setLineDash([15, 10]);
+                ctx.stroke();
+                ctx.setLineDash([]);
+
+                // Draw center point
+                ctx.beginPath();
+                ctx.arc(pub.x, pub.y, 6, 0, 2 * Math.PI);
+                ctx.fillStyle = 'red';
+                ctx.fill();
+                
+                // Label
+                ctx.fillStyle = 'red';
+                ctx.font = 'bold 14px Arial';
+                ctx.fillText(`Pub: ${pub.client}`, pub.x + 10, pub.y - 5);
+                ctx.font = '12px Arial';
+                ctx.fillText(`(${pub.x}, ${pub.y}) r=${pub.radius}`, pub.x + 10, pub.y + 10);
+            });
+
+            // Draw gateway if checkbox is checked
+            if (document.getElementById('showGateway').checked && matcher.x && matcher.y) {
+                ctx.fillStyle = 'purple';
+                ctx.fillRect(matcher.x - 8, matcher.y - 8, 16, 16);
+                ctx.font = 'bold 14px Arial';
+                ctx.fillText('Gateway', matcher.x + 12, matcher.y + 5);
+            }
+
+            // Draw clients if checkbox is checked
+            if (document.getElementById('showClients').checked) {
+                Object.values(clients).forEach(client => {
+                    ctx.beginPath();
+                    ctx.arc(client.x, client.y, 6, 0, 2 * Math.PI);
+                    ctx.fillStyle = 'gray';
+                    ctx.fill();
+                    ctx.strokeStyle = 'black';
+                    ctx.lineWidth = 1;
+                    ctx.stroke();
+                    
+                    // Label
+                    ctx.fillStyle = 'black';
+                    ctx.font = '12px Arial';
+                    ctx.fillText(client.name, client.x + 10, client.y + 5);
+                });
+            }
+
+            // Update legend
+            updateLegend();
+        }
+
+        // Function to update legend
+        function updateLegend() {
+            const legendDiv = document.getElementById('legend');
+            let legendHTML = '<h3>Legend:</h3>';
+            
+            legendHTML += '<div class="legend-item"><span class="color-box" style="background-color: red; border-style: dashed;"></span>Publication Areas</div>';
+            legendHTML += '<div class="legend-item"><span class="color-box" style="background-color: rgba(0,0,0,0.3);"></span>Subscription Areas</div>';
+            
+            if (document.getElementById('showGateway').checked) {
+                legendHTML += '<div class="legend-item"><span class="color-box" style="background-color: purple;"></span>Gateway</div>';
+            }
+            
+            if (document.getElementById('showClients').checked) {
+                legendHTML += '<div class="legend-item"><span class="color-box" style="background-color: gray;"></span>Client Positions</div>';
+            }
+            
+            legendHTML += '<br><h4>Details:</h4>';
+            
+            subscriptions.forEach((sub, index) => {
+                legendHTML += `<div class="legend-item">
+                    <span class="color-box" style="background-color: ${sub.color};"></span>
+                    ${sub.client} subscription at (${sub.x}, ${sub.y}) r=${sub.radius}
+                </div>`;
+            });
+            
+            publications.forEach((pub, index) => {
+                legendHTML += `<div class="legend-item">
+                    <span class="color-box" style="background-color: red; border-style: dashed;"></span>
+                    ${pub.client} publish at (${pub.x}, ${pub.y}) r=${pub.radius}
+                </div>`;
+            });
+            
+            legendDiv.innerHTML = legendHTML;
+        }
+
+        // Redraw function
+        function redraw() {
+            if (scriptData) {
+                draw();
+            }
+        }
+
+        // Parse and visualize
+        function parseAndVisualize(data) {
+            try {
+                parseScript(data);
+                draw();
+                document.getElementById('status').innerHTML = '<div class="success">Script loaded and visualized successfully!</div>';
+            } catch (error) {
+                document.getElementById('status').innerHTML = `<div class="error">Error parsing file: ${error.message}</div>`;
+            }
+        }
+
+        // Handle file input
+        document.getElementById('fileInput').addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    parseAndVisualize(e.target.result);
+                };
+                reader.onerror = function() {
+                    document.getElementById('status').innerHTML = '<div class="error">Error reading file!</div>';
+                };
+                reader.readAsText(file);
+            }
+        });
+
+        // Function to load the default file
+        function loadDefaultFile() {
+            fetch('simulationScript.txt')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('File not found');
+                    }
+                    return response.text();
+                })
+                .then(data => {
+                    parseAndVisualize(data);
+                })
+                .catch(error => {
+                    document.getElementById('status').innerHTML = `<div class="error">Error loading simulationScript.txt: ${error.message}</div>`;
+                });
+        }
+    </script>
+</body>
+</html>

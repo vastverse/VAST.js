@@ -40,6 +40,7 @@ let brokerPosition = { x: 0, y: 0 };
 
 // Add at the top with other global variables
 const subscriptions = new Map();  // Store subscriptions: topic -> Set of clientIds
+const pubInfoByPubId = new Map(); // Track pubID -> { clientID, aoi, channel, payload }
 
 // Create logs directory structure
 const LOGS_DIR = path.join(__dirname, '../logs');
@@ -51,10 +52,10 @@ const CLIENT_EVENTS_LOG_PATH = path.join(SPMQTT_LOGS_DIR, 'spmqtt_client_events_
 const CLIENT_MESSAGES_LOG_PATH = path.join(SPMQTT_LOGS_DIR, 'spmqtt_client_messages.txt');
 
 // Configuration flags
-const ENABLE_CLIENT_LOGS = false;  // Enable individual client log files
+const ENABLE_CLIENT_LOGS = true;  // Enable individual client log files
 
 // Script file path
-const SCRIPT_FILE = path.join(__dirname, '../simulationScript.txt');
+const SCRIPT_FILE = path.join(__dirname, '../simScripts/simulationScript.txt');
 
 // Ensure directories exist
 fs.mkdirSync(LOGS_DIR, { recursive: true });
@@ -263,17 +264,25 @@ function createClient(clientId, host, port, x, y, r) {
         const [pubId, payload] = message.toString().split(':');
         logClient(clientId, `Received message on topic ${topic}: ${payload}`);
         logClientMessage(clientId, topic, message);
+        // Look up publisher info for this pubId
+        let pubInfo = pubInfoByPubId.get(pubId);
+        if (!pubInfo) {
+            // fallback: use receiver's info if not found
+            pubInfo = {
+                clientID: clientId,
+                aoi: { center: { x, y }, radius: r },
+                channel: topic,
+                payload: payload
+            };
+        }
         logClientEvent(clientId, Client_Event.RECEIVE_PUB, {
             pub: {
                 matcherID: 1,
-                clientID: clientId,
+                clientID: pubInfo.clientID, // publisher's clientID
                 pubID: pubId,
-                aoi: {
-                    center: { x, y },
-                    radius: r
-                },
-                payload: payload,
-                channel: topic,
+                aoi: pubInfo.aoi, // publisher's AOI
+                payload: pubInfo.payload, // publisher's payload
+                channel: pubInfo.channel, // publisher's channel
                 recipients: [1],
                 chain: [1]
             }
@@ -335,7 +344,8 @@ async function processLine(line, lineNumber) {
 
         case 'subscribe':
             const [___, subClientId, subX, subY, subRadius, channel] = parts;
-            const topic = `sp: <${JSON.stringify({ x: parseInt(subX), y: parseInt(subY), radius: parseInt(subRadius), channel })}>`;
+            const topicObj = { x: parseInt(subX), y: parseInt(subY), radius: parseInt(subRadius), channel };
+            const topic = `sp: <${JSON.stringify(topicObj)}>`;
             logToFile(`Client ${subClientId} subscribing to topic ${topic}`);
             const subClient = simulatedClients[subClientId];
             if (!subClient) {
@@ -375,7 +385,10 @@ async function processLine(line, lineNumber) {
         case 'publish':
             const [____, pubClientId, pubX, pubY, pubRadius, pubTopic, ...pubPayloadParts] = parts;
             const pubPayload = pubPayloadParts.join(' ');
-            logToFile(`Client ${pubClientId} publishing to topic ${pubTopic}: ${pubPayload}`);
+            // Use the same topic format as subscribe
+            const pubTopicObj = { x: parseInt(pubX), y: parseInt(pubY), radius: parseInt(pubRadius), channel: pubTopic };
+            const pubTopicStr = `sp: <${JSON.stringify(pubTopicObj)}>`;
+            logToFile(`Client ${pubClientId} publishing to topic ${pubTopicStr}: ${pubPayload}`);
             const pubClient = simulatedClients[pubClientId];
             if (!pubClient) {
                 logToFile(`Error: Client ${pubClientId} not found`);
@@ -383,34 +396,43 @@ async function processLine(line, lineNumber) {
             }
             return new Promise((resolve, reject) => {
                 const pubId = `PUB-${_randomString(5)}`;
+                const pubAoi = {
+                    center: { x: parseInt(pubX), y: parseInt(pubY) },
+                    radius: parseInt(pubRadius)
+                };
                 const message = `${pubId}:${pubPayload}`;
-                // Log PUB event first
-                logClientEvent(pubClientId, Client_Event.PUB, {
-                    pub: {
-                        pubID: pubId,
-                        channel: pubTopic,
-                        aoi: {
-                            center: { x: parseInt(pubX), y: parseInt(pubY) },
-                            radius: parseInt(pubRadius)
-                        },
-                        payload: pubPayload
-                    }
+                // Track publisher info for this pubId
+                pubInfoByPubId.set(pubId, {
+                    clientID: pubClientId,
+                    aoi: pubAoi,
+                    channel: pubTopicStr,
+                    payload: pubPayload
                 });
-                pubClient.client.publish(pubTopic, message, (err) => {
+                // Log PUB event first
+                pubClient.client.publish(pubTopicStr, message, (err) => {
                     if (err) {
-                        logToFile(`Error publishing from client ${pubClientId} to topic ${pubTopic}: ${err.message}`);
+                        logToFile(`Error publishing from client ${pubClientId} to topic ${pubTopicStr}: ${err.message}`);
                         reject(err);
                     } else {
-                        logToFile(`Client ${pubClientId} published to topic ${pubTopic}: ${pubPayload}`);
-                        logClient(pubClientId, `Published to topic ${pubTopic}: ${pubPayload}`);
+                        logToFile(`Client ${pubClientId} published to topic ${pubTopicStr}: ${pubPayload}`);
+                        logClient(pubClientId, `Published to topic ${pubTopicStr}: ${pubPayload}`);
+                        //insert log code
+                        logClientEvent(pubClientId, Client_Event.PUB, {
+                            pub: {
+                                pubID: pubId,
+                                aoi: pubAoi,
+                                channel: pubTopicStr,
+                                payload: pubPayload
+                            }
+                        });
                         resolve();
                     }
                 });
             });
 
         case 'end':
-            logToFile('Simulation ended');
-            process.exit(0);
+            logToFile('Simulation ended, waiting for message delivery...');
+            setTimeout(() => process.exit(0), 1000); // Wait 1 second before exiting
             return Promise.resolve();
 
         default:

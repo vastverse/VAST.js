@@ -11,53 +11,51 @@ const MQTT_LOGS_DIR = path.join(LOGS_DIR, 'mqtt_events');
 const CLIENT_LOGS_DIR = path.join(MQTT_LOGS_DIR, 'clients');
 const BROKER_LOG_PATH = path.join(MQTT_LOGS_DIR, 'broker.txt');
 const EVENTS_LOG_PATH = path.join(MQTT_LOGS_DIR, 'mqtt_client_events.txt');
-const CLIENT_EVENTS_LOG_PATH = path.join(MQTT_LOGS_DIR, 'mqtt_client_events_no_broker.txt');  // New file for client-only events
+const CLIENT_EVENTS_LOG_PATH = path.join(MQTT_LOGS_DIR, 'mqtt_client_events_no_broker.txt');
 
 // Configuration flags
-const ENABLE_CLIENT_LOGS = false;  // Set to true to enable individual client log files
+const ENABLE_CLIENT_LOGS = false;
 
-// Ensure directories exist
 fs.mkdirSync(LOGS_DIR, { recursive: true });
 fs.mkdirSync(MQTT_LOGS_DIR, { recursive: true });
 fs.mkdirSync(CLIENT_LOGS_DIR, { recursive: true });
 
-// Dynamic script file path
-const SCRIPT_FILE = path.join(__dirname, '..', 'simulationScript.txt');
+const SCRIPT_FILE = path.join(__dirname, '..', './simScripts/simulationScript.txt');
 
-// Store clients
 const clients = {};
-let brokerPort = 1883;  // Default port, will be updated when broker starts
+let brokerPort = 1883;
 
-// Helper to generate unique IDs
 function generateId(prefix) {
-    return prefix + '-' + Math.random().toString(36).substr(2, 5);
+    return prefix + '-' + Math.random().toString(36).substring(2, 7);
 }
 
 // Store pub-ids for each publish (clientId+topic+payload -> pubId)
 const pubIdMap = new Map();
-// Store sub-ids for each subscription (clientId+topic -> subId)
+const pubInfoByPubId = new Map(); // NEW: pubId -> { clientID, topic, message, aoi }
 const subIdMap = new Map();
 
-// VAST-style logger
 function logVastEvent(eventObj) {
     const line = JSON.stringify(eventObj) + '\n';
-    fs.appendFileSync(EVENTS_LOG_PATH, line);
+    fs.appendFile(EVENTS_LOG_PATH, line, err => {
+        if (err) console.error('Error writing to events log:', err);
+    });
 }
 
-// VAST-style logger for client events only
 function logClientEvent(eventObj) {
     const line = JSON.stringify(eventObj) + '\n';
-    fs.appendFileSync(CLIENT_EVENTS_LOG_PATH, line);
+    fs.appendFile(CLIENT_EVENTS_LOG_PATH, line, err => {
+        if (err) console.error('Error writing to client events log:', err);
+    });
 }
 
 function logBroker(message) {
     const timestamp = new Date().toISOString();
     const line = `[${timestamp}] ${message}\n`;
     console.log(`[BROKER] ${line.trim()}`);
-    fs.appendFile(BROKER_LOG_PATH, line, (err) => {
+    fs.appendFile(BROKER_LOG_PATH, line, err => {
         if (err) console.error('Error writing to broker log:', err);
     });
-    fs.appendFile(EVENTS_LOG_PATH, line, (err) => {
+    fs.appendFile(EVENTS_LOG_PATH, line, err => {
         if (err) console.error('Error writing to events log:', err);
     });
 }
@@ -66,24 +64,20 @@ function logClient(clientId, message) {
     const timestamp = new Date().toISOString();
     const line = `[${timestamp}] ${message}\n`;
     console.log(`[CLIENT ${clientId}] ${line.trim()}`);
-    
-    // Only write to individual client log files if enabled
     if (ENABLE_CLIENT_LOGS) {
-    const clientLogPath = path.join(CLIENT_LOGS_DIR, `client_${clientId}.txt`);
-    fs.appendFile(clientLogPath, line, (err) => {
-        if (err) console.error(`Error writing to client ${clientId} log:`, err);
-    });
+        const clientLogPath = path.join(CLIENT_LOGS_DIR, `client_${clientId}.txt`);
+        fs.appendFile(clientLogPath, line, err => {
+            if (err) console.error(`Error writing to client ${clientId} log:`, err);
+        });
     }
-    
-    // Always write to events log
-    fs.appendFile(EVENTS_LOG_PATH, line, (err) => {
+    fs.appendFile(EVENTS_LOG_PATH, line, err => {
         if (err) console.error('Error writing to events log:', err);
     });
 }
 
 function startBroker(port = 1883) {
     const broker = aedes();
-    const BROKER_POS = { x: 500, y: 500 };  // Fixed broker position
+    const BROKER_POS = { x: 500, y: 500 };
 
     broker.on('subscribe', (subscriptions, client) => {
         if (client) {
@@ -91,10 +85,9 @@ function startBroker(port = 1883) {
                 const subKey = client.id + ':' + sub.topic;
                 let subId = subIdMap.get(subKey);
                 if (!subId) {
-                    subId = `${client.id}-${generateId('')}`;  // Format: C1-8nhMU
+                    subId = generateId('SUB');
                     subIdMap.set(subKey, subId);
                 }
-                // Log SUB_NEW event to client events only
                 logClientEvent({
                     time: Date.now(),
                     event: Client_Event.SUB_NEW,
@@ -107,7 +100,7 @@ function startBroker(port = 1883) {
                         clientID: client.id,
                         subID: subId,
                         channel: sub.topic,
-                        aoi: { center: BROKER_POS, radius: 100 },  // Default radius
+                        aoi: { center: BROKER_POS, radius: 100 },
                         recipients: [],
                         heartbeat: Date.now()
                     }
@@ -116,14 +109,12 @@ function startBroker(port = 1883) {
         }
     });
 
-    // Add unsubscribe handler
     broker.on('unsubscribe', (subscriptions, client) => {
         if (client) {
             subscriptions.forEach(topic => {
                 const subKey = client.id + ':' + topic;
                 const subId = subIdMap.get(subKey);
                 if (subId) {
-                    // Log SUB_DELETE event to client events only
                     logClientEvent({
                         time: Date.now(),
                         event: Client_Event.SUB_DELETE,
@@ -132,40 +123,39 @@ function startBroker(port = 1883) {
                         matcher: 1,
                         subID: subId
                     });
-                    // Remove the subscription from the map
                     subIdMap.delete(subKey);
                 }
             });
         }
     });
 
+    // PUB event on broker: only log if pubID is in payload (matches publishing client)
     broker.on('publish', (packet, client) => {
         if (!packet.topic.startsWith('$SYS') && client) {
-            // Try to extract pub-id from payload
             let payloadStr = packet.payload.toString();
-            let pubIdMatch = payloadStr.match(/\[pub-id: ([^\]]+)\]$/);
-            let pubId = pubIdMatch ? pubIdMatch[1] : `${client.id}-${Object.keys(pubIdMap).length + 1}`;
-            
-            // Log PUB event to client events only
-            logClientEvent({
-                time: Date.now(),
-                event: Client_Event.PUB,
-                id: client.id,
-                alias: "unnamed_client",
-                matcher: 1,
-                pub: {
-                    pubID: pubId,
-                    aoi: { center: BROKER_POS, radius: 10 },  // Default radius
-                    channel: packet.topic,
-                    payload: payloadStr
-                }
-            });
+            let pubIdMatch = payloadStr.match(/$$pub-id:\s*([^$$]+)\]$/);
+            let pubId = pubIdMatch ? pubIdMatch[1].trim() : null;
+            if (pubId) {
+                let cleanMsg = payloadStr.replace(/\s*$$pub-id:\s*[^$$]+\]$/, '');
+                logClientEvent({
+                    time: Date.now(),
+                    event: Client_Event.PUB,
+                    id: client.id,
+                    alias: "unnamed_client",
+                    matcher: 1,
+                    pub: {
+                        pubID: pubId,
+                        aoi: { center: BROKER_POS, radius: 10 }, // Substitute real AOI if available
+                        channel: packet.topic,
+                        payload: cleanMsg
+                    }
+                });
+            }
         }
     });
 
     const server = net.createServer(broker.handle);
-    
-    // Try to start the server with error handling
+
     const startServer = (port) => {
         return new Promise((resolve, reject) => {
             server.once('error', (err) => {
@@ -178,7 +168,7 @@ function startBroker(port = 1883) {
                 }
             });
 
-    server.listen(port, () => {
+            server.listen(port, () => {
                 logBroker(`Broker started on port ${port}`);
                 resolve(port);
             });
@@ -196,7 +186,6 @@ function createClient(clientId, host, port, x, y, r) {
         const client = mqtt.connect(url, { clientId });
         const clientPos = { x, y };
 
-        // Log CLIENT_JOIN event
         logClientEvent({
             time: Date.now(),
             event: Client_Event.CLIENT_JOIN,
@@ -207,7 +196,6 @@ function createClient(clientId, host, port, x, y, r) {
         });
 
         client.on('connect', () => {
-            // Log CLIENT_CONNECT event
             logClientEvent({
                 time: Date.now(),
                 event: Client_Event.CLIENT_CONNECT,
@@ -216,7 +204,6 @@ function createClient(clientId, host, port, x, y, r) {
                 pos: clientPos,
                 matcher: 0
             });
-            // Log CLIENT_MIGRATE event
             logClientEvent({
                 time: Date.now(),
                 event: Client_Event.CLIENT_MIGRATE,
@@ -227,10 +214,11 @@ function createClient(clientId, host, port, x, y, r) {
             });
             clients[clientId] = client;
             resolve(client);
+
+            // Optional: subscribe client to their topics after connect here, if needed
         });
 
         client.on('error', (err) => {
-            // Log CLIENT_DISCONNECT event
             logClientEvent({
                 time: Date.now(),
                 event: Client_Event.CLIENT_DISCONNECT,
@@ -244,7 +232,6 @@ function createClient(clientId, host, port, x, y, r) {
         });
 
         client.on('close', () => {
-            // Log CLIENT_LEAVE event
             logClientEvent({
                 time: Date.now(),
                 event: Client_Event.CLIENT_LEAVE,
@@ -255,25 +242,75 @@ function createClient(clientId, host, port, x, y, r) {
             });
         });
 
+        // On receiving a message, extract pubID from payload, log correct RECEIVE_PUB
+        // client.on('message', (topic, message) => {
+        //     let msgStr = message.toString();
+        //     // let pubIdMatch = msgStr.match(/$$pub-id:\s*([^$$]+)\]$/);
+        //     let pubIdMatch = msgStr.match(/$$pub-id:\s*([^$$]+)\]$/);
+        //     let pubId = pubIdMatch ? pubIdMatch[1].trim() : null;
+        //     let cleanMsg = msgStr.replace(/\s*$$pub-id:\s*[^$$]+\]$/, '');
+
+        //     if (!pubId) return; // do not log if pubId not found
+
+        //     logClient(clientId, `Received message on topic ${topic}: ${cleanMsg}`);
+
+        //     logClientEvent({
+        //         time: Date.now(),
+        //         event: Client_Event.RECEIVE_PUB,
+        //         id: clientId,
+        //         alias: "unnamed_client",
+        //         matcher: 1,
+        //         pub: {
+        //             matcherID: 1,
+        //             clientID: clientId,
+        //             pubID: pubId,
+        //             aoi: { center: clientPos, radius: r },
+        //             payload: cleanMsg,
+        //             channel: topic,
+        //             recipients: [1],
+        //             chain: [1]
+        //         }
+        //     });
+        // });
         client.on('message', (topic, message) => {
             let msgStr = message.toString();
-            let pubIdMatch = msgStr.match(/\[pub-id: ([^\]]+)\]$/);
-            let pubId = pubIdMatch ? pubIdMatch[1] : `${clientId}-${Object.keys(pubIdMap).length + 1}`;
-            
-            // Log RECEIVE_PUB event
+            // Remove pub-id matching logic
+            // let pubIdMatch = msgStr.match(/$$pub-id:\s*([^$$]+)\]$/);
+            // let pubId = pubIdMatch ? pubIdMatch[1].trim() : null;
+            // Instead, extract pubId from the end of the message (if present)
+            let pubId = null;
+            let cleanMsg = msgStr;
+            const pubIdPattern = / \[pub-id: ([^\]]+)\]$/;
+            const match = msgStr.match(pubIdPattern);
+            if (match) {
+                pubId = match[1];
+                cleanMsg = msgStr.replace(pubIdPattern, '');
+            }
+            // Look up publisher info
+            let pubInfo = pubId ? pubInfoByPubId.get(pubId) : null;
+            if (!pubInfo) {
+                // If not found, fallback to old behavior (receiver's info)
+                pubInfo = {
+                    clientID: clientId,
+                    pubID: pubId,
+                    aoi: { center: clientPos, radius: r },
+                    message: cleanMsg,
+                    topic: topic
+                };
+            }
             logClientEvent({
                 time: Date.now(),
-                event: Client_Event.RECEIVE_PUB,
+                event: Client_Event.RECEIVE_PUB, // always 10 for receive events
                 id: clientId,
                 alias: "unnamed_client",
                 matcher: 1,
                 pub: {
                     matcherID: 1,
-                    clientID: clientId,
-                    pubID: pubId,
-                    aoi: { center: clientPos, radius: r },
-                    payload: msgStr,
-                    channel: topic,
+                    clientID: pubInfo.clientID, // publisher's clientID
+                    pubID: pubId, // publisher's pubID
+                    aoi: pubInfo.aoi, // publisher's AOI
+                    payload: pubInfo.message, // clean message
+                    channel: pubInfo.topic, // publisher's topic
                     recipients: [1],
                     chain: [1]
                 }
@@ -302,15 +339,16 @@ async function processLine(line, lineNumber) {
     const command = parts[0];
 
     switch (command) {
-        case 'newMatcher':
+        case 'newMatcher': {
             const host = parts[3];
             const port = 1883;
             logBroker(`Starting at ${host}:${port}`);
             const { port: actualPort } = await startBroker(port);
-            brokerPort = actualPort;  // Update the broker port
+            brokerPort = actualPort;
             break;
+        }
 
-        case 'newClient':
+        case 'newClient': {
             const clientId = parts[1];
             const clientHost = parts[2];
             const x = parseFloat(parts[4]);
@@ -324,37 +362,42 @@ async function processLine(line, lineNumber) {
                 throw err;
             }
             break;
+        }
 
-        case 'wait':
+        case 'wait': {
             const waitTime = parseInt(parts[1]);
             logBroker(`Waiting for ${waitTime} ms`);
             await new Promise(resolve => setTimeout(resolve, waitTime));
             break;
+        }
 
-        case 'subscribe':
+        case 'subscribe': {
             const subClientId = parts[1];
             const topic = parts.slice(5).join(' ');
             if (clients[subClientId]) {
-                // Generate sub-id for this client/topic
                 const subKey = subClientId + ':' + topic;
                 let subId = subIdMap.get(subKey);
                 if (!subId) {
                     subId = generateId('SUB');
                     subIdMap.set(subKey, subId);
                 }
-                clients[subClientId].subscribe(topic, (err) => {
+                clients[subClientId].subscribe(topic, (err, granted) => {
                     if (err) {
                         logClient(subClientId, `Failed to subscribe to ${topic}: ${err.message}`);
                     } else {
                         logClient(subClientId, `Subscribing to ${topic} [sub-id: ${subId}]`);
+                        if (granted && granted.length > 0) {
+                            logClient(subClientId, `Subscription to '${topic}' granted with QoS ${granted[0].qos}`);
+                        }
                     }
                 });
             } else {
                 logBroker(`Client ${subClientId} not found for subscribe`);
             }
             break;
+        }
 
-        case 'unsubscribe':
+        case 'unsubscribe': {
             const unsubClientId = parts[1];
             const unsubTopic = parts.slice(5).join(' ');
             if (clients[unsubClientId]) {
@@ -375,31 +418,59 @@ async function processLine(line, lineNumber) {
                 logBroker(`Client ${unsubClientId} not found for unsubscribe`);
             }
             break;
+        }
 
-        case 'publish':
+        case 'publish': {
             const pubClientId = parts[1];
+            const pubAoiX = parseFloat(parts[2]);
+            const pubAoiY = parseFloat(parts[3]);
+            const pubAoiR = parseFloat(parts[4]);
             const pubTopic = parts[5];
             const message = parts.slice(6).join(' ').replace(/^"|"$/g, '');
+            const pubAoi = { center: { x: pubAoiX, y: pubAoiY }, radius: pubAoiR };
+
             if (clients[pubClientId]) {
-                // Generate pub-id for this publish
+                // Generate a single pubID and always use it for PUB event and payload
                 const pubKey = pubClientId + ':' + pubTopic + ':' + message;
                 let pubId = pubIdMap.get(pubKey);
                 if (!pubId) {
                     pubId = generateId('PUB');
                     pubIdMap.set(pubKey, pubId);
                 }
+                // Store reverse mapping for receive log
+                pubInfoByPubId.set(pubId, {
+                    clientID: pubClientId,
+                    topic: pubTopic,
+                    message,
+                    aoi: pubAoi
+                });
                 const payloadWithId = `${message} [pub-id: ${pubId}]`;
                 clients[pubClientId].publish(pubTopic, payloadWithId, { qos: 0 }, (err) => {
                     if (err) {
                         logClient(pubClientId, `Failed to publish to ${pubTopic}: ${err.message}`);
                     } else {
-                        logClient(pubClientId, `Publishing to ${pubTopic}: ${message} [pub-id: ${pubId}]`);
+                        logClient(pubClientId, `Published to ${pubTopic}: ${message} [pub-id: ${pubId}]`);
+                        // PUB event (log here so it always matches pubID)
+                        logClientEvent({
+                            time: Date.now(),
+                            event: Client_Event.PUB,
+                            id: pubClientId,
+                            alias: "unnamed_client",
+                            matcher: 1,
+                            pub: {
+                                pubID: pubId,
+                                aoi: pubAoi, // Use the correct AOI
+                                channel: pubTopic,
+                                payload: message
+                            }
+                        });
                     }
                 });
             } else {
                 logBroker(`Client ${pubClientId} not found for publish`);
             }
             break;
+        }
 
         case 'end':
             logBroker("Simulation ended.");
@@ -413,8 +484,6 @@ async function processLine(line, lineNumber) {
 
 async function cleanup() {
     logBroker("Starting cleanup...");
-    
-    // Disconnect all clients
     for (const [clientId, client] of Object.entries(clients)) {
         try {
             await new Promise((resolve) => {
@@ -427,9 +496,11 @@ async function cleanup() {
             logBroker(`Error disconnecting client ${clientId}: ${err.message}`);
         }
     }
-    
     logBroker("Cleanup completed");
 }
 
-// Start processing the simulation script
+process.on('unhandledRejection', (reason, p) => {
+    console.error('Unhandled Rejection at:', p, 'reason:', reason);
+});
+
 processScript(SCRIPT_FILE);

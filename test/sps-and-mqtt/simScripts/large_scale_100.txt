@@ -1,0 +1,434 @@
+// Auto-generated simulation script
+// Generated at: 2025-07-10T22:39:02.214Z
+// World size: 1000x1000
+
+// Start the Gateway matcher
+newMatcher GW true localhost 8000 8001 20000 500 500 1500
+wait 100
+
+newClient C1 localhost 20000 330 142 100
+wait 100
+newClient C2 localhost 20000 791 609 100
+wait 100
+newClient C3 localhost 20000 476 61 100
+wait 100
+newClient C4 localhost 20000 917 177 100
+wait 100
+newClient C5 localhost 20000 224 77 100
+wait 100
+newClient C6 localhost 20000 883 523 100
+wait 100
+newClient C7 localhost 20000 401 851 100
+wait 100
+newClient C8 localhost 20000 704 167 100
+wait 100
+newClient C9 localhost 20000 396 119 100
+wait 100
+newClient C10 localhost 20000 767 582 100
+wait 100
+newClient C11 localhost 20000 835 114 100
+wait 100
+newClient C12 localhost 20000 610 190 100
+wait 100
+newClient C13 localhost 20000 888 209 100
+wait 100
+newClient C14 localhost 20000 736 621 100
+wait 100
+newClient C15 localhost 20000 221 253 100
+wait 100
+newClient C16 localhost 20000 643 124 100
+wait 100
+newClient C17 localhost 20000 82 163 100
+wait 100
+newClient C18 localhost 20000 417 498 100
+wait 100
+newClient C19 localhost 20000 307 292 100
+wait 100
+newClient C20 localhost 20000 114 697 100
+wait 100
+newClient C21 localhost 20000 340 131 100
+wait 100
+newClient C22 localhost 20000 341 767 100
+wait 100
+newClient C23 localhost 20000 612 126 100
+wait 100
+newClient C24 localhost 20000 278 659 100
+wait 100
+newClient C25 localhost 20000 915 641 100
+wait 100
+newClient C26 localhost 20000 430 138 100
+wait 100
+newClient C27 localhost 20000 211 166 100
+wait 100
+newClient C28 localhost 20000 280 338 100
+wait 100
+newClient C29 localhost 20000 51 266 100
+wait 100
+newClient C30 localhost 20000 129 668 100
+wait 100
+newClient C31 localhost 20000 835 876 100
+wait 100
+newClient C32 localhost 20000 657 265 100
+wait 100
+newClient C33 localhost 20000 450 719 100
+wait 100
+newClient C34 localhost 20000 624 706 100
+wait 100
+newClient C35 localhost 20000 72 440 100
+wait 100
+newClient C36 localhost 20000 431 707 100
+wait 100
+newClient C37 localhost 20000 669 755 100
+wait 100
+newClient C38 localhost 20000 60 640 100
+wait 100
+newClient C39 localhost 20000 942 459 100
+wait 100
+newClient C40 localhost 20000 573 843 100
+wait 100
+newClient C41 localhost 20000 759 497 100
+wait 100
+newClient C42 localhost 20000 95 579 100
+wait 100
+newClient C43 localhost 20000 441 634 100
+wait 100
+newClient C44 localhost 20000 377 297 100
+wait 100
+newClient C45 localhost 20000 174 522 100
+wait 100
+newClient C46 localhost 20000 146 357 100
+wait 100
+newClient C47 localhost 20000 273 432 100
+wait 100
+newClient C48 localhost 20000 197 502 100
+wait 100
+newClient C49 localhost 20000 705 50 100
+wait 100
+newClient C50 localhost 20000 349 766 100
+wait 100
+newClient C51 localhost 20000 498 436 100
+wait 100
+newClient C52 localhost 20000 944 831 100
+wait 100
+newClient C53 localhost 20000 512 177 100
+wait 100
+newClient C54 localhost 20000 320 710 100
+wait 100
+newClient C55 localhost 20000 83 117 100
+wait 100
+newClient C56 localhost 20000 194 925 100
+wait 100
+newClient C57 localhost 20000 815 897 100
+wait 100
+newClient C58 localhost 20000 81 241 100
+wait 100
+newClient C59 localhost 20000 510 329 100
+wait 100
+newClient C60 localhost 20000 387 235 100
+wait 100
+newClient C61 localhost 20000 649 691 100
+wait 100
+newClient C62 localhost 20000 886 872 100
+wait 100
+newClient C63 localhost 20000 836 285 100
+wait 100
+newClient C64 localhost 20000 373 649 100
+wait 100
+newClient C65 localhost 20000 523 870 100
+wait 100
+newClient C66 localhost 20000 224 704 100
+wait 100
+newClient C67 localhost 20000 371 180 100
+wait 100
+newClient C68 localhost 20000 327 673 100
+wait 100
+newClient C69 localhost 20000 295 546 100
+wait 100
+newClient C70 localhost 20000 202 832 100
+wait 100
+newClient C71 localhost 20000 72 444 100
+wait 100
+newClient C72 localhost 20000 463 591 100
+wait 100
+newClient C73 localhost 20000 114 589 100
+wait 100
+newClient C74 localhost 20000 658 332 100
+wait 100
+newClient C75 localhost 20000 914 585 100
+wait 100
+newClient C76 localhost 20000 734 677 100
+wait 100
+newClient C77 localhost 20000 387 572 100
+wait 100
+newClient C78 localhost 20000 249 583 100
+wait 100
+newClient C79 localhost 20000 148 191 100
+wait 100
+newClient C80 localhost 20000 578 514 100
+wait 100
+newClient C81 localhost 20000 645 570 100
+wait 100
+newClient C82 localhost 20000 236 617 100
+wait 100
+newClient C83 localhost 20000 245 449 100
+wait 100
+newClient C84 localhost 20000 313 594 100
+wait 100
+newClient C85 localhost 20000 893 109 100
+wait 100
+newClient C86 localhost 20000 196 841 100
+wait 100
+newClient C87 localhost 20000 878 698 100
+wait 100
+newClient C88 localhost 20000 425 632 100
+wait 100
+newClient C89 localhost 20000 202 103 100
+wait 100
+newClient C90 localhost 20000 858 311 100
+wait 100
+newClient C91 localhost 20000 450 330 100
+wait 100
+newClient C92 localhost 20000 353 388 100
+wait 100
+newClient C93 localhost 20000 483 166 100
+wait 100
+newClient C94 localhost 20000 907 378 100
+wait 100
+newClient C95 localhost 20000 516 126 100
+wait 100
+newClient C96 localhost 20000 396 283 100
+wait 100
+newClient C97 localhost 20000 644 604 100
+wait 100
+newClient C98 localhost 20000 703 636 100
+wait 100
+newClient C99 localhost 20000 429 362 100
+wait 100
+newClient C100 localhost 20000 856 232 100
+
+// Subscriptions
+subscribe C1 432 775 172 channel1
+wait 200
+subscribe C2 895 592 236 channel1
+wait 200
+subscribe C3 439 230 180 channel1
+wait 200
+subscribe C4 867 441 104 channel1
+wait 200
+subscribe C5 907 281 263 channel1
+wait 200
+subscribe C6 658 59 315 channel1
+wait 200
+subscribe C7 835 759 135 channel1
+wait 200
+subscribe C8 637 57 140 channel1
+wait 200
+subscribe C9 414 54 264 channel1
+wait 200
+subscribe C10 112 750 323 channel1
+wait 200
+subscribe C11 704 767 232 channel1
+wait 200
+subscribe C12 258 795 203 channel1
+wait 200
+subscribe C13 630 678 139 channel1
+wait 200
+subscribe C14 476 662 173 channel1
+wait 200
+subscribe C15 795 342 193 channel1
+wait 200
+subscribe C16 223 134 346 channel1
+wait 200
+subscribe C17 52 82 345 channel1
+wait 200
+subscribe C18 666 475 233 channel1
+wait 200
+subscribe C19 293 773 260 channel1
+wait 200
+subscribe C20 147 543 115 channel1
+wait 200
+subscribe C21 880 625 217 channel1
+wait 200
+subscribe C22 588 449 284 channel1
+wait 200
+subscribe C23 415 357 335 channel1
+wait 200
+subscribe C24 134 756 178 channel1
+wait 200
+subscribe C25 414 600 236 channel1
+wait 200
+subscribe C26 803 526 251 channel1
+wait 200
+subscribe C27 607 580 223 channel1
+wait 200
+subscribe C28 309 373 258 channel1
+wait 200
+subscribe C29 844 687 356 channel1
+wait 200
+subscribe C30 324 575 278 channel1
+wait 200
+subscribe C31 706 398 105 channel1
+wait 200
+subscribe C32 281 728 383 channel1
+wait 200
+subscribe C33 606 173 352 channel1
+wait 200
+subscribe C34 493 909 121 channel1
+wait 200
+subscribe C35 224 422 248 channel1
+wait 200
+subscribe C36 75 106 378 channel1
+wait 200
+subscribe C37 51 334 103 channel1
+wait 200
+subscribe C38 936 847 182 channel1
+wait 200
+subscribe C39 671 467 316 channel1
+wait 200
+subscribe C40 815 914 147 channel1
+wait 200
+subscribe C41 745 483 279 channel1
+wait 200
+subscribe C42 824 765 266 channel1
+wait 200
+subscribe C43 791 467 249 channel1
+wait 200
+subscribe C44 908 501 241 channel1
+wait 200
+subscribe C45 358 844 176 channel1
+wait 200
+subscribe C46 379 111 173 channel1
+wait 200
+subscribe C47 777 765 189 channel1
+wait 200
+subscribe C48 739 843 102 channel1
+wait 200
+subscribe C49 457 910 368 channel1
+wait 200
+subscribe C50 406 408 213 channel1
+wait 200
+subscribe C51 329 607 135 channel1
+wait 200
+subscribe C52 735 242 123 channel1
+wait 200
+subscribe C53 444 677 392 channel1
+wait 200
+subscribe C54 141 93 136 channel1
+wait 200
+subscribe C55 101 837 279 channel1
+wait 200
+subscribe C56 339 877 251 channel1
+wait 200
+subscribe C57 771 306 233 channel1
+wait 200
+subscribe C58 855 343 373 channel1
+wait 200
+subscribe C59 852 648 210 channel1
+wait 200
+subscribe C60 70 78 213 channel1
+wait 200
+subscribe C61 769 676 130 channel1
+wait 200
+subscribe C62 631 562 141 channel1
+wait 200
+subscribe C63 557 605 327 channel1
+wait 200
+subscribe C64 487 832 279 channel1
+wait 200
+subscribe C65 51 452 189 channel1
+wait 200
+subscribe C66 790 848 336 channel1
+wait 200
+subscribe C67 695 335 184 channel1
+wait 200
+subscribe C68 127 563 267 channel1
+wait 200
+subscribe C69 730 365 270 channel1
+wait 200
+subscribe C70 314 905 388 channel1
+wait 200
+subscribe C71 676 708 358 channel1
+wait 200
+subscribe C72 727 880 350 channel1
+wait 200
+subscribe C73 232 760 135 channel1
+wait 200
+subscribe C74 217 854 300 channel1
+wait 200
+subscribe C75 612 568 187 channel1
+wait 200
+subscribe C76 822 141 171 channel1
+wait 200
+subscribe C77 113 656 320 channel1
+wait 200
+subscribe C78 516 862 368 channel1
+wait 200
+subscribe C79 629 861 356 channel1
+wait 200
+subscribe C80 472 768 107 channel1
+wait 200
+subscribe C81 358 128 252 channel1
+wait 200
+subscribe C82 886 357 207 channel1
+wait 200
+subscribe C83 68 311 127 channel1
+wait 200
+subscribe C84 532 576 382 channel1
+wait 200
+subscribe C85 678 878 267 channel1
+wait 200
+subscribe C86 308 313 331 channel1
+wait 200
+subscribe C87 470 709 256 channel1
+wait 200
+subscribe C88 472 415 368 channel1
+wait 200
+subscribe C89 737 535 368 channel1
+wait 200
+subscribe C90 320 575 258 channel1
+wait 200
+subscribe C91 434 440 241 channel1
+wait 200
+subscribe C92 409 607 189 channel1
+wait 200
+subscribe C93 275 150 178 channel1
+wait 200
+subscribe C94 108 526 288 channel1
+wait 200
+subscribe C95 139 899 101 channel1
+wait 200
+subscribe C96 451 509 244 channel1
+wait 200
+subscribe C97 521 740 255 channel1
+wait 200
+subscribe C98 762 107 231 channel1
+wait 200
+subscribe C99 338 411 344 channel1
+wait 200
+subscribe C100 203 434 316 channel1
+wait 200
+
+// Publications
+publish C1 216 55 100 channel1 "Message from C1"
+wait 500
+publish C2 725 89 196 channel1 "Message from C2"
+wait 500
+publish C3 612 287 299 channel1 "Message from C3"
+wait 500
+publish C4 227 907 212 channel1 "Message from C4"
+wait 500
+publish C5 264 564 170 channel1 "Message from C5"
+wait 500
+publish C6 329 825 232 channel1 "Message from C6"
+wait 500
+publish C7 508 710 139 channel1 "Message from C7"
+wait 500
+publish C8 76 180 195 channel1 "Message from C8"
+wait 500
+publish C9 783 584 271 channel1 "Message from C9"
+wait 500
+publish C10 770 251 212 channel1 "Message from C10"
+
+// End of simulation; wait for pending operations
+wait 10000
+end

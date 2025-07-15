@@ -21,7 +21,13 @@ var clientIDs2alias = {};
 var instructions = [];
 
 // Dynamic script file path
-const SCRIPT_FILE = path.join(__dirname, '..', 'simulationScript.txt');
+const SCRIPT_FILE = path.join(__dirname, '..', './simScripts/simulationScript.txt');
+
+// Add timestamp to log messages
+function logWithTimestamp(message) {
+    const timestamp = new Date().getTime();
+    return `[${timestamp}] ${message}`;
+}
 
 // Interpret and execute instruction
 async function executeInstruction(instruction, step, success, fail) {   
