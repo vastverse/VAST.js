@@ -57,7 +57,7 @@ end
 
 // Start the Gateway matcher
 newMatcher GW true localhost 8000 8001 20000 500 500 1500
-wait 100
+wait 10000
 
 // Start a few clients with localised subscriptions
 newClient C1 localhost 20000 300 100 100

@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Spatial Pub/Sub Visualization</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f0f0f0;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        canvas {
+            border: 1px solid #ccc;
+            margin-top: 20px;
+            background-color: white;
+            box-shadow: 0 0 5px rgba(0,0,0,0.1);
+        }
+        .legend {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: white;
+            border-radius: 5px;
+            box-shadow: 0 0 5px rgba(0,0,0,0.1);
+        }
+        .legend-item {
+            display: inline-block;
+            margin-right: 20px;
+            margin-bottom: 10px;
+        }
+        .color-box {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            margin-right: 5px;
+            vertical-align: middle;
+            border: 1px solid #000;
+        }
+        .file-input {
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: #f8f8f8;
+            border-radius: 5px;
+        }
+        .controls {
+            margin: 10px 0;
+            padding: 15px;
+            background-color: #f8f8f8;
+            border-radius: 5px;
+        }
+        .error {
+            color: #d32f2f;
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #ffebee;
+            border-radius: 4px;
+        }
+        .success {
+            color: #388e3c;
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #e8f5e9;
+            border-radius: 4px;
+        }
+        label.toggle {
+            margin-left: 20px;
+            cursor: pointer;
+        }
+        .filters {
+            margin: 10px 0;
+            padding: 15px;
+            background-color: #f8f8f8;
+            border-radius: 5px;
+        }
+        .filter-section {
+            margin-bottom: 10px;
+        }
+        .filter-group {
+            display: inline-block;
+            margin-right: 20px;
+            padding: 5px 10px;
+            background-color: white;
+            border-radius: 4px;
+            box-shadow: 0 0 3px rgba(0,0,0,0.1);
+        }
+        .client-type {
+            margin-right: 15px;
+        }
+        .zone-filter {
+            margin-right: 15px;
+        }
+        button {
+            padding: 8px 15px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        input[type="file"] {
+            padding: 5px;
+            margin-right: 10px;
+        }
+        input[type="checkbox"] {
+            margin-right: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Spatial Publish/Subscribe System Visualization</h2>
+        
+        <div class="file-input">
+            <label for="fileInput">Load simulation script: </label>
+            <input type="file" id="fileInput" accept=".txt">
+            <button onclick="loadDefaultFile()">Load Default Script</button>
+        </div>
+        
+        <div class="filters">
+            <h4>Filters:</h4>
+            <div class="filter-section">
+                <div class="filter-group">
+                    <strong>Client Types:</strong>
+                    <span class="client-type">
+                        <input type="checkbox" id="showWH" checked onchange="redraw()">
+                        <label for="showWH">Warehouses</label>
+                    </span>
+                    <span class="client-type">
+                        <input type="checkbox" id="showTR" checked onchange="redraw()">
+                        <label for="showTR">Trucks</label>
+                    </span>
+                    <span class="client-type">
+                        <input type="checkbox" id="showCS" checked onchange="redraw()">
+                        <label for="showCS">Customers</label>
+                    </span>
+                </div>
+            </div>
+            
+            <div class="filter-section">
+                <div class="filter-group">
+                    <strong>Zones:</strong>
+                    <span class="zone-filter">
+                        <input type="checkbox" id="showNW" checked onchange="redraw()">
+                        <label for="showNW">NW Zone</label>
+                    </span>
+                    <span class="zone-filter">
+                        <input type="checkbox" id="showNE" checked onchange="redraw()">
+                        <label for="showNE">NE Zone</label>
+                    </span>
+                    <span class="zone-filter">
+                        <input type="checkbox" id="showSW" checked onchange="redraw()">
+                        <label for="showSW">SW Zone</label>
+                    </span>
+                    <span class="zone-filter">
+                        <input type="checkbox" id="showSE" checked onchange="redraw()">
+                        <label for="showSE">SE Zone</label>
+                    </span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="controls">
+            <div class="filter-group">
+                <strong>Display Options:</strong>
+                <label class="toggle">
+                    <input type="checkbox" id="showClients" checked onchange="redraw()"> Show client positions
+                </label>
+                <label class="toggle">
+                    <input type="checkbox" id="showGateway" checked onchange="redraw()"> Show gateway
+                </label>
+                <label class="toggle">
+                    <input type="checkbox" id="showZones" checked onchange="redraw()"> Show zones
+                </label>
+            </div>
+        </div>
+        
+        <div id="status"></div>
+        
+        <canvas id="canvas" width="1200" height="1200" style="display:none;"></canvas>
+        <div class="legend" id="legend"></div>
+    </div>
+
+    <script>
+        // Data structures
+        let matcher = {};
+        let clients = {};
+        let subscriptions = [];
+        let publications = [];
+        let scriptData = '';
+    
+        // Client type colors
+        const clientTypeColors = {
+            'WH': {
+                main: 'rgba(255, 0, 0, 0.8)',    // Red for Warehouses
+                area: 'rgba(255, 0, 0, 0.2)'
+            },
+            'TR': {
+                main: 'rgba(0, 155, 0, 0.8)',    // Green for Trucks
+                area: 'rgba(0, 155, 0, 0.2)'
+            },
+            'CS': {
+                main: 'rgba(0, 0, 255, 0.8)',    // Blue for Customers
+                area: 'rgba(0, 0, 255, 0.2)'
+            }
+        };
+    
+        // Zone definitions
+        const zones = {
+            'NW': { x: [0, 600], y: [0, 600] },
+            'NE': { x: [600, 1200], y: [0, 600] },
+            'SW': { x: [0, 600], y: [600, 1200] },
+            'SE': { x: [600, 1200], y: [600, 1200] }
+        };
+    
+        // Helper functions
+        function getClientType(clientName) {
+            return clientName.split('_')[0];
+        }
+    
+        function getClientZone(clientName) {
+            return clientName.split('_')[1];
+        }
+    
+        function shouldShowClient(clientName) {
+            const type = getClientType(clientName);
+            const zone = getClientZone(clientName);
+            
+            const typeEnabled = {
+                'WH': document.getElementById('showWH').checked,
+                'TR': document.getElementById('showTR').checked,
+                'CS': document.getElementById('showCS').checked
+            }[type];
+    
+            const zoneEnabled = {
+                'NW': document.getElementById('showNW').checked,
+                'NE': document.getElementById('showNE').checked,
+                'SW': document.getElementById('showSW').checked,
+                'SE': document.getElementById('showSE').checked
+            }[zone];
+    
+            return typeEnabled && zoneEnabled;
+        }
+    
+        // Parse script
+        function parseScript(data) {
+            scriptData = data;
+            
+            // Reset data structures
+            matcher = {};
+            clients = {};
+            subscriptions = [];
+            publications = [];
+    
+            const lines = data.trim().split('\n');
+    
+            lines.forEach(line => {
+                line = line.trim();
+                if (line.startsWith('//') || line === '') return;
+    
+                const parts = line.split(/\s+/);
+                const command = parts[0];
+    
+                switch(command) {
+                    case 'newMatcher':
+                        matcher = {
+                            name: parts[1],
+                            x: parseInt(parts[7]),
+                            y: parseInt(parts[8])
+                        };
+                        break;
+    
+                    case 'newClient':
+                        clients[parts[1]] = {
+                            name: parts[1],
+                            x: parseInt(parts[4]),
+                            y: parseInt(parts[5])
+                        };
+                        break;
+    
+                    case 'subscribe':
+                        subscriptions.push({
+                            client: parts[1],
+                            x: parseInt(parts[2]),
+                            y: parseInt(parts[3]),
+                            radius: parseInt(parts[4]),
+                            channel: parts[5]
+                        });
+                        break;
+    
+                    case 'publish':
+                        publications.push({
+                            client: parts[1],
+                            x: parseInt(parts[2]),
+                            y: parseInt(parts[3]),
+                            radius: parseInt(parts[4]),
+                            channel: parts[5],
+                            message: parts.slice(6).join(' ')
+                        });
+                        break;
+                }
+            });
+        }
+    
+        // Drawing functions
+        function drawGrid(ctx) {
+            ctx.strokeStyle = '#f0f0f0';
+            ctx.lineWidth = 1;
+            
+            for (let i = 0; i <= 1200; i += 100) {
+                ctx.beginPath();
+                ctx.moveTo(i, 0);
+                ctx.lineTo(i, 1200);
+                ctx.stroke();
+                
+                ctx.beginPath();
+                ctx.moveTo(0, i);
+                ctx.lineTo(1200, i);
+                ctx.stroke();
+    
+                // Add grid coordinates
+                if (i > 0) {
+                    ctx.fillStyle = '#999';
+                    ctx.font = '10px Arial';
+                    ctx.fillText(i.toString(), i + 5, 10);
+                    ctx.fillText(i.toString(), 5, i + 10);
+                }
+            }
+        }
+    
+        function drawZones(ctx) {
+            if (!document.getElementById('showZones').checked) return;
+    
+            Object.entries(zones).forEach(([zoneName, zone]) => {
+                if (!document.getElementById(`show${zoneName}`).checked) return;
+    
+                const width = zone.x[1] - zone.x[0];
+                const height = zone.y[1] - zone.y[0];
+    
+                // Draw zone rectangle
+                ctx.strokeStyle = '#666';
+                ctx.setLineDash([5, 5]);
+                ctx.strokeRect(zone.x[0], zone.y[0], width, height);
+                ctx.setLineDash([]);
+    
+                // Zone label
+                ctx.fillStyle = '#666';
+                ctx.font = 'bold 20px Arial';
+                ctx.fillText(zoneName, zone.x[0] + 10, zone.y[0] + 30);
+            });
+        }
+    
+        function drawClientMarker(ctx, client, type) {
+            const color = clientTypeColors[type];
+            
+            // Draw client point
+            ctx.beginPath();
+            ctx.arc(client.x, client.y, 4, 0, 2 * Math.PI);
+            ctx.fillStyle = color.main;
+            ctx.fill();
+            
+            // Draw label
+            ctx.fillStyle = 'black';
+            ctx.font = 'bold 12px Arial';
+            ctx.fillText(client.client, client.x + 10, client.y - 5);
+            ctx.font = '10px Arial';
+            ctx.fillText(`(${client.x}, ${client.y})`, client.x + 10, client.y + 10);
+        }
+    
+        function draw() {
+            const canvas = document.getElementById('canvas');
+            const ctx = canvas.getContext('2d');
+            
+            // Clear canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            canvas.style.display = 'block';
+    
+            // Draw base elements
+            drawGrid(ctx);
+            drawZones(ctx);
+    
+            // Draw gateway if enabled
+            if (document.getElementById('showGateway').checked && matcher.x && matcher.y) {
+                ctx.fillStyle = 'purple';
+                ctx.fillRect(matcher.x - 8, matcher.y - 8, 16, 16);
+                ctx.font = 'bold 14px Arial';
+                ctx.fillText('Gateway', matcher.x + 12, matcher.y + 5);
+            }
+    
+            // Draw subscriptions
+            subscriptions.forEach(sub => {
+                if (!shouldShowClient(sub.client)) return;
+                
+                const clientType = getClientType(sub.client);
+                const color = clientTypeColors[clientType];
+    
+                // Draw subscription area
+                ctx.beginPath();
+                ctx.arc(sub.x, sub.y, sub.radius, 0, 2 * Math.PI);
+                ctx.fillStyle = color.area;
+                ctx.fill();
+                ctx.strokeStyle = color.main;
+                ctx.lineWidth = 1;
+                ctx.stroke();
+    
+                // Draw client marker if enabled
+                if (document.getElementById('showClients').checked) {
+                    drawClientMarker(ctx, sub, clientType);
+                }
+            });
+    
+            // Draw publications
+            publications.forEach(pub => {
+                if (!shouldShowClient(pub.client)) return;
+                
+                const clientType = getClientType(pub.client);
+                
+                // Draw publication area
+                ctx.beginPath();
+                ctx.arc(pub.x, pub.y, pub.radius, 0, 2 * Math.PI);
+                ctx.strokeStyle = clientTypeColors[clientType].main;
+                ctx.lineWidth = 2;
+                ctx.setLineDash([5, 5]);
+                ctx.stroke();
+                ctx.setLineDash([]);
+    
+                // Draw client marker if enabled
+                if (document.getElementById('showClients').checked) {
+                    drawClientMarker(ctx, pub, clientType);
+                }
+            });
+    
+            updateLegend();
+        }
+    
+        function updateLegend() {
+            const legendDiv = document.getElementById('legend');
+            let legendHTML = '<h3>Legend:</h3>';
+            
+            // Client types
+            Object.entries(clientTypeColors).forEach(([type, color]) => {
+                if (document.getElementById(`show${type}`).checked) {
+                    legendHTML += `
+                        <div class="legend-item">
+                            <span class="color-box" style="background-color: ${color.main}"></span>
+                            ${type === 'WH' ? 'Warehouse' : type === 'TR' ? 'Truck' : 'Customer'}
+                        </div>`;
+                }
+            });
+    
+            // Other elements
+            if (document.getElementById('showGateway').checked) {
+                legendHTML += `
+                    <div class="legend-item">
+                        <span class="color-box" style="background-color: purple"></span>
+                        Gateway
+                    </div>`;
+            }
+    
+            legendDiv.innerHTML = legendHTML;
+        }
+    
+        function redraw() {
+            if (scriptData) {
+                draw();
+            }
+        }
+    
+        // File handling functions
+        function parseAndVisualize(data) {
+            try {
+                parseScript(data);
+                draw();
+                document.getElementById('status').innerHTML = 
+                    '<div class="success">Script loaded and visualized successfully!</div>';
+            } catch (error) {
+                document.getElementById('status').innerHTML = 
+                    `<div class="error">Error parsing file: ${error.message}</div>`;
+            }
+        }
+    
+        // Event listeners
+        document.getElementById('fileInput').addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    parseAndVisualize(e.target.result);
+                };
+                reader.onerror = function() {
+                    document.getElementById('status').innerHTML = 
+                        '<div class="error">Error reading file!</div>';
+                };
+                reader.readAsText(file);
+            }
+        });
+    
+        function loadDefaultFile() {
+            fetch('simulationScript.txt')
+                .then(response => {
+                    if (!response.ok) throw new Error('File not found');
+                    return response.text();
+                })
+                .then(data => parseAndVisualize(data))
+                .catch(error => {
+                    document.getElementById('status').innerHTML = 
+                        `<div class="error">Error loading default script: ${error.message}</div>`;
+                });
+        }
+    </script>
+    </body>
+    </html>

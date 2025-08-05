@@ -88,5 +88,5 @@ publish R1 607 186 150 channel1 "Message from R1"
 wait 500
 
 // End of simulation
-wait 10000
+wait 1000
 end

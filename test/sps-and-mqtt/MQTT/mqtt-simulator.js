@@ -20,7 +20,12 @@ fs.mkdirSync(LOGS_DIR, { recursive: true });
 fs.mkdirSync(MQTT_LOGS_DIR, { recursive: true });
 fs.mkdirSync(CLIENT_LOGS_DIR, { recursive: true });
 
-const SCRIPT_FILE = path.join(__dirname, '..', './simScripts/simulationScript.txt');
+// const SCRIPT_FILE = path.join(__dirname, '..', 'test/sps-and-mqtt/example_simulationScript.txt');
+// const SCRIPT_FILE = path.join(__dirname, '..', 'example_simulationScript.txt');
+// const SCRIPT_FILE = path.join(__dirname, '..', 'simScripts', '01_Generate_Node', 'Scripts_2025-08-03_09-57-57', 'mqtt_simulation_test_uniform.txt');
+
+const SCRIPT_FILE = '/Users/vo/Documents/vast_dev/vast_js_experiments/VAST.js/test/sps-and-mqtt/simScripts/01_Generate_Node/Scripts_2025-08-03_10-08-48/mqtt_simulation_test_uniform.txt';
+// /Users/vo/Documents/vast_dev/vast_js_experiments/VAST.js/test/sps-and-mqtt/simScripts/01_Generate_Node/Scripts_2025-08-03_10-08-48/mqtt_simulation_test_uniform.txt
 
 const clients = {};
 let brokerPort = 1883;
@@ -33,6 +38,8 @@ function generateId(prefix) {
 const pubIdMap = new Map();
 const pubInfoByPubId = new Map(); // NEW: pubId -> { clientID, topic, message, aoi }
 const subIdMap = new Map();
+// Store ping timestamps for RTT calculation
+const pingTimestamps = new Map(); // pubId -> timestamp
 
 function logVastEvent(eventObj) {
     const line = JSON.stringify(eventObj) + '\n';
@@ -130,29 +137,50 @@ function startBroker(port = 1883) {
     });
 
     // PUB event on broker: only log if pubID is in payload (matches publishing client)
-    broker.on('publish', (packet, client) => {
-        if (!packet.topic.startsWith('$SYS') && client) {
-            let payloadStr = packet.payload.toString();
-            let pubIdMatch = payloadStr.match(/$$pub-id:\s*([^$$]+)\]$/);
-            let pubId = pubIdMatch ? pubIdMatch[1].trim() : null;
-            if (pubId) {
-                let cleanMsg = payloadStr.replace(/\s*$$pub-id:\s*[^$$]+\]$/, '');
-                logClientEvent({
-                    time: Date.now(),
-                    event: Client_Event.PUB,
-                    id: client.id,
-                    alias: "unnamed_client",
-                    matcher: 1,
-                    pub: {
-                        pubID: pubId,
-                        aoi: { center: BROKER_POS, radius: 10 }, // Substitute real AOI if available
-                        channel: packet.topic,
-                        payload: cleanMsg
-                    }
-                });
-            }
-        }
-    });
+    // broker.on('publish', (packet, client) => {
+    //     if (!packet.topic.startsWith('$SYS') && client) {
+    //         try {
+    //             // Try JSON parsing first
+    //             const obj = JSON.parse(packet.payload.toString());
+    //             if (obj.pubId && obj.message) {
+    //                 logClientEvent({
+    //                     time: Date.now(),
+    //                     event: Client_Event.PUB,
+    //                     id: client.id,
+    //                     alias: "unnamed_client",
+    //                     matcher: 1,
+    //                     pub: {
+    //                         pubID: obj.pubId,
+    //                         aoi: { center: BROKER_POS, radius: 10 }, // Substitute real AOI if available
+    //                         channel: packet.topic,
+    //                         payload: obj.message
+    //                     }
+    //                 });
+    //             }
+    //         } catch (parseError) {
+    //             // Fallback to regex for backwards compatibility
+    //             let payloadStr = packet.payload.toString();
+    //             let pubIdMatch = payloadStr.match(/$$pub-id:\s*([^$$]+)\]$/);
+    //             let pubId = pubIdMatch ? pubIdMatch[1].trim() : null;
+    //             if (pubId) {
+    //                 let cleanMsg = payloadStr.replace(/\s*$$pub-id:\s*[^$$]+\]$/, '');
+    //                 logClientEvent({
+    //                     time: Date.now(),
+    //                     event: Client_Event.PUB,
+    //                     id: client.id,
+    //                     alias: "unnamed_client",
+    //                     matcher: 1,
+    //                     pub: {
+    //                         pubID: pubId,
+    //                         aoi: { center: BROKER_POS, radius: 10 },
+    //                         channel: packet.topic,
+    //                         payload: cleanMsg
+    //                     }
+    //                 });
+    //             }
+    //         }
+    //     }
+    // });
 
     const server = net.createServer(broker.handle);
 
@@ -214,8 +242,6 @@ function createClient(clientId, host, port, x, y, r) {
             });
             clients[clientId] = client;
             resolve(client);
-
-            // Optional: subscribe client to their topics after connect here, if needed
         });
 
         client.on('error', (err) => {
@@ -242,54 +268,40 @@ function createClient(clientId, host, port, x, y, r) {
             });
         });
 
-        // On receiving a message, extract pubID from payload, log correct RECEIVE_PUB
-        // client.on('message', (topic, message) => {
-        //     let msgStr = message.toString();
-        //     // let pubIdMatch = msgStr.match(/$$pub-id:\s*([^$$]+)\]$/);
-        //     let pubIdMatch = msgStr.match(/$$pub-id:\s*([^$$]+)\]$/);
-        //     let pubId = pubIdMatch ? pubIdMatch[1].trim() : null;
-        //     let cleanMsg = msgStr.replace(/\s*$$pub-id:\s*[^$$]+\]$/, '');
-
-        //     if (!pubId) return; // do not log if pubId not found
-
-        //     logClient(clientId, `Received message on topic ${topic}: ${cleanMsg}`);
-
-        //     logClientEvent({
-        //         time: Date.now(),
-        //         event: Client_Event.RECEIVE_PUB,
-        //         id: clientId,
-        //         alias: "unnamed_client",
-        //         matcher: 1,
-        //         pub: {
-        //             matcherID: 1,
-        //             clientID: clientId,
-        //             pubID: pubId,
-        //             aoi: { center: clientPos, radius: r },
-        //             payload: cleanMsg,
-        //             channel: topic,
-        //             recipients: [1],
-        //             chain: [1]
-        //         }
-        //     });
-        // });
+        // Updated message handler with JSON parsing and ping-pong functionality
         client.on('message', (topic, message) => {
-            let msgStr = message.toString();
-            // Remove pub-id matching logic
-            // let pubIdMatch = msgStr.match(/$$pub-id:\s*([^$$]+)\]$/);
-            // let pubId = pubIdMatch ? pubIdMatch[1].trim() : null;
-            // Instead, extract pubId from the end of the message (if present)
             let pubId = null;
-            let cleanMsg = msgStr;
-            const pubIdPattern = / \[pub-id: ([^\]]+)\]$/;
-            const match = msgStr.match(pubIdPattern);
-            if (match) {
-                pubId = match[1];
-                cleanMsg = msgStr.replace(pubIdPattern, '');
+            let cleanMsg = '';
+            
+            try {
+                // Try JSON parsing first
+                const obj = JSON.parse(message.toString());
+                pubId = obj.pubId;
+                cleanMsg = obj.message;
+                
+            } catch (parseError) {
+                // Fallback to regex for backwards compatibility
+                let msgStr = message.toString();
+                const pubIdPattern = / $$pub-id: ([^$$]+)\]$/;
+                const match = msgStr.match(pubIdPattern);
+                if (match) {
+                    pubId = match[1];
+                    cleanMsg = msgStr.replace(pubIdPattern, '');
+                } else {
+                    // If no pubId found, use the raw message
+                    cleanMsg = msgStr;
+                }
             }
+            
+            // Calculate RTT
+            const pongTimestamp = Date.now();
+            const pingTimestamp = pingTimestamps.get(pubId);
+            const rtt = pingTimestamp ? pongTimestamp - pingTimestamp : null;
+            
             // Look up publisher info
             let pubInfo = pubId ? pubInfoByPubId.get(pubId) : null;
             if (!pubInfo) {
-                // If not found, fallback to old behavior (receiver's info)
+                // If not found, fallback to receiver's info
                 pubInfo = {
                     clientID: clientId,
                     pubID: pubId,
@@ -298,8 +310,9 @@ function createClient(clientId, host, port, x, y, r) {
                     topic: topic
                 };
             }
+            
             logClientEvent({
-                time: Date.now(),
+                time: pongTimestamp,
                 event: Client_Event.RECEIVE_PUB, // always 10 for receive events
                 id: clientId,
                 alias: "unnamed_client",
@@ -313,8 +326,26 @@ function createClient(clientId, host, port, x, y, r) {
                     channel: pubInfo.topic, // publisher's topic
                     recipients: [1],
                     chain: [1]
+                },
+                pingpong: {
+                    ping: {
+                        timestamp: pingTimestamp,
+                        pubid: pubId
+                    },
+                    pong: {
+                        timestamp: pongTimestamp,
+                        pubid: pubId,
+                        rtt: rtt
+                    }
                 }
             });
+            
+            // Clean up ping timestamp after calculating RTT
+            if (pubId && pingTimestamps.has(pubId)) {
+                setTimeout(() => {
+                    pingTimestamps.delete(pubId);
+                }, 100); // Small delay to allow all subscribers
+            }
         });
     });
 }
@@ -437,6 +468,11 @@ async function processLine(line, lineNumber) {
                     pubId = generateId('PUB');
                     pubIdMap.set(pubKey, pubId);
                 }
+                
+                // Store ping timestamp for RTT calculation
+                const pingTimestamp = Date.now();
+                pingTimestamps.set(pubId, pingTimestamp);
+                
                 // Store reverse mapping for receive log
                 pubInfoByPubId.set(pubId, {
                     clientID: pubClientId,
@@ -444,13 +480,20 @@ async function processLine(line, lineNumber) {
                     message,
                     aoi: pubAoi
                 });
-                const payloadWithId = `${message} [pub-id: ${pubId}]`;
+                
+                // Create JSON payload instead of string concatenation
+                const payloadObj = {
+                    message: message,
+                    pubId: pubId
+                };
+                const payloadWithId = JSON.stringify(payloadObj);
+                
                 clients[pubClientId].publish(pubTopic, payloadWithId, { qos: 0 }, (err) => {
                     if (err) {
                         logClient(pubClientId, `Failed to publish to ${pubTopic}: ${err.message}`);
                     } else {
                         logClient(pubClientId, `Published to ${pubTopic}: ${message} [pub-id: ${pubId}]`);
-                        // PUB event (log here so it always matches pubID)
+                        // PUB event with PING (log here so it always matches pubID)
                         logClientEvent({
                             time: Date.now(),
                             event: Client_Event.PUB,
@@ -459,9 +502,15 @@ async function processLine(line, lineNumber) {
                             matcher: 1,
                             pub: {
                                 pubID: pubId,
-                                aoi: pubAoi, // Use the correct AOI
+                                aoi: pubAoi,
                                 channel: pubTopic,
                                 payload: message
+                            },
+                            pingpong: {
+                                ping: {
+                                    timestamp: pingTimestamp,
+                                    pubid: pubId
+                                }
                             }
                         });
                     }

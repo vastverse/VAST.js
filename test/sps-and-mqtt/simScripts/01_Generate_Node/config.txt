@@ -1,0 +1,14 @@
+mode=centralized
+
+# Scales to generate (comma-separated)
+# Options: TEST, SMALL, MEDIUM, LARGE, XLARGE
+scales=TEST
+
+# Zone patterns to generate (comma-separated)
+# Options: UNIFORM, SINGLE_HOT_ZONE, DUAL_HOT_ZONES, TRIPLE_HOT_ZONES
+patterns=UNIFORM
+
+# Client type distribution (must sum to 100)
+clients.customers=50
+clients.trucks=30
+clients.warehouses=20

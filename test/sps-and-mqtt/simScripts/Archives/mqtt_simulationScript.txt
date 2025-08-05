@@ -1,0 +1,133 @@
+// MQTT Simulation Script (auto-generated)
+// Each channel matches the number of expected deliveries from the SPS scenario
+
+newClient C1 localhost 20000 546 430 250
+wait 100
+newClient C2 localhost 20000 365 716 250
+wait 100
+newClient C3 localhost 20000 524 671 250
+wait 100
+newClient C4 localhost 20000 221 254 258
+wait 100
+newClient C5 localhost 20000 586 562 148
+wait 100
+newClient C6 localhost 20000 274 942 212
+wait 100
+newClient C7 localhost 20000 441 320 114
+wait 100
+newClient C8 localhost 20000 501 762 218
+wait 100
+newClient C9 localhost 20000 795 260 158
+wait 100
+newClient C10 localhost 20000 346 438 108
+wait 100
+newClient C11 localhost 20000 420 682 101
+wait 100
+newClient C12 localhost 20000 366 716 160
+wait 100
+newClient C13 localhost 20000 215 218 137
+wait 100
+newClient C14 localhost 20000 343 377 238
+wait 100
+newClient C15 localhost 20000 423 576 115
+wait 100
+newClient C16 localhost 20000 146 383 197
+wait 100
+newClient C17 localhost 20000 674 563 113
+wait 100
+newClient C18 localhost 20000 471 379 267
+wait 100
+newClient C19 localhost 20000 547 597 131
+wait 100
+newClient C20 localhost 20000 293 229 291
+wait 100
+newClient C21 localhost 20000 598 609 276
+wait 100
+newClient C22 localhost 20000 414 393 209
+wait 100
+newClient C23 localhost 20000 163 940 257
+wait 100
+newClient C24 localhost 20000 554 671 148
+wait 100
+newClient C26 localhost 20000 424 518 101
+wait 100
+newClient C27 localhost 20000 651 671 199
+wait 100
+newClient C29 localhost 20000 595 706 170
+wait 100
+newClient C25 localhost 20000 781 544 252
+wait 100
+newClient C30 localhost 20000 815 744 293
+wait 100
+newClient C28 localhost 20000 399 612 286
+wait 100
+
+subscribe C1 546 430 250 channel1
+wait 200
+subscribe C2 365 716 250 channel1
+wait 200
+subscribe C3 524 671 250 channel1
+wait 200
+subscribe C4 221 254 258 channel1
+wait 200
+subscribe C5 586 562 148 channel1
+wait 200
+subscribe C6 274 942 212 channel1
+wait 200
+subscribe C7 441 320 114 channel1
+wait 200
+subscribe C8 501 762 218 channel1
+wait 200
+subscribe C9 795 260 158 channel1
+wait 200
+subscribe C10 346 438 108 channel1
+wait 200
+subscribe C11 420 682 101 channel1
+wait 200
+subscribe C12 366 716 160 channel1
+wait 200
+subscribe C13 215 218 137 channel1
+wait 200
+subscribe C14 343 377 238 channel1
+wait 200
+subscribe C15 423 576 115 channel1
+wait 200
+subscribe C16 146 383 197 channel1
+wait 200
+subscribe C17 674 563 113 channel1
+wait 200
+subscribe C18 471 379 267 channel1
+wait 200
+subscribe C19 547 597 131 channel1
+wait 200
+subscribe C20 293 229 291 channel1
+wait 200
+subscribe C21 598 609 276 channel1
+wait 200
+subscribe C22 414 393 209 channel1
+wait 200
+subscribe C23 163 940 257 channel1
+wait 200
+subscribe C24 554 671 148 channel1
+wait 200
+subscribe C26 424 518 101 channel1
+wait 200
+subscribe C27 651 671 199 channel1
+wait 200
+subscribe C29 595 706 170 channel1
+wait 200
+subscribe C25 781 544 252 channel3
+wait 200
+subscribe C30 815 744 293 channel3
+wait 200
+subscribe C28 399 612 286 channel5
+wait 200
+
+publish C1 546 430 125 channel1 "Hotspot 0 message"
+wait 500
+
+publish C3 524 671 125 channel5 "Hotspot 2 message"
+wait 500
+
+wait 10000
+end

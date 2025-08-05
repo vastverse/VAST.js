@@ -1,0 +1,781 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Spatial Pub/Sub Visualization</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f0f0f0;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        canvas {
+            border: 1px solid #ccc;
+            margin-top: 20px;
+            background-color: white;
+            box-shadow: 0 0 5px rgba(0,0,0,0.1);
+        }
+        .legend {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: white;
+            border-radius: 5px;
+            box-shadow: 0 0 5px rgba(0,0,0,0.1);
+        }
+        .legend-item {
+            display: inline-block;
+            margin-right: 20px;
+            margin-bottom: 10px;
+        }
+        .color-box {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            margin-right: 5px;
+            vertical-align: middle;
+            border: 1px solid #000;
+        }
+        .file-input {
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: #f8f8f8;
+            border-radius: 5px;
+        }
+        .controls {
+            margin: 10px 0;
+            padding: 15px;
+            background-color: #f8f8f8;
+            border-radius: 5px;
+        }
+        .error {
+            color: #d32f2f;
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #ffebee;
+            border-radius: 4px;
+        }
+        .success {
+            color: #388e3c;
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #e8f5e9;
+            border-radius: 4px;
+        }
+        label.toggle {
+            margin-left: 20px;
+            cursor: pointer;
+        }
+        .filters {
+            margin: 10px 0;
+            padding: 15px;
+            background-color: #f8f8f8;
+            border-radius: 5px;
+        }
+        .filter-section {
+            margin-bottom: 10px;
+        }
+        .filter-group {
+            display: inline-block;
+            margin-right: 20px;
+            padding: 5px 10px;
+            background-color: white;
+            border-radius: 4px;
+            box-shadow: 0 0 3px rgba(0,0,0,0.1);
+        }
+        .client-type {
+            margin-right: 15px;
+        }
+        .zone-filter {
+            margin-right: 15px;
+        }
+        button {
+            padding: 8px 15px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        input[type="file"] {
+            padding: 5px;
+            margin-right: 10px;
+        }
+        input[type="checkbox"] {
+            margin-right: 5px;
+        }
+        .config-details {
+            margin-top: 15px;
+            padding: 10px;
+            background-color: #f8f8f8;
+            border-radius: 4px;
+        }
+        .config-details h4 {
+            margin-top: 0;
+        }
+        .debug-info {
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #e3f2fd;
+            border-radius: 4px;
+            font-family: monospace;
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Spatial Publish/Subscribe System Visualization</h2>
+        
+        <div class="file-input">
+            <label for="fileInput">Load simulation script: </label>
+            <input type="file" id="fileInput" accept=".txt">
+            <button onclick="loadDefaultFile()">Load Default Script</button>
+            <button onclick="showDebugInfo()">Show Debug Info</button>
+        </div>
+        
+        <div class="filters">
+            <h4>Filters:</h4>
+            <div class="filter-section">
+                <div class="filter-group">
+                    <strong>Client Types:</strong>
+                    <span class="client-type">
+                        <input type="checkbox" id="showWH" checked onchange="redraw()">
+                        <label for="showWH">Warehouses</label>
+                    </span>
+                    <span class="client-type">
+                        <input type="checkbox" id="showTR" checked onchange="redraw()">
+                        <label for="showTR">Trucks</label>
+                    </span>
+                    <span class="client-type">
+                        <input type="checkbox" id="showCS" checked onchange="redraw()">
+                        <label for="showCS">Customers</label>
+                    </span>
+                </div>
+            </div>
+            
+            <div class="filter-section">
+                <div class="filter-group">
+                    <strong>Zones:</strong>
+                    <span class="zone-filter">
+                        <input type="checkbox" id="showNW" checked onchange="redraw()">
+                        <label for="showNW">NW Zone</label>
+                    </span>
+                    <span class="zone-filter">
+                        <input type="checkbox" id="showNE" checked onchange="redraw()">
+                        <label for="showNE">NE Zone</label>
+                    </span>
+                    <span class="zone-filter">
+                        <input type="checkbox" id="showSW" checked onchange="redraw()">
+                        <label for="showSW">SW Zone</label>
+                    </span>
+                    <span class="zone-filter">
+                        <input type="checkbox" id="showSE" checked onchange="redraw()">
+                        <label for="showSE">SE Zone</label>
+                    </span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="controls">
+            <div class="filter-group">
+                <strong>Display Options:</strong>
+                <label class="toggle">
+                    <input type="checkbox" id="showClients" checked onchange="redraw()"> Show client positions
+                </label>
+                <label class="toggle">
+                    <input type="checkbox" id="showGateway" checked onchange="redraw()"> Show gateway
+                </label>
+                <label class="toggle">
+                    <input type="checkbox" id="showZones" checked onchange="redraw()"> Show zones
+                </label>
+                <label class="toggle">
+                    <input type="checkbox" id="showSubscriptions" checked onchange="redraw()"> Show subscriptions
+                </label>
+                <label class="toggle">
+                    <input type="checkbox" id="showPublications" checked onchange="redraw()"> Show publications
+                </label>
+            </div>
+        </div>
+        
+        <div id="status"></div>
+        
+        <canvas id="canvas" width="1200" height="1200" style="display:none;"></canvas>
+        <div class="legend" id="legend"></div>
+    </div>
+
+    <script>
+        // Global variables
+        let matcher = {};
+        let clients = {};
+        let subscriptions = [];
+        let publications = [];
+        let scriptData = '';
+        let worldSize = 1000; // Default world size
+        let zones = {}; // Will be dynamically set
+        let scaleFactor = 1;
+        const maxCanvasSize = 1200;
+
+        // Client type colors
+        const clientTypeColors = {
+            'WH': {
+                main: 'rgba(255, 0, 0, 0.8)',    // Red for Warehouses
+                area: 'rgba(255, 0, 0, 0.2)'
+            },
+            'TR': {
+                main: 'rgba(0, 155, 0, 0.8)',    // Green for Trucks
+                area: 'rgba(0, 155, 0, 0.2)'
+            },
+            'CS': {
+                main: 'rgba(0, 0, 255, 0.8)',    // Blue for Customers
+                area: 'rgba(0, 0, 255, 0.2)'
+            }
+        };
+
+        // Helper functions
+        function getClientType(clientName) {
+            const typeMap = {
+                'WH': 'WH',
+                'TR': 'TR',
+                'CS': 'CS',
+                'WA': 'WH',  // Warehouse alternative
+                'CU': 'CS',  // Customer alternative
+            };
+            
+            const prefix = clientName.split('_')[0];
+            return typeMap[prefix] || 'Unknown';
+        }
+
+        function getClientZone(clientName) {
+            return clientName.split('_')[1];
+        }
+
+        function shouldShowClient(clientName) {
+            const type = getClientType(clientName);
+            const zone = getClientZone(clientName);
+            
+            const typeEnabled = {
+                'WH': document.getElementById('showWH').checked,
+                'TR': document.getElementById('showTR').checked,
+                'CS': document.getElementById('showCS').checked
+            }[type];
+
+            const zoneEnabled = {
+                'NW': document.getElementById('showNW').checked,
+                'NE': document.getElementById('showNE').checked,
+                'SW': document.getElementById('showSW').checked,
+                'SE': document.getElementById('showSE').checked
+            }[zone];
+
+            return typeEnabled && zoneEnabled;
+        }
+
+        function updateWorldSize(newWorldSize) {
+            worldSize = newWorldSize;
+            scaleFactor = maxCanvasSize / worldSize;
+            
+            // Update zones based on new world size
+            const halfX = Math.floor(worldSize / 2);
+            const halfY = Math.floor(worldSize / 2);
+            
+            zones = {
+                'NW': { x: [0, halfX - 1], y: [0, halfY - 1] },
+                'NE': { x: [halfX, worldSize - 1], y: [0, halfY - 1] },
+                'SW': { x: [0, halfX - 1], y: [halfY, worldSize - 1] },
+                'SE': { x: [halfX, worldSize - 1], y: [halfY, worldSize - 1] }
+            };
+
+            console.log('Updated world size:', worldSize);
+            console.log('Updated zones:', zones);
+        }
+
+        // Parse script
+        function parseScript(data) {
+            try {
+                scriptData = data;
+                
+                // Reset data structures
+                matcher = {};
+                clients = {};
+                subscriptions = [];
+                publications = [];
+
+                const lines = data.trim().split('\n');
+                let detectedWorldSize = worldSize; // Default
+
+                // Try to extract world size from comments or detect from coordinates
+                let maxX = 0, maxY = 0;
+
+                lines.forEach(line => {
+                    line = line.trim();
+                    if (line.startsWith('//') || line === '' || line.startsWith('#')) return;
+
+                    const parts = line.split(/\s+/);
+                    const command = parts[0];
+
+                    switch(command) {
+                        case 'newMatcher':
+                            matcher = {
+                                name: parts[1],
+                                x: parseInt(parts[7]) || 500,
+                                y: parseInt(parts[8]) || 500
+                            };
+                            maxX = Math.max(maxX, matcher.x);
+                            maxY = Math.max(maxY, matcher.y);
+                            break;
+
+                        case 'newClient':
+                            const clientX = parseInt(parts[4]);
+                            const clientY = parseInt(parts[5]);
+                            clients[parts[1]] = {
+                                name: parts[1],
+                                x: clientX,
+                                y: clientY
+                            };
+                            maxX = Math.max(maxX, clientX);
+                            maxY = Math.max(maxY, clientY);
+                            break;
+
+                        case 'subscribe':
+                            const subX = parseInt(parts[2]);
+                            const subY = parseInt(parts[3]);
+                            subscriptions.push({
+                                client: parts[1],
+                                x: subX,
+                                y: subY,
+                                radius: parseFloat(parts[4]),
+                                channel: parts[5]
+                            });
+                            maxX = Math.max(maxX, subX);
+                            maxY = Math.max(maxY, subY);
+                            break;
+
+                        case 'publish':                        
+                            const pubX = parseInt(parts[2]);
+                            const pubY = parseInt(parts[3]);
+                            publications.push({
+                                client: parts[1],
+                                x: pubX,
+                                y: pubY,
+                                radius: parseFloat(parts[4]),
+                                channel: parts[5],
+                                message: parts.slice(6).join(' ')
+                            });
+                            maxX = Math.max(maxX, pubX);
+                            maxY = Math.max(maxY, pubY);
+                            break;
+                    }
+                });
+
+                // Estimate world size from maximum coordinates
+                detectedWorldSize = Math.max(maxX, maxY) + 50; // Add some padding
+                detectedWorldSize = Math.max(detectedWorldSize, 100); // Minimum size
+
+                updateWorldSize(detectedWorldSize);
+
+                console.log('Parsed Data:', {
+                    worldSize: detectedWorldSize,
+                    matcherCount: Object.keys(matcher).length > 0 ? 1 : 0,
+                    clientCount: Object.keys(clients).length,
+                    subscriptionCount: subscriptions.length,
+                    publicationCount: publications.length,
+                    maxCoordinates: { x: maxX, y: maxY }
+                });
+
+            } catch (error) {
+                console.error('Parsing Error:', error);
+                document.getElementById('status').innerHTML = 
+                    `<div class="error">Parsing Error: ${error.message}</div>`;
+            }
+        }
+
+        // Drawing functions
+        function drawGrid(ctx) {
+            ctx.strokeStyle = '#f0f0f0';
+            ctx.lineWidth = 1;
+            
+            const gridSpacing = Math.max(10, Math.floor(worldSize / 20));
+            
+            for (let i = 0; i <= worldSize; i += gridSpacing) {
+                ctx.beginPath();
+                ctx.moveTo(i, 0);
+                ctx.lineTo(i, worldSize);
+                ctx.stroke();
+                
+                ctx.beginPath();
+                ctx.moveTo(0, i);
+                ctx.lineTo(worldSize, i);
+                ctx.stroke();
+
+                // Add grid coordinates (less frequent for readability)
+                if (i % (gridSpacing * 2) === 0 && i > 0) {
+                    ctx.fillStyle = '#999';
+                    ctx.font = `${Math.max(8, 12 / scaleFactor)}px Arial`;
+                    ctx.fillText(i.toString(), i + 5, 15);
+                    ctx.fillText(i.toString(), 5, i + 15);
+                }
+            }
+        }
+
+        function drawZones(ctx) {
+            if (!document.getElementById('showZones').checked) return;
+
+            Object.entries(zones).forEach(([zoneName, zone]) => {
+                if (!document.getElementById(`show${zoneName}`).checked) return;
+
+                const width = zone.x[1] - zone.x[0] + 1;
+                const height = zone.y[1] - zone.y[0] + 1;
+
+                // Draw zone rectangle
+                ctx.strokeStyle = '#666';
+                ctx.lineWidth = 2;
+                ctx.setLineDash([10, 5]);
+                ctx.strokeRect(zone.x[0], zone.y[0], width, height);
+                ctx.setLineDash([]);
+
+                // Zone label
+                ctx.fillStyle = '#666';
+                ctx.font = `bold ${Math.max(12, 20 / scaleFactor)}px Arial`;
+                ctx.fillText(zoneName, zone.x[0] + 10, zone.y[0] + 30);
+            });
+        }
+
+        function drawClientMarker(ctx, client, type) {
+            const color = clientTypeColors[type];
+            const radius = Math.max(2, 4 / scaleFactor);
+            
+            // Draw client point
+            ctx.beginPath();
+            ctx.arc(client.x, client.y, radius, 0, 2 * Math.PI);
+            ctx.fillStyle = color.main;
+            ctx.fill();
+            
+            // Draw label
+            ctx.fillStyle = 'black';
+            ctx.font = `bold ${Math.max(8, 12 / scaleFactor)}px Arial`;
+            ctx.fillText(client.client || client.name, client.x + 10, client.y - 5);
+            ctx.font = `${Math.max(6, 10 / scaleFactor)}px Arial`;
+            ctx.fillText(`(${client.x}, ${client.y})`, client.x + 10, client.y + 10);
+        }
+
+        function draw() {
+            const canvas = document.getElementById('canvas');
+            const ctx = canvas.getContext('2d');
+            
+            // Set canvas size to maintain aspect ratio
+            canvas.width = maxCanvasSize;
+            canvas.height = maxCanvasSize;
+            
+            // Clear canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            canvas.style.display = 'block';
+
+            // Apply scaling
+            ctx.save();
+            ctx.scale(scaleFactor, scaleFactor);
+
+            // Draw base elements
+            drawGrid(ctx);
+            drawZones(ctx);
+
+            // Draw gateway if enabled
+            if (document.getElementById('showGateway').checked && matcher.x !== undefined && matcher.y !== undefined) {
+                const size = Math.max(6, 8 / scaleFactor);
+                ctx.fillStyle = 'purple';
+                ctx.fillRect(matcher.x - size, matcher.y - size, size * 2, size * 2);
+                ctx.fillStyle = 'white';
+                ctx.font = `bold ${Math.max(10, 14 / scaleFactor)}px Arial`;
+                ctx.fillText('GW', matcher.x + size + 2, matcher.y + 5);
+            }
+
+            // Draw subscriptions
+            if (document.getElementById('showSubscriptions').checked) {
+                subscriptions.forEach(sub => {
+                    if (!shouldShowClient(sub.client)) return;
+                    
+                    const clientType = getClientType(sub.client);
+                    const color = clientTypeColors[clientType];
+
+                    // Draw subscription area
+                    ctx.beginPath();
+                    ctx.arc(sub.x, sub.y, sub.radius, 0, 2 * Math.PI);
+                    ctx.fillStyle = color.area;
+                    ctx.fill();
+                    ctx.strokeStyle = color.main;
+                    ctx.lineWidth = 1;
+                    ctx.stroke();
+
+                    // Draw client marker if enabled
+                    if (document.getElementById('showClients').checked) {
+                        drawClientMarker(ctx, sub, clientType);
+                    }
+                });
+            }
+
+            // Draw publications
+            if (document.getElementById('showPublications').checked) {
+                publications.forEach(pub => {
+                    if (!shouldShowClient(pub.client)) return;
+                    
+                    const clientType = getClientType(pub.client);
+                    
+                    // Draw publication area
+                    ctx.beginPath();
+                    ctx.arc(pub.x, pub.y, pub.radius, 0, 2 * Math.PI);
+                    ctx.strokeStyle = clientTypeColors[clientType].main;
+                    ctx.lineWidth = 2;
+                    ctx.setLineDash([5, 5]);
+                    ctx.stroke();
+                    ctx.setLineDash([]);
+
+                    // Draw client marker if enabled
+                    if (document.getElementById('showClients').checked) {
+                        drawClientMarker(ctx, pub, clientType);
+                    }
+                });
+            }
+
+            ctx.restore();
+            updateLegend();
+        }
+
+        function updateLegend() {
+            const legendDiv = document.getElementById('legend');
+            let legendHTML = '<h3>Legend:</h3>';
+            
+            // Client types
+            Object.entries(clientTypeColors).forEach(([type, color]) => {
+                if (document.getElementById(`show${type}`).checked) {
+                    legendHTML += `
+                        <div class="legend-item">
+                            <span class="color-box" style="background-color: ${color.main}"></span>
+                            ${type === 'WH' ? 'Warehouse' : type === 'TR' ? 'Truck' : 'Customer'}
+                        </div>`;
+                }
+            });
+
+            // Other elements
+            if (document.getElementById('showGateway').checked) {
+                legendHTML += `
+                    <div class="legend-item">
+                        <span class="color-box" style="background-color: purple"></span>
+                        Gateway
+                    </div>`;
+                                }
+
+            // Subscription and publication legend
+            if (document.getElementById('showSubscriptions').checked) {
+                legendHTML += `
+                    <div class="legend-item">
+                        <span style="display: inline-block; width: 20px; height: 20px; border: 2px solid #666; border-radius: 50%; margin-right: 5px; vertical-align: middle;"></span>
+                        Subscription Areas
+                    </div>`;
+            }
+
+            if (document.getElementById('showPublications').checked) {
+                legendHTML += `
+                    <div class="legend-item">
+                        <span style="display: inline-block; width: 20px; height: 20px; border: 2px dashed #666; border-radius: 50%; margin-right: 5px; vertical-align: middle;"></span>
+                        Publication Areas
+                    </div>`;
+            }
+
+            // Configuration details
+            legendHTML += `
+                <div class="config-details">
+                    <h4>Simulation Configuration</h4>
+                    <p><strong>World Size:</strong> ${worldSize} x ${worldSize}</p>
+                    <p><strong>Scale Factor:</strong> ${scaleFactor.toFixed(3)}</p>
+                    <p><strong>Total Clients:</strong> ${Object.keys(clients).length}</p>
+                    <p><strong>Subscriptions:</strong> ${subscriptions.length}</p>
+                    <p><strong>Publications:</strong> ${publications.length}</p>
+                    <p><strong>Gateway:</strong> ${matcher.x !== undefined ? `(${matcher.x}, ${matcher.y})` : 'Not found'}</p>
+                </div>
+            `;
+
+            legendDiv.innerHTML = legendHTML;
+        }
+
+        function redraw() {
+            if (scriptData) {
+                draw();
+            }
+        }
+
+        function showDebugInfo() {
+            const debugInfo = {
+                worldSize: worldSize,
+                scaleFactor: scaleFactor,
+                zones: zones,
+                matcher: matcher,
+                clientCount: Object.keys(clients).length,
+                subscriptionCount: subscriptions.length,
+                publicationCount: publications.length,
+                sampleClients: Object.values(clients).slice(0, 5),
+                sampleSubscriptions: subscriptions.slice(0, 3),
+                samplePublications: publications.slice(0, 3)
+            };
+            
+            const debugText = JSON.stringify(debugInfo, null, 2);
+            
+            // Create a modal-like display
+            const debugModal = document.createElement('div');
+            debugModal.style.cssText = `
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                background: white;
+                padding: 20px;
+                border-radius: 8px;
+                box-shadow: 0 0 20px rgba(0,0,0,0.5);
+                z-index: 1000;
+                max-width: 80%;
+                max-height: 80%;
+                overflow: auto;
+            `;
+            
+            debugModal.innerHTML = `
+                <h3>Debug Information</h3>
+                <pre class="debug-info">${debugText}</pre>
+                <button onclick="this.parentElement.remove()">Close</button>
+            `;
+            
+            document.body.appendChild(debugModal);
+        }
+
+        // File handling functions
+        function parseAndVisualize(data) {
+            try {
+                parseScript(data);
+                draw();
+                document.getElementById('status').innerHTML = 
+                    '<div class="success">Script loaded and visualized successfully!</div>';
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('status').innerHTML = 
+                    `<div class="error">Error parsing file: ${error.message}</div>`;
+            }
+        }
+
+        // Event listeners
+        document.getElementById('fileInput').addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    parseAndVisualize(e.target.result);
+                };
+                reader.onerror = function() {
+                    document.getElementById('status').innerHTML = 
+                        '<div class="error">Error reading file!</div>';
+                };
+                reader.readAsText(file);
+            }
+        });
+
+        function loadDefaultFile() {
+            // Try to load a default file
+            fetch('simulationScript.txt')
+                .then(response => {
+                    if (!response.ok) throw new Error('Default file not found');
+                    return response.text();
+                })
+                .then(data => parseAndVisualize(data))
+                .catch(error => {
+                    document.getElementById('status').innerHTML = 
+                        `<div class="error">Error loading default script: ${error.message}. Please upload a script file manually.</div>`;
+                });
+        }
+
+        // Add drag and drop functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const container = document.querySelector('.container');
+            
+            container.addEventListener('dragover', function(e) {
+                e.preventDefault();
+                container.style.backgroundColor = '#e8f5e9';
+            });
+            
+            container.addEventListener('dragleave', function(e) {
+                e.preventDefault();
+                container.style.backgroundColor = 'white';
+            });
+            
+            container.addEventListener('drop', function(e) {
+                e.preventDefault();
+                container.style.backgroundColor = 'white';
+                
+                const files = e.dataTransfer.files;
+                if (files.length > 0) {
+                    const file = files[0];
+                    if (file.name.endsWith('.txt')) {
+                        const reader = new FileReader();
+                        reader.onload = function(e) {
+                            parseAndVisualize(e.target.result);
+                        };
+                        reader.readAsText(file);
+                    } else {
+                        document.getElementById('status').innerHTML = 
+                            '<div class="error">Please drop a .txt file</div>';
+                    }
+                }
+            });
+        });
+
+        // Initialize with default zones
+        updateWorldSize(1000);
+        
+        // Add sample data display function (for testing without file)
+        function loadSampleData() {
+            const sampleData = `newMatcher GW true localhost 8000 8001 20000 500 500 100
+wait 100
+newClient WH_NW_1 localhost 20000 100 100 25
+wait 100
+subscribe WH_NW_1 100 100 25 delivery.confirmation
+wait 100
+newClient TR_NE_1 localhost 20000 700 200 20
+wait 100
+subscribe TR_NE_1 700 200 20 package.ready
+wait 100
+newClient CS_SW_1 localhost 20000 200 700 15
+wait 100
+subscribe CS_SW_1 200 700 15 delivery.status
+wait 100
+newClient CS_SE_1 localhost 20000 800 800 18
+wait 100
+subscribe CS_SE_1 800 800 18 delivery.status
+wait 100
+wait 500
+publish WH_NW_1 100 100 25 inventory.available "Sample inventory message"
+wait 100
+publish TR_NE_1 700 200 20 truck.location "Sample truck message"
+wait 100
+wait 1000
+end`;
+            
+            parseAndVisualize(sampleData);
+        }
+
+        // Add sample data button to file input section
+        document.addEventListener('DOMContentLoaded', function() {
+            const fileInputDiv = document.querySelector('.file-input');
+            const sampleButton = document.createElement('button');
+            sampleButton.textContent = 'Load Sample Data';
+            sampleButton.onclick = loadSampleData;
+            fileInputDiv.appendChild(sampleButton);
+        });
+
+    </script>
+</body>
+</html>
