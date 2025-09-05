@@ -185,7 +185,7 @@ class SimulationAnalyzer {
 
         // Add MQTT topic subscriptions (no coordinates needed for MQTT)
         for (const sub of this.subscribes) {
-            output.push(`subscribe ${sub.client} ${sub.channel}`);
+            output.push(`subscribe ${sub.client} 0 0 0 ${sub.channel}`);
             output.push('wait 100');
         }
         output.push('');
@@ -213,13 +213,13 @@ class SimulationAnalyzer {
                     
                     for (let i = 0; i < mqttPublishCount; i++) {
                         const originalPub = channelPubs[i % channelPubs.length];
-                        output.push(`publish ${originalPub.client} ${pub.channel} "${originalPub.message}"`);
+                        output.push(`publish ${originalPub.client} 0 0 0 ${pub.channel} "${originalPub.message}"`);
                         output.push('wait 100');
                     }
                 } else {
                     // If no subscribers, still include the original publish for completeness
                     for (const originalPub of channelPubs) {
-                        output.push(`publish ${originalPub.client} ${originalPub.channel} "${originalPub.message}"`);
+                        output.push(`publish ${originalPub.client} 0 0 0 ${originalPub.channel} "${originalPub.message}"`);
                         output.push('wait 100');
                     }
                 }

@@ -556,10 +556,10 @@ const aedesOpts = {
               this.logClient(clientId, `Received message on topic ${topic}: ${payload}`);
               this.logClientMessage(clientId, topic, message);
               
-              // Calculate RTT if available
+              // Calculate latency if available
               const pongTimestamp = Date.now();
               const pingTimestamp = this.pingTimestamps.get(pubId);
-              const rtt = pingTimestamp ? pongTimestamp - pingTimestamp : null;
+              const latency = pingTimestamp ? pongTimestamp - pingTimestamp : null;
               
               // Look up publisher info for this pubId
               let pubInfo = this.pubInfoByPubId.get(pubId);
@@ -583,7 +583,7 @@ const aedesOpts = {
                     recipients: [1],
                     chain: [1]
                 },
-                pingpong: rtt ? {
+                pingpong: latency ? {
                     ping: {
                         timestamp: pingTimestamp,
                         pubid: pubId
@@ -591,7 +591,7 @@ const aedesOpts = {
                     pong: {
                         timestamp: pongTimestamp,
                         pubid: pubId,
-                        rtt: rtt
+                        latency: latency
                     }
                 } : undefined
             });
@@ -717,7 +717,7 @@ const aedesOpts = {
                         radius: parseInt(pubRadius)
                     };
                     
-                    // Store ping timestamp for RTT calculation
+                    // Store ping timestamp for latency calculation
                     const pingTimestamp = Date.now();
                     this.pingTimestamps.set(pubId, pingTimestamp);
                     

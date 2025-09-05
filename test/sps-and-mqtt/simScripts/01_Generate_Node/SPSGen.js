@@ -132,7 +132,6 @@ class ZoneManager {
         );
     }
 }
-
 class ScriptGenerator {
     static generateSimulationScript(config) {
         let script = '';
@@ -143,7 +142,7 @@ class ScriptGenerator {
             script += `newMatcher GW true localhost 8000 8001 20000 500 500 100\nwait 100\n`;
         }
 
-        // First, create all clients with short delays
+        // Create all clients with their subscriptions immediately after
         zones.forEach(zone => {
             const zoneClientsCount = Math.round((config.zoneDistribution[zone.name] / 100) * config.totalClients);
             const { script: zoneScript, clients } = this.generateZoneClientsWithRegistry(zone, zoneClientsCount, config.clientTypePercentages);
@@ -151,11 +150,10 @@ class ScriptGenerator {
             clientRegistry[zone.name] = clients;
         });
 
-        // Add big delay after all clients are created
+        // Add big delay after all clients are created and subscribed
         script += 'wait 10000\n';
 
-        // Then generate subscriptions and publications
-        script += this.generateSubscriptionsFromRegistry(clientRegistry);
+        // Generate publications
         script += this.generatePublicationsFromRegistry(clientRegistry);
         script += 'wait 1000\nend\n';
         
@@ -174,17 +172,22 @@ class ScriptGenerator {
         const trucks = Math.round((percentages.trucks / 100) * clientCount);
         const customers = Math.round((percentages.customers / 100) * clientCount);
 
-        // Generate warehouses - only newClient commands
+        // Generate warehouses
         for (let i = 0; i < warehouses; i++) {
             const coords = ZoneManager.getRandomCoordinatesInZone(zone);
             const radius = ZoneManager.calculateZoneRadius(zone);
             const clientName = `WH_${zone.name}_${i + 1}`;
             
             clients.warehouses.push({ name: clientName, coords, radius });
-            script += `newClient ${clientName} localhost 20000 ${coords.x} ${coords.y} ${radius}\nwait 100\n`;
+            script += `\nnewClient ${clientName} localhost 20000 ${coords.x} ${coords.y} ${radius}\nwait 100\n`;
+            
+            // Add subscriptions immediately after client creation
+            TOPICS.WAREHOUSE.SUBSCRIBE.forEach(topic => {
+                script += `subscribe ${clientName} ${coords.x} ${coords.y} ${radius} ${topic}\nwait 100\n`;
+            });
         }
 
-        // Generate trucks - only newClient commands
+        // Generate trucks
         for (let i = 0; i < trucks; i++) {
             const coords = ZoneManager.getRandomCoordinatesInZone(zone);
             const radius = ZoneManager.calculateZoneRadius(zone);
@@ -192,9 +195,14 @@ class ScriptGenerator {
             
             clients.trucks.push({ name: clientName, coords, radius });
             script += `newClient ${clientName} localhost 20000 ${coords.x} ${coords.y} ${radius}\nwait 100\n`;
+            
+            // Add subscriptions immediately after client creation
+            TOPICS.TRUCK.SUBSCRIBE.forEach(topic => {
+                script += `subscribe ${clientName} ${coords.x} ${coords.y} ${radius} ${topic}\nwait 100\n`;
+            });
         }
 
-        // Generate customers - only newClient commands
+        // Generate customers
         for (let i = 0; i < customers; i++) {
             const coords = ZoneManager.getRandomCoordinatesInZone(zone);
             const radius = ZoneManager.calculateZoneRadius(zone);
@@ -202,6 +210,11 @@ class ScriptGenerator {
             
             clients.customers.push({ name: clientName, coords, radius });
             script += `newClient ${clientName} localhost 20000 ${coords.x} ${coords.y} ${radius}\nwait 100\n`;
+            
+            // Add subscriptions immediately after client creation
+            TOPICS.CUSTOMER.SUBSCRIBE.forEach(topic => {
+                script += `subscribe ${clientName} ${coords.x} ${coords.y} ${radius} ${topic}\nwait 100\n`;
+            });
         }
 
         return { script, clients };
@@ -265,57 +278,6 @@ class ScriptGenerator {
         return script;
     }
 }
-
-// class OutputManager {
-//     static saveScripts(configurations) {
-//         // Create main directory with date and timestamp
-//         const now = new Date();
-//         const date = now.toISOString().split('T')[0]; // Gets YYYY-MM-DD
-//         const timestamp = now.toTimeString().split(' ')[0].replace(/:/g, '-'); // Gets HH-MM-SS
-//         const mainDirName = `Scripts_${date}_${timestamp}`;
-        
-//         if (!fs.existsSync(mainDirName)) {
-//             fs.mkdirSync(mainDirName);
-//         }
-
-//         // Create subdirectories
-//         const spsDir = path.join(mainDirName, 'sps');
-//         const spmqttDir = path.join(mainDirName, 'spmqtt');
-        
-//         if (!fs.existsSync(spsDir)) {
-//             fs.mkdirSync(spsDir);
-//         }
-        
-//         if (!fs.existsSync(spmqttDir)) {
-//             fs.mkdirSync(spmqttDir);
-//         }
-
-//         // Generate and save scripts for each configuration
-//         configurations.forEach(config => {
-//             const scriptFileName = `simulation_${config.scale.name.toLowerCase()}_${config.patternName}.txt`;
-//             const script = ScriptGenerator.generateSimulationScript(config);
-            
-//             // Save to both subdirectories
-//             fs.writeFileSync(
-//                 path.join(spsDir, scriptFileName),
-//                 script
-//             );
-            
-//             fs.writeFileSync(
-//                 path.join(spmqttDir, scriptFileName),
-//                 script
-//             );
-            
-//             console.log(`Generated: ${scriptFileName} (saved to both sps and spmqtt folders)`);
-//         });
-
-//         console.log(`\nAll scripts saved in directory: ${mainDirName}`);
-//         console.log(`├── sps/`);
-//         console.log(`└── spmqtt/`);
-//     }
-// }
-
-// In the original script generator, update the OutputManager class:
 
 class OutputManager {
     static saveScripts(configurations) {

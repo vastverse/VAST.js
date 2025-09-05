@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Event Log Analyzer</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        
+        .file-input {
+            margin-bottom: 20px;
+        }
+        
+        .file-input input[type="file"] {
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 4px;
+            width: 100%;
+        }
+        
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .stat-card {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 6px;
+            text-align: center;
+            border-left: 4px solid #007bff;
+        }
+        
+        .stat-card h3 {
+            margin: 0 0 10px 0;
+            color: #333;
+        }
+        
+        .stat-card .value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #007bff;
+        }
+        
+        .charts {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .chart-container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .chart-container h3 {
+            margin-top: 0;
+            text-align: center;
+            color: #333;
+        }
+        
+        .controls {
+            margin-bottom: 20px;
+        }
+        
+        .controls select, .controls button {
+            padding: 8px 12px;
+            margin: 5px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background: white;
+        }
+        
+        .event-types {
+            background: #e9ecef;
+            padding: 15px;
+            border-radius: 6px;
+            margin-top: 10px;
+        }
+        
+        .event-types h4 {
+            margin-top: 0;
+            color: #495057;
+        }
+        
+        .event-type {
+            display: inline-block;
+            margin: 5px;
+            padding: 5px 10px;
+            background: white;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+        
+        @media (max-width: 768px) {
+            .charts {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Event Log Analyzer</h1>
+        
+        <div class="file-input">
+            <input type="file" id="fileInput" accept=".json,.txt,.log" multiple>
+            <p>Select one or more log files to analyze</p>
+        </div>
+        
+        <div class="controls">
+            <select id="timeRange">
+                <option value="all">All Time</option>
+                <option value="1000">Last 1 Second</option>
+                <option value="5000">Last 5 Seconds</option>
+                <option value="10000">Last 10 Seconds</option>
+                <option value="30000">Last 30 Seconds</option>
+            </select>
+            <button onclick="refreshCharts()">Refresh Charts</button>
+        </div>
+        
+        <div class="stats" id="stats">
+            <!-- Stats will be populated here -->
+        </div>
+        
+        <div class="event-types" id="eventTypes" style="display: none;">
+            <h4>Event Types Found:</h4>
+            <div id="eventTypesList"></div>
+        </div>
+    </div>
+    
+    <div class="charts">
+        <div class="chart-container">
+            <h3>Messages Sent Over Time</h3>
+            <canvas id="messagesChart"></canvas>
+        </div>
+        
+        <div class="chart-container">
+            <h3>Latency Distribution</h3>
+            <canvas id="latencyChart"></canvas>
+        </div>
+        
+        <div class="chart-container">
+            <h3>Event Types Distribution</h3>
+            <canvas id="eventTypesChart"></canvas>
+        </div>
+        
+        <div class="chart-container">
+            <h3>Average Latency Over Time</h3>
+            <canvas id="latencyTimeChart"></canvas>
+        </div>
+    </div>
+
+    <script>
+        let allEvents = [];
+        let charts = {};
+        
+        // Event type mappings (based on your data)
+        const eventTypeNames = {
+            0: 'Connect',
+            1: 'Disconnect', 
+            2: 'Ready',
+            4: 'Join',
+            6: 'Subscribe',
+            8: 'Unsubscribe',
+            9: 'Publish',
+            10: 'Receive'
+        };
+        
+        document.getElementById('fileInput').addEventListener('change', handleFileSelect);
+        document.getElementById('timeRange').addEventListener('change', refreshCharts);
+        
+        function handleFileSelect(event) {
+            const files = Array.from(event.target.files);
+            allEvents = [];
+            
+            Promise.all(files.map(file => readFile(file)))
+                .then(() => {
+                    updateStats();
+                    refreshCharts();
+                    showEventTypes();
+                })
+                .catch(error => {
+                    console.error('Error reading files:', error);
+                    alert('Error reading files. Please check the console for details.');
+                });
+        }
+        
+        function readFile(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    try {
+                        const lines = e.target.result.split('\n');
+                        const events = lines
+                            .filter(line => line.trim())
+                            .map(line => {
+                                try {
+                                    return JSON.parse(line);
+                                } catch (err) {
+                                    console.warn('Invalid JSON line:', line);
+                                    return null;
+                                }
+                            })
+                            .filter(event => event !== null);
+                        
+                        allEvents.push(...events);
+                        console.log(`Loaded ${events.length} events from ${file.name}`);
+                        resolve();
+                    } catch (error) {
+                        reject(error);
+                    }
+                };
+                reader.onerror = reject;
+                reader.readAsText(file);
+            });
+        }
+        
+        function updateStats() {
+            const stats = calculateStats();
+            const statsContainer = document.getElementById('stats');
+            
+            statsContainer.innerHTML = `
+                <div class="stat-card">
+                    <h3>Total Events</h3>
+                    <div class="value">${stats.totalEvents}</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Messages Published</h3>
+                    <div class="value">${stats.messagesPublished}</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Messages Received</h3>
+                    <div class="value">${stats.messagesReceived}</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Avg Latency</h3>
+                    <div class="value">${stats.avgLatency}ms</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Unique Clients</h3>
+                    <div class="value">${stats.uniqueClients}</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Time Range</h3>
+                    <div class="value">${stats.timeRange}s</div>
+                </div>
+            `;
+        }
+        
+        function calculateStats() {
+            if (allEvents.length === 0) return {};
+            
+            const filteredEvents = getFilteredEvents();
+            const messagesPublished = filteredEvents.filter(e => e.event === 9).length;
+            const messagesReceived = filteredEvents.filter(e => e.event === 10).length;
+            const latencies = filteredEvents
+                .filter(e => e.latency && e.latency.receive && e.latency.receive.latency)
+                .map(e => e.latency.receive.latency);
+            
+            const avgLatency = latencies.length > 0 
+                ? Math.round(latencies.reduce((a, b) => a + b, 0) / latencies.length) 
+                : 0;
+            
+            const uniqueClients = new Set(filteredEvents.map(e => e.id)).size;
+            const times = filteredEvents.map(e => e.time);
+            const timeRange = times.length > 0 
+                ? Math.round((Math.max(...times) - Math.min(...times)) / 1000)
+                : 0;
+            
+            return {
+                totalEvents: filteredEvents.length,
+                messagesPublished,
+                messagesReceived,
+                avgLatency,
+                uniqueClients,
+                timeRange
+            };
+        }
+        
+        function getFilteredEvents() {
+            const timeRange = document.getElementById('timeRange').value;
+            if (timeRange === 'all') return allEvents;
+            
+            const cutoff = parseInt(timeRange);
+            const maxTime = Math.max(...allEvents.map(e => e.time));
+            const minTime = maxTime - cutoff;
+            
+            return allEvents.filter(e => e.time >= minTime);
+        }
+        
+        function showEventTypes() {
+            const eventTypes = [...new Set(allEvents.map(e => e.event))].sort();
+            const container = document.getElementById('eventTypesList');
+            
+            container.innerHTML = eventTypes.map(type => 
+                `<span class="event-type">${type}: ${eventTypeNames[type] || 'Unknown'}</span>`
+            ).join('');
+            
+            document.getElementById('eventTypes').style.display = 'block';
+        }
+        
+        function refreshCharts() {
+            const events = getFilteredEvents();
+            
+            createMessagesChart(events);
+            createLatencyChart(events);
+            createEventTypesChart(events);
+            createLatencyTimeChart(events);
+            updateStats();
+        }
+        
+        function createMessagesChart(events) {
+            const publishEvents = events.filter(e => e.event === 9);
+            const timeGroups = groupEventsByTime(publishEvents, 1000); // Group by second
+            
+            const ctx = document.getElementById('messagesChart').getContext('2d');
+            
+            if (charts.messages) {
+                charts.messages.destroy();
+            }
+            
+            charts.messages = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: timeGroups.map(g => new Date(g.timestamp).toLocaleTimeString()),
+                    datasets: [{
+                        label: 'Messages Published',
+                        data: timeGroups.map(g => g.count),
+                        borderColor: 'rgb(75, 192, 192)',
+                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                        tension: 0.1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+        
+        function createLatencyChart(events) {
+            const latencies = events
+                .filter(e => e.latency && e.latency.receive && e.latency.receive.latency)
+                .map(e => e.latency.receive.latency);
+            
+            if (latencies.length === 0) return;
+            
+            // Create histogram bins
+            const bins = createHistogramBins(latencies, 10);
+            
+            const ctx = document.getElementById('latencyChart').getContext('2d');
+            
+            if (charts.latency) {
+                charts.latency.destroy();
+            }
+            
+            charts.latency = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: bins.map(b => `${b.min}-${b.max}ms`),
+                    datasets: [{
+                        label: 'Frequency',
+                        data: bins.map(b => b.count),
+                        backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+        
+        function createEventTypesChart(events) {
+            const eventCounts = {};
+            events.forEach(e => {
+                eventCounts[e.event] = (eventCounts[e.event] || 0) + 1;
+            });
+            
+            const ctx = document.getElementById('eventTypesChart').getContext('2d');
+            
+            if (charts.eventTypes) {
+                charts.eventTypes.destroy();
+            }
+            
+            charts.eventTypes = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: Object.keys(eventCounts).map(type => 
+                        `${type}: ${eventTypeNames[type] || 'Unknown'}`
+                    ),
+                    datasets: [{
+                        data: Object.values(eventCounts),
+                        backgroundColor: [
+                            '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0',
+                            '#9966FF', '#FF9F40', '#FF6384', '#C9CBCF',
+                            '#4BC0C0', '#FF6384', '#36A2EB'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true
+                }
+            });
+        }
+        
+        function createLatencyTimeChart(events) {
+            const latencyEvents = events.filter(e => 
+                e.latency && e.latency.receive && e.latency.receive.latency
+            );
+            
+            const timeGroups = groupEventsByTime(latencyEvents, 1000);
+            const avgLatencies = timeGroups.map(group => {
+                const groupLatencies = group.events
+                    .map(e => e.latency.receive.latency);
+                return groupLatencies.reduce((a, b) => a + b, 0) / groupLatencies.length;
+            });
+            
+            const ctx = document.getElementById('latencyTimeChart').getContext('2d');
+            
+            if (charts.latencyTime) {
+                charts.latencyTime.destroy();
+            }
+            
+            charts.latencyTime = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: timeGroups.map(g => new Date(g.timestamp).toLocaleTimeString()),
+                    datasets: [{
+                        label: 'Average Latency (ms)',
+                        data: avgLatencies,
+                        borderColor: 'rgb(255, 99, 132)',
+                        backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                        tension: 0.1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+        
+        function groupEventsByTime(events, intervalMs) {
+            if (events.length === 0) return [];
+            
+            const minTime = Math.min(...events.map(e => e.time));
+            const maxTime = Math.max(...events.map(e => e.time));
+            const groups = [];
+            
+            for (let time = minTime; time <= maxTime; time += intervalMs) {
+                const groupEvents = events.filter(e => 
+                    e.time >= time && e.time < time + intervalMs
+                );
+                
+                if (groupEvents.length > 0) {
+                    groups.push({
+                        timestamp: time,
+                        count: groupEvents.length,
+                        events: groupEvents
+                    });
+                }
+            }
+            
+            return groups;
+        }
+        
+        function createHistogramBins(data, numBins) {
+            const min = Math.min(...data);
+            const max = Math.max(...data);
+            const binSize = (max - min) / numBins;
+            const bins = [];
+            
+            for (let i = 0; i < numBins; i++) {
+                const binMin = min + i * binSize;
+                const binMax = min + (i + 1) * binSize;
+                const count = data.filter(val => val >= binMin && val < binMax).length;
+                
+                bins.push({
+                    min: Math.round(binMin),
+                    max: Math.round(binMax),
+                    count
+                });
+            }
+            
+            return bins;
+        }
+    </script>
+</body>
+</html>

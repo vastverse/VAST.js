@@ -21,6 +21,7 @@ var clientIDs2alias = {};
 var instructions = [];
 
 // Dynamic script file path
+// const SCRIPT_FILE = path.join(__dirname, '..', './simScripts/01_Generate_Node/Scripts_2025-08-12_08-28-39/sps/simulation_test_uniform.txt');
 const SCRIPT_FILE = path.join(__dirname, '..', './simScripts/simulationScript.txt');
 
 // Add timestamp to log messages

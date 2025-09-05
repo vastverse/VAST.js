@@ -63,39 +63,39 @@ const ZONE_PATTERNS = {
 const TOPICS = {
     WAREHOUSE: {
         PUBLISH: [
-            'inventory.available',
-            'package.ready',
-            'inventory.low'
+            'inventoryAvailable',
+            'packageReady',
+            'inventoryLow'
         ],
         SUBSCRIBE: [
-            'delivery.confirmation',
-            'truck.arrival',
-            'inventory.request'
+            'deliveryConfirmation',
+            'truckArrival',
+            'inventoryRequest'
         ]
     },
     TRUCK: {
         PUBLISH: [
-            'truck.location',
-            'truck.status',
-            'delivery.status',
-            'truck.arrival'
+            'truckLocation',
+            'truckStatus',
+            'deliveryStatus',
+            'truckArrival'
         ],
         SUBSCRIBE: [
-            'package.ready',
-            'delivery.request',
-            'route.update'
+            'packageReady',
+            'deliveryRequest',
+            'routeUpdate'
         ]
     },
     CUSTOMER: {
         PUBLISH: [
-            'delivery.request',
-            'delivery.confirmation',
-            'inventory.request'
+            'deliveryRequest',
+            'deliveryConfirmation',
+            'inventoryRequest'
         ],
         SUBSCRIBE: [
-            'delivery.status',
-            'inventory.available',
-            'estimated.arrival'
+            'deliveryStatus',
+            'inventoryAvailable',
+            'estimatedArrival'
         ]
     }
 };

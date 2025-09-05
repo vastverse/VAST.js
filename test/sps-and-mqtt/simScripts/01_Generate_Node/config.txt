@@ -2,7 +2,7 @@ mode=centralized
 
 # Scales to generate (comma-separated)
 # Options: TEST, SMALL, MEDIUM, LARGE, XLARGE
-scales=TEST
+scales=MEDIUM, LARGE, XLARGE
 
 # Zone patterns to generate (comma-separated)
 # Options: UNIFORM, SINGLE_HOT_ZONE, DUAL_HOT_ZONES, TRIPLE_HOT_ZONES
@@ -12,3 +12,9 @@ patterns=UNIFORM
 clients.customers=50
 clients.trucks=30
 clients.warehouses=20
+
+
+#how would system perform with different loads under normal conditions/steady state conditions
+# do multiple runs per setting. Get average performance for 5 - 10.
+# 10000 messages per second e.g. total messages up to 100000.
+# ramp up slowly
