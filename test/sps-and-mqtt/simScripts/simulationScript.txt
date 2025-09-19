@@ -6985,6 +6985,7 @@ wait 100
 subscribe CSNW47 21177 41139 6902 deliveryStatus
 subscribe CSNW47 21177 41139 6902 inventoryAvailable
 subscribe CSNW47 21177 41139 6902 estimatedArrival
+wait 100
 newClient CSNW48 localhost 20000 4045 23827 9117
 wait 100
 subscribe CSNW48 4045 23827 9117 deliveryStatus

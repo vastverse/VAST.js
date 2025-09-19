@@ -3,7 +3,7 @@ const path = require('path');
 const aedes = require('aedes');
 const net = require('net');
 const mqtt = require('mqtt');
-require('../../../lib/common');  // This will make Client_Event available globally
+require('../../../lib/common');
 
 // Create logs directory structure
 const LOGS_DIR = path.join(__dirname, '../logs');
@@ -20,12 +20,17 @@ fs.mkdirSync(LOGS_DIR, { recursive: true });
 fs.mkdirSync(MQTT_LOGS_DIR, { recursive: true });
 fs.mkdirSync(CLIENT_LOGS_DIR, { recursive: true });
 
-// const SCRIPT_FILE = path.join(__dirname, '..', 'test/sps-and-mqtt/example_simulationScript.txt');
-// const SCRIPT_FILE = path.join(__dirname, '..', 'example_simulationScript.txt');
-// const SCRIPT_FILE = path.join(__dirname, '..', 'simScripts', '01_Generate_Node', 'Scripts_2025-08-03_09-57-57', 'mqtt_simulation_test_uniform.txt');
+// Create write streams for the log files
+const logStreams = {
+    events: fs.createWriteStream(EVENTS_LOG_PATH, { flags: 'a' }),
+    clientEvents: fs.createWriteStream(CLIENT_EVENTS_LOG_PATH, { flags: 'a' }),
+    broker: fs.createWriteStream(BROKER_LOG_PATH, { flags: 'a' })
+};
 
-const SCRIPT_FILE = '/Users/vo/Documents/vast_dev/vast_js_experiments/VAST.js/test/sps-and-mqtt/simScripts/01_Generate_Node/Scripts_2025-08-03_10-08-48/mqtt_simulation_test_uniform.txt';
-// /Users/vo/Documents/vast_dev/vast_js_experiments/VAST.js/test/sps-and-mqtt/simScripts/01_Generate_Node/Scripts_2025-08-03_10-08-48/mqtt_simulation_test_uniform.txt
+// Store client log streams if enabled
+const clientLogStreams = {};
+
+const SCRIPT_FILE = '/Users/vo/Documents/vast_dev/vast_js_experiments/VAST.js/test/sps-and-mqtt/simScripts/simulationScript.txt';
 
 const clients = {};
 let brokerPort = 1883;
@@ -36,21 +41,21 @@ function generateId(prefix) {
 
 // Store pub-ids for each publish (clientId+topic+payload -> pubId)
 const pubIdMap = new Map();
-const pubInfoByPubId = new Map(); // NEW: pubId -> { clientID, topic, message, aoi }
+const pubInfoByPubId = new Map();
 const subIdMap = new Map();
-// Store ping timestamps for RTT calculation
-const pingTimestamps = new Map(); // pubId -> timestamp
+const pingTimestamps = new Map();
 
+// Updated logging functions to use write streams
 function logVastEvent(eventObj) {
     const line = JSON.stringify(eventObj) + '\n';
-    fs.appendFile(EVENTS_LOG_PATH, line, err => {
+    logStreams.events.write(line, (err) => {
         if (err) console.error('Error writing to events log:', err);
     });
 }
 
 function logClientEvent(eventObj) {
     const line = JSON.stringify(eventObj) + '\n';
-    fs.appendFile(CLIENT_EVENTS_LOG_PATH, line, err => {
+    logStreams.clientEvents.write(line, (err) => {
         if (err) console.error('Error writing to client events log:', err);
     });
 }
@@ -59,10 +64,12 @@ function logBroker(message) {
     const timestamp = new Date().toISOString();
     const line = `[${timestamp}] ${message}\n`;
     console.log(`[BROKER] ${line.trim()}`);
-    fs.appendFile(BROKER_LOG_PATH, line, err => {
+    
+    logStreams.broker.write(line, (err) => {
         if (err) console.error('Error writing to broker log:', err);
     });
-    fs.appendFile(EVENTS_LOG_PATH, line, err => {
+    
+    logStreams.events.write(line, (err) => {
         if (err) console.error('Error writing to events log:', err);
     });
 }
@@ -71,16 +78,82 @@ function logClient(clientId, message) {
     const timestamp = new Date().toISOString();
     const line = `[${timestamp}] ${message}\n`;
     console.log(`[CLIENT ${clientId}] ${line.trim()}`);
+    
     if (ENABLE_CLIENT_LOGS) {
-        const clientLogPath = path.join(CLIENT_LOGS_DIR, `client_${clientId}.txt`);
-        fs.appendFile(clientLogPath, line, err => {
+        // Create client log stream if it doesn't exist
+        if (!clientLogStreams[clientId]) {
+            const clientLogPath = path.join(CLIENT_LOGS_DIR, `client_${clientId}.txt`);
+            clientLogStreams[clientId] = fs.createWriteStream(clientLogPath, { flags: 'a' });
+        }
+        
+        clientLogStreams[clientId].write(line, (err) => {
             if (err) console.error(`Error writing to client ${clientId} log:`, err);
         });
     }
-    fs.appendFile(EVENTS_LOG_PATH, line, err => {
+    
+    logStreams.events.write(line, (err) => {
         if (err) console.error('Error writing to events log:', err);
     });
 }
+
+// Clean up function to close all streams
+async function cleanup() {
+    logBroker("Starting cleanup...");
+    
+    // Disconnect all clients
+    for (const [clientId, client] of Object.entries(clients)) {
+        try {
+            await new Promise((resolve) => {
+                client.end(true, () => {
+                    logClient(clientId, 'Disconnected');
+                    resolve();
+                });
+            });
+        } catch (err) {
+            logBroker(`Error disconnecting client ${clientId}: ${err.message}`);
+        }
+    }
+    
+    // Close all log streams
+    logBroker("Closing log streams...");
+    
+    // Close main log streams
+    Object.entries(logStreams).forEach(([name, stream]) => {
+        stream.end((err) => {
+            if (err) console.error(`Error closing ${name} stream:`, err);
+        });
+    });
+    
+    // Close client log streams if enabled
+    if (ENABLE_CLIENT_LOGS) {
+        Object.entries(clientLogStreams).forEach(([clientId, stream]) => {
+            stream.end((err) => {
+                if (err) console.error(`Error closing client ${clientId} stream:`, err);
+            });
+        });
+    }
+    
+    logBroker("Cleanup completed");
+}
+
+// Make sure to clean up on exit
+process.on('exit', cleanup);
+process.on('SIGINT', async () => {
+    await cleanup();
+    process.exit(0);
+});
+process.on('SIGTERM', async () => {
+    await cleanup();
+    process.exit(0);
+});
+process.on('unhandledRejection', async (reason, p) => {
+    console.error('Unhandled Rejection at:', p, 'reason:', reason);
+    await cleanup();
+    process.exit(1);
+});
+
+// Keep the rest of your code as is (startBroker, createClient, processScript, etc.)
+// Just make sure the 'end' command in processLine calls cleanup:
 
 function startBroker(port = 1883) {
     const broker = aedes();
@@ -136,51 +209,6 @@ function startBroker(port = 1883) {
         }
     });
 
-    // PUB event on broker: only log if pubID is in payload (matches publishing client)
-    // broker.on('publish', (packet, client) => {
-    //     if (!packet.topic.startsWith('$SYS') && client) {
-    //         try {
-    //             // Try JSON parsing first
-    //             const obj = JSON.parse(packet.payload.toString());
-    //             if (obj.pubId && obj.message) {
-    //                 logClientEvent({
-    //                     time: Date.now(),
-    //                     event: Client_Event.PUB,
-    //                     id: client.id,
-    //                     alias: "unnamed_client",
-    //                     matcher: 1,
-    //                     pub: {
-    //                         pubID: obj.pubId,
-    //                         aoi: { center: BROKER_POS, radius: 10 }, // Substitute real AOI if available
-    //                         channel: packet.topic,
-    //                         payload: obj.message
-    //                     }
-    //                 });
-    //             }
-    //         } catch (parseError) {
-    //             // Fallback to regex for backwards compatibility
-    //             let payloadStr = packet.payload.toString();
-    //             let pubIdMatch = payloadStr.match(/$$pub-id:\s*([^$$]+)\]$/);
-    //             let pubId = pubIdMatch ? pubIdMatch[1].trim() : null;
-    //             if (pubId) {
-    //                 let cleanMsg = payloadStr.replace(/\s*$$pub-id:\s*[^$$]+\]$/, '');
-    //                 logClientEvent({
-    //                     time: Date.now(),
-    //                     event: Client_Event.PUB,
-    //                     id: client.id,
-    //                     alias: "unnamed_client",
-    //                     matcher: 1,
-    //                     pub: {
-    //                         pubID: pubId,
-    //                         aoi: { center: BROKER_POS, radius: 10 },
-    //                         channel: packet.topic,
-    //                         payload: cleanMsg
-    //                     }
-    //                 });
-    //             }
-    //         }
-    //     }
-    // });
 
     const server = net.createServer(broker.handle);
 
@@ -523,6 +551,7 @@ async function processLine(line, lineNumber) {
 
         case 'end':
             logBroker("Simulation ended.");
+            await cleanup();
             process.exit(0);
             break;
 
