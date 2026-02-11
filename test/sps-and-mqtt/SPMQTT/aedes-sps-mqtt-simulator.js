@@ -55,7 +55,8 @@ const CLIENT_MESSAGES_LOG_PATH = path.join(SPMQTT_LOGS_DIR, 'spmqtt_client_messa
 const ENABLE_CLIENT_LOGS = true;  // Enable individual client log files
 
 // Script file path
-const SCRIPT_FILE = path.join(__dirname, '../simScripts/simulationScript.txt');
+const SCRIPT_FILE = path.join(__dirname, '../simScripts/01_Generate_Node/Scripts_2025-11-07_07-50-43/sps/simulation_test_uniform.txt');
+// /Users/vo/Documents/vast_dev/vast_js_experiments/VAST.js/test/sps-and-mqtt/simScripts/01_Generate_Node/Scripts_2025-11-07_07-50-43/sps/simulation_test_uniform.txt
 
 // Ensure directories exist
 fs.mkdirSync(LOGS_DIR, { recursive: true });

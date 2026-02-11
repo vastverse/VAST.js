@@ -1,0 +1,8 @@
+# Performance Evaluation Configuration
+# Format: LABEL|PATH_TO_FILE
+# Lines starting with # are ignored
+# Paths are relative to the performance/ directory
+
+SPS|../SPS/logs_and_events/Client_events.txt
+MQTT|../logs/mqtt_events/sim_test_uniform_1762496550552/mqtt_client_events_no_broker.txt
+SP-MQTT|../logs/spmqtt_events/spmqtt_client_events_no_broker.txt

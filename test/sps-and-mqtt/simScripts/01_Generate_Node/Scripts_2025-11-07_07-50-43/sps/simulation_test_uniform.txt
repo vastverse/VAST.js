@@ -1,0 +1,242 @@
+newMatcher GW true localhost 8000 8001 20000 500 500 100
+wait 300
+
+newClient WHNW1 localhost 20000 9 7 9
+wait 300
+subscribe WHNW1 9 7 9 deliveryConfirmation
+wait 300
+subscribe WHNW1 9 7 9 truckArrival
+wait 300
+subscribe WHNW1 9 7 9 inventoryRequest
+wait 300
+newClient TRNW1 localhost 20000 5 23 3
+wait 300
+subscribe TRNW1 5 23 3 packageReady
+wait 300
+subscribe TRNW1 5 23 3 deliveryRequest
+wait 300
+subscribe TRNW1 5 23 3 routeUpdate
+wait 300
+newClient CSNW1 localhost 20000 33 1 9
+wait 300
+subscribe CSNW1 33 1 9 deliveryStatus
+wait 300
+subscribe CSNW1 33 1 9 inventoryAvailable
+wait 300
+subscribe CSNW1 33 1 9 estimatedArrival
+wait 300
+newClient CSNW2 localhost 20000 25 46 3
+wait 300
+subscribe CSNW2 25 46 3 deliveryStatus
+wait 300
+subscribe CSNW2 25 46 3 inventoryAvailable
+wait 300
+subscribe CSNW2 25 46 3 estimatedArrival
+wait 300
+
+newClient WHNE1 localhost 20000 59 21 3
+wait 300
+subscribe WHNE1 59 21 3 deliveryConfirmation
+wait 300
+subscribe WHNE1 59 21 3 truckArrival
+wait 300
+subscribe WHNE1 59 21 3 inventoryRequest
+wait 300
+newClient TRNE1 localhost 20000 70 19 3
+wait 300
+subscribe TRNE1 70 19 3 packageReady
+wait 300
+subscribe TRNE1 70 19 3 deliveryRequest
+wait 300
+subscribe TRNE1 70 19 3 routeUpdate
+wait 300
+newClient CSNE1 localhost 20000 51 29 5
+wait 300
+subscribe CSNE1 51 29 5 deliveryStatus
+wait 300
+subscribe CSNE1 51 29 5 inventoryAvailable
+wait 300
+subscribe CSNE1 51 29 5 estimatedArrival
+wait 300
+newClient CSNE2 localhost 20000 64 31 7
+wait 300
+subscribe CSNE2 64 31 7 deliveryStatus
+wait 300
+subscribe CSNE2 64 31 7 inventoryAvailable
+wait 300
+subscribe CSNE2 64 31 7 estimatedArrival
+wait 300
+
+newClient WHSW1 localhost 20000 39 87 6
+wait 300
+subscribe WHSW1 39 87 6 deliveryConfirmation
+wait 300
+subscribe WHSW1 39 87 6 truckArrival
+wait 300
+subscribe WHSW1 39 87 6 inventoryRequest
+wait 300
+newClient TRSW1 localhost 20000 12 79 6
+wait 300
+subscribe TRSW1 12 79 6 packageReady
+wait 300
+subscribe TRSW1 12 79 6 deliveryRequest
+wait 300
+subscribe TRSW1 12 79 6 routeUpdate
+wait 300
+newClient CSSW1 localhost 20000 6 79 4
+wait 300
+subscribe CSSW1 6 79 4 deliveryStatus
+wait 300
+subscribe CSSW1 6 79 4 inventoryAvailable
+wait 300
+subscribe CSSW1 6 79 4 estimatedArrival
+wait 300
+newClient CSSW2 localhost 20000 46 64 2
+wait 300
+subscribe CSSW2 46 64 2 deliveryStatus
+wait 300
+subscribe CSSW2 46 64 2 inventoryAvailable
+wait 300
+subscribe CSSW2 46 64 2 estimatedArrival
+wait 300
+
+newClient WHSE1 localhost 20000 90 91 7
+wait 300
+subscribe WHSE1 90 91 7 deliveryConfirmation
+wait 300
+subscribe WHSE1 90 91 7 truckArrival
+wait 300
+subscribe WHSE1 90 91 7 inventoryRequest
+wait 300
+newClient TRSE1 localhost 20000 69 81 9
+wait 300
+subscribe TRSE1 69 81 9 packageReady
+wait 300
+subscribe TRSE1 69 81 9 deliveryRequest
+wait 300
+subscribe TRSE1 69 81 9 routeUpdate
+wait 300
+newClient CSSE1 localhost 20000 69 61 7
+wait 300
+subscribe CSSE1 69 61 7 deliveryStatus
+wait 300
+subscribe CSSE1 69 61 7 inventoryAvailable
+wait 300
+subscribe CSSE1 69 61 7 estimatedArrival
+wait 300
+newClient CSSE2 localhost 20000 91 79 3
+wait 300
+subscribe CSSE2 91 79 3 deliveryStatus
+wait 300
+subscribe CSSE2 91 79 3 inventoryAvailable
+wait 300
+subscribe CSSE2 91 79 3 estimatedArrival
+wait 300
+wait 30000
+wait 30000
+publish WHNW1 9 7 9 inventoryAvailable "Sample inventoryAvailable message"
+wait 300
+publish WHNW1 9 7 9 packageReady "Sample packageReady message"
+wait 300
+publish WHNW1 9 7 9 inventoryLow "Sample inventoryLow message"
+wait 300
+publish TRNW1 5 23 3 truckLocation "Sample truckLocation message"
+wait 300
+publish TRNW1 5 23 3 truckStatus "Sample truckStatus message"
+wait 300
+publish TRNW1 5 23 3 deliveryStatus "Sample deliveryStatus message"
+wait 300
+publish TRNW1 5 23 3 truckArrival "Sample truckArrival message"
+wait 300
+publish CSNW1 33 1 9 deliveryRequest "Sample deliveryRequest message"
+wait 300
+publish CSNW1 33 1 9 deliveryConfirmation "Sample deliveryConfirmation message"
+wait 300
+publish CSNW1 33 1 9 inventoryRequest "Sample inventoryRequest message"
+wait 300
+publish CSNW2 25 46 3 deliveryRequest "Sample deliveryRequest message"
+wait 300
+publish CSNW2 25 46 3 deliveryConfirmation "Sample deliveryConfirmation message"
+wait 300
+publish CSNW2 25 46 3 inventoryRequest "Sample inventoryRequest message"
+wait 300
+publish WHNE1 59 21 3 inventoryAvailable "Sample inventoryAvailable message"
+wait 300
+publish WHNE1 59 21 3 packageReady "Sample packageReady message"
+wait 300
+publish WHNE1 59 21 3 inventoryLow "Sample inventoryLow message"
+wait 300
+publish TRNE1 70 19 3 truckLocation "Sample truckLocation message"
+wait 300
+publish TRNE1 70 19 3 truckStatus "Sample truckStatus message"
+wait 300
+publish TRNE1 70 19 3 deliveryStatus "Sample deliveryStatus message"
+wait 300
+publish TRNE1 70 19 3 truckArrival "Sample truckArrival message"
+wait 300
+publish CSNE1 51 29 5 deliveryRequest "Sample deliveryRequest message"
+wait 300
+publish CSNE1 51 29 5 deliveryConfirmation "Sample deliveryConfirmation message"
+wait 300
+publish CSNE1 51 29 5 inventoryRequest "Sample inventoryRequest message"
+wait 300
+publish CSNE2 64 31 7 deliveryRequest "Sample deliveryRequest message"
+wait 300
+publish CSNE2 64 31 7 deliveryConfirmation "Sample deliveryConfirmation message"
+wait 300
+publish CSNE2 64 31 7 inventoryRequest "Sample inventoryRequest message"
+wait 300
+publish WHSW1 39 87 6 inventoryAvailable "Sample inventoryAvailable message"
+wait 300
+publish WHSW1 39 87 6 packageReady "Sample packageReady message"
+wait 300
+publish WHSW1 39 87 6 inventoryLow "Sample inventoryLow message"
+wait 300
+publish TRSW1 12 79 6 truckLocation "Sample truckLocation message"
+wait 300
+publish TRSW1 12 79 6 truckStatus "Sample truckStatus message"
+wait 300
+publish TRSW1 12 79 6 deliveryStatus "Sample deliveryStatus message"
+wait 300
+publish TRSW1 12 79 6 truckArrival "Sample truckArrival message"
+wait 300
+publish CSSW1 6 79 4 deliveryRequest "Sample deliveryRequest message"
+wait 300
+publish CSSW1 6 79 4 deliveryConfirmation "Sample deliveryConfirmation message"
+wait 300
+publish CSSW1 6 79 4 inventoryRequest "Sample inventoryRequest message"
+wait 300
+publish CSSW2 46 64 2 deliveryRequest "Sample deliveryRequest message"
+wait 300
+publish CSSW2 46 64 2 deliveryConfirmation "Sample deliveryConfirmation message"
+wait 300
+publish CSSW2 46 64 2 inventoryRequest "Sample inventoryRequest message"
+wait 300
+publish WHSE1 90 91 7 inventoryAvailable "Sample inventoryAvailable message"
+wait 300
+publish WHSE1 90 91 7 packageReady "Sample packageReady message"
+wait 300
+publish WHSE1 90 91 7 inventoryLow "Sample inventoryLow message"
+wait 300
+publish TRSE1 69 81 9 truckLocation "Sample truckLocation message"
+wait 300
+publish TRSE1 69 81 9 truckStatus "Sample truckStatus message"
+wait 300
+publish TRSE1 69 81 9 deliveryStatus "Sample deliveryStatus message"
+wait 300
+publish TRSE1 69 81 9 truckArrival "Sample truckArrival message"
+wait 300
+publish CSSE1 69 61 7 deliveryRequest "Sample deliveryRequest message"
+wait 300
+publish CSSE1 69 61 7 deliveryConfirmation "Sample deliveryConfirmation message"
+wait 300
+publish CSSE1 69 61 7 inventoryRequest "Sample inventoryRequest message"
+wait 300
+publish CSSE2 91 79 3 deliveryRequest "Sample deliveryRequest message"
+wait 300
+publish CSSE2 91 79 3 deliveryConfirmation "Sample deliveryConfirmation message"
+wait 300
+publish CSSE2 91 79 3 inventoryRequest "Sample inventoryRequest message"
+wait 300
+wait 3000
+end

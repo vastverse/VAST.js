@@ -15,6 +15,18 @@ const aedesOpts = {
   const net = require('net');
   const mqtt = require('mqtt');
   require('../../../lib/common');
+
+  // ✅ Define Client_Event constants to match SPS format
+  const Client_Event = {
+      CLIENT_JOIN: 1,
+      CLIENT_CONNECT: 2,
+      CLIENT_LEAVE: 3,
+      CLIENT_MIGRATE: 4,
+      SUB_NEW: 6,
+      SUB_DELETE: 7,
+      PUB: 9,
+      RECEIVE_PUB: 10
+  };
   
   class SPMQTTSimulator {
       constructor() {
@@ -36,20 +48,21 @@ const aedesOpts = {
       }
   
       setupLogging() {
-          // Create logs directory structure
-          this.LOGS_DIR = path.join(__dirname, '../logs');
-          this.SPMQTT_LOGS_DIR = path.join(this.LOGS_DIR, 'spmqtt_events');
-          this.CLIENT_LOGS_DIR = path.join(this.SPMQTT_LOGS_DIR, 'clients');
-          this.BROKER_LOG_PATH = path.join(this.SPMQTT_LOGS_DIR, 'broker.txt');
-          this.EVENTS_LOG_PATH = path.join(this.SPMQTT_LOGS_DIR, 'spmqtt_client_events.txt');
-          this.CLIENT_EVENTS_LOG_PATH = path.join(this.SPMQTT_LOGS_DIR, 'spmqtt_client_events_no_broker.txt');
-          this.CLIENT_MESSAGES_LOG_PATH = path.join(this.SPMQTT_LOGS_DIR, 'spmqtt_client_messages.txt');
-  
-          // Ensure directories exist
-          fs.mkdirSync(this.LOGS_DIR, { recursive: true });
-          fs.mkdirSync(this.SPMQTT_LOGS_DIR, { recursive: true });
-          fs.mkdirSync(this.CLIENT_LOGS_DIR, { recursive: true });
-      }
+        // Create logs directory structure
+        this.LOGS_DIR = path.join(__dirname, '../logs');
+        this.SPMQTT_LOGS_DIR = path.join(this.LOGS_DIR, 'spmqtt_events');
+        this.CLIENT_LOGS_DIR = path.join(this.SPMQTT_LOGS_DIR, 'clients');
+        this.BROKER_LOG_PATH = path.join(this.SPMQTT_LOGS_DIR, 'broker.txt');
+        this.EVENTS_LOG_PATH = path.join(this.SPMQTT_LOGS_DIR, 'spmqtt_events.txt');
+        this.CLIENT_EVENTS_LOG_PATH = path.join(this.SPMQTT_LOGS_DIR, 'spmqtt_client_events.txt');
+        this.CLIENT_EVENTS_NO_BROKER_LOG_PATH = path.join(this.SPMQTT_LOGS_DIR, 'spmqtt_client_events_no_broker.txt');
+        this.CLIENT_MESSAGES_LOG_PATH = path.join(this.SPMQTT_LOGS_DIR, 'spmqtt_client_messages.txt');
+    
+        // Ensure directories exist
+        fs.mkdirSync(this.LOGS_DIR, { recursive: true });
+        fs.mkdirSync(this.SPMQTT_LOGS_DIR, { recursive: true });
+        fs.mkdirSync(this.CLIENT_LOGS_DIR, { recursive: true });
+    }
   
       // Find all script directories
       findScriptDirectories(baseDir) {
@@ -91,98 +104,51 @@ const aedesOpts = {
           }
           return 0;
       }
-  
-    //   // Find simulation scripts in a directory (both original and MQTT versions)
-    //   findSimulationScripts(scriptsDir) {
-    //       const scripts = [];
+
+      // Find MQTT scripts in a directory
+      findSimulationScripts(scriptsDir) {
+          const mqttScripts = [];
           
-    //       try {
-    //           const files = fs.readdirSync(scriptsDir);
+          try {
+              // First, check if there's a 'spmqtt' subfolder
+              const mqttSubfolder = path.join(scriptsDir, 'spmqtt');
+              let searchDir = scriptsDir;
               
-    //           for (const file of files) {
-    //               if (file.startsWith('simulation_') && file.endsWith('.txt')) {
-    //                   const filePath = path.join(scriptsDir, file);
-    //                   scripts.push({
-    //                       name: file,
-    //                       path: filePath,
-    //                       type: 'original',
-    //                       scale: this.extractScale(file),
-    //                       pattern: this.extractPattern(file)
-    //                   });
-    //               }
-    //               // Also include MQTT scripts for comparison
-    //               if (file.startsWith('mqtt_simulation_') && file.endsWith('.txt')) {
-    //                   const filePath = path.join(scriptsDir, file);
-    //                   scripts.push({
-    //                       name: file,
-    //                       path: filePath,
-    //                       type: 'mqtt',
-    //                       scale: this.extractScale(file),
-    //                       pattern: this.extractPattern(file)
-    //                   });
-    //               }
-    //           }
+              if (fs.existsSync(mqttSubfolder)) {
+                  console.log(`📁 Found spmqtt subfolder, searching in: ${mqttSubfolder}`);
+                  searchDir = mqttSubfolder;
+              } else {
+                  console.log(`📁 No spmqtt subfolder found, searching in: ${scriptsDir}`);
+              }
               
-    //           // Sort by type, then scale, then pattern
-    //           scripts.sort((a, b) => {
-    //               if (a.type !== b.type) return a.type.localeCompare(b.type);
-    //               if (a.scale !== b.scale) return a.scale.localeCompare(b.scale);
-    //               return a.pattern.localeCompare(b.pattern);
-    //           });
+              const files = fs.readdirSync(searchDir);
               
-    //       } catch (error) {
-    //           console.error(`Error reading scripts directory ${scriptsDir}:`, error.message);
-    //       }
+              for (const file of files) {
+                  // Look for simulation files (both mqtt_ prefixed and regular simulation_ files in spmqtt folder)
+                  if ((file.startsWith('mqtt_simulation_') || file.startsWith('simulation_')) && file.endsWith('.txt')) {
+                      const filePath = path.join(searchDir, file);
+                      mqttScripts.push({
+                          name: file,
+                          path: filePath,
+                          scale: this.extractScale(file),
+                          pattern: this.extractPattern(file)
+                      });
+                  }
+              }
+              
+              // Sort by scale and pattern for consistent ordering
+              mqttScripts.sort((a, b) => {
+                  if (a.scale !== b.scale) return a.scale.localeCompare(b.scale);
+                  return a.pattern.localeCompare(b.pattern);
+              });
+              
+          } catch (error) {
+              console.error(`Error reading scripts directory:`, error.message);
+          }
           
-    //       return scripts;
-    //   }
-
-        // Find MQTT scripts in a directory
-        findSimulationScripts(scriptsDir) {
-            const mqttScripts = [];
-            
-            try {
-                // First, check if there's an 'mqtt' subfolder
-                const mqttSubfolder = path.join(scriptsDir, 'spmqtt');
-                let searchDir = scriptsDir;
-                
-                if (fs.existsSync(mqttSubfolder)) {
-                    console.log(`📁 Found mqtt subfolder, searching in: ${mqttSubfolder}`);
-                    searchDir = mqttSubfolder;
-                } else {
-                    console.log(`📁 No mqtt subfolder found, searching in: ${scriptsDir}`);
-                }
-                
-                const files = fs.readdirSync(searchDir);
-                
-                for (const file of files) {
-                    // Look for simulation files (both mqtt_ prefixed and regular simulation_ files in mqtt folder)
-                    if ((file.startsWith('mqtt_simulation_') || file.startsWith('simulation_')) && file.endsWith('.txt')) {
-                        const filePath = path.join(searchDir, file);
-                        mqttScripts.push({
-                            name: file,
-                            path: filePath,
-                            scale: this.extractScale(file),
-                            pattern: this.extractPattern(file)
-                        });
-                    }
-                }
-                
-                // Sort by scale and pattern for consistent ordering
-                mqttScripts.sort((a, b) => {
-                    if (a.scale !== b.scale) return a.scale.localeCompare(b.scale);
-                    return a.pattern.localeCompare(b.pattern);
-                });
-                
-            } catch (error) {
-                console.error(`Error reading scripts directory ${searchDir}:`, error.message);
-            }
-            
-            return mqttScripts;
-        }
+          return mqttScripts;
+      }
   
-
-
       // Extract scale from filename
       extractScale(filename) {
           const match = filename.match(/(?:mqtt_)?simulation_(\w+)_/);
@@ -231,10 +197,9 @@ const aedesOpts = {
       async showSimulationScriptMenu(scripts) {
           console.log('\n🚀 Available Simulation Scripts:');
           scripts.forEach((script, index) => {
-              const typeLabel = script.type === 'mqtt' ? '(MQTT)' : '(SPS)';
-              console.log(`  ${index + 1}. ${script.name} ${typeLabel} - ${script.scale} scale, ${script.pattern} pattern`);
+              console.log(`  ${index + 1}. ${script.name} - ${script.scale} scale, ${script.pattern} pattern`);
           });
-          console.log('  0. Run all SPS scripts sequentially');
+          console.log('  0. Run all scripts sequentially');
           console.log('  -1. Back to directory selection');
           
           const readline = require('readline');
@@ -261,26 +226,25 @@ const aedesOpts = {
           });
       }
   
-      // Run multiple scripts sequentially (only SPS scripts)
+      // Run multiple scripts sequentially
       async runAllScripts(scripts) {
-          const spsScripts = scripts.filter(s => s.type === 'original');
-          console.log(`\n🎮 Running ${spsScripts.length} SPS scripts sequentially...\n`);
+          console.log(`\n🎮 Running ${scripts.length} scripts sequentially...\n`);
           
-          for (let i = 0; i < spsScripts.length; i++) {
-              const script = spsScripts[i];
-              console.log(`\n📍 [${i + 1}/${spsScripts.length}] Starting: ${script.name}`);
+          for (let i = 0; i < scripts.length; i++) {
+              const script = scripts[i];
+              console.log(`\n📍 [${i + 1}/${scripts.length}] Starting: ${script.name}`);
               console.log(`   Scale: ${script.scale}, Pattern: ${script.pattern}`);
               
               try {
                   await this.runSingleScript(script);
-                  console.log(`✅ [${i + 1}/${spsScripts.length}] Completed: ${script.name}`);
+                  console.log(`✅ [${i + 1}/${scripts.length}] Completed: ${script.name}`);
                   
-                  if (i < spsScripts.length - 1) {
+                  if (i < scripts.length - 1) {
                       console.log('   Waiting 3 seconds before next script...');
                       await this.wait(3000);
                   }
               } catch (error) {
-                  console.error(`❌ [${i + 1}/${spsScripts.length}] Failed: ${script.name}`, error.message);
+                  console.error(`❌ [${i + 1}/${scripts.length}] Failed: ${script.name}`, error.message);
               }
           }
           
@@ -307,15 +271,15 @@ const aedesOpts = {
       }
   
       // Update log paths for current simulation
-      updateLogPaths(simLogDir) {
-          this.BROKER_LOG_PATH = path.join(simLogDir, 'broker.txt');
-          this.EVENTS_LOG_PATH = path.join(simLogDir, 'spmqtt_client_events.txt');
-          this.CLIENT_EVENTS_LOG_PATH = path.join(simLogDir, 'spmqtt_client_events_no_broker.txt');
-          this.CLIENT_MESSAGES_LOG_PATH = path.join(simLogDir, 'spmqtt_client_messages.txt');
-          this.CLIENT_LOGS_DIR = path.join(simLogDir, 'clients');
-          fs.mkdirSync(this.CLIENT_LOGS_DIR, { recursive: true });
-      }
-  
+    updateLogPaths(simLogDir) {
+        this.BROKER_LOG_PATH = path.join(simLogDir, 'broker.txt');
+        this.EVENTS_LOG_PATH = path.join(simLogDir, 'spmqtt_events.txt');
+        this.CLIENT_EVENTS_LOG_PATH = path.join(simLogDir, 'spmqtt_client_events.txt');
+        this.CLIENT_EVENTS_NO_BROKER_LOG_PATH = path.join(simLogDir, 'spmqtt_client_events_no_broker.txt');
+        this.CLIENT_MESSAGES_LOG_PATH = path.join(simLogDir, 'spmqtt_client_messages.txt');
+        this.CLIENT_LOGS_DIR = path.join(simLogDir, 'clients');
+        fs.mkdirSync(this.CLIENT_LOGS_DIR, { recursive: true });
+    }
       // Reset internal state
       resetState() {
           this.simulatedClients = {};
@@ -346,7 +310,51 @@ const aedesOpts = {
           return clientID + '-' + this._randomString(5);
       }
   
-      // Logging functions
+      // ✅ UPDATED: Logging functions to match SPS format
+      
+        logClientEvent(clientId, eventType, data) {
+            const eventObj = {
+                time: Date.now(),
+                event: eventType,
+                id: clientId,
+                ...data
+            };
+            const line = JSON.stringify(eventObj) + '\n';
+            
+            // Write to both logs
+            fs.appendFileSync(this.CLIENT_EVENTS_LOG_PATH, line);
+            fs.appendFileSync(this.CLIENT_EVENTS_LOG_PATH.replace('spmqtt_client_events.txt', 'spmqtt_client_events_no_broker.txt'), line);
+            
+            console.log(`[EVENT] ${line.trim()}`);
+        }
+
+        logToFile(message) {
+            const timestamp = Date.now();
+            const line = `[${timestamp}] ${message}\n`;
+            console.log(line.trim());
+            
+            fs.appendFile(this.BROKER_LOG_PATH, line, (err) => {
+                if (err) console.error('Error writing to broker log:', err);
+            });
+        }
+
+        logClient(clientId, message) {
+            const timestamp = Date.now();
+            const line = `[${timestamp}] ${message}\n`;
+            console.log(`[CLIENT ${clientId}] ${line.trim()}`);
+            
+            if (this.ENABLE_CLIENT_LOGS) {
+                const clientLogPath = path.join(this.CLIENT_LOGS_DIR, `client_${clientId}.txt`);
+                fs.appendFile(clientLogPath, line, (err) => {
+                    if (err) console.error(`Error writing to client ${clientId} log:`, err);
+                });
+            }
+            
+            fs.appendFile(this.EVENTS_LOG_PATH, line, (err) => {
+                if (err) console.error('Error writing to events log:', err);
+            });
+        }
+  
       logToFile(message) {
           const timestamp = Date.now();
           const line = `[${timestamp}] ${message}\n`;
@@ -357,41 +365,11 @@ const aedesOpts = {
           });
       }
   
-      logClientEvent(clientId, eventType, data) {
-          const eventObj = {
-              time: Date.now(),
-              event: eventType,
-              id: clientId,
-              alias: "unnamed_client",
-              matcher: 1,
-              ...data
-          };
-          const line = JSON.stringify(eventObj) + '\n';
-          fs.appendFileSync(this.CLIENT_EVENTS_LOG_PATH, line);
-      }
-  
-      logClientMessage(clientId, topic, message) {
-          const timestamp = Date.now();
-          const logEntry = JSON.stringify({
-              time: timestamp,
-              clientId,
-              topic,
-              message: message.toString()
-          }) + '\n';
-  
-          fs.appendFile(this.CLIENT_MESSAGES_LOG_PATH, logEntry, (err) => {
-              if (err) {
-                  console.error('Error writing to client messages log:', err);
-              }
-          });
-      }
-  
       logClient(clientId, message) {
           const timestamp = Date.now();
           const line = `[${timestamp}] ${message}\n`;
           console.log(`[CLIENT ${clientId}] ${line.trim()}`);
           
-          // Write to individual client log files if enabled
           if (this.ENABLE_CLIENT_LOGS) {
               const clientLogPath = path.join(this.CLIENT_LOGS_DIR, `client_${clientId}.txt`);
               fs.appendFile(clientLogPath, line, (err) => {
@@ -399,7 +377,6 @@ const aedesOpts = {
               });
           }
           
-          // Always write to events log
           fs.appendFile(this.EVENTS_LOG_PATH, line, (err) => {
               if (err) console.error('Error writing to events log:', err);
           });
@@ -459,7 +436,6 @@ const aedesOpts = {
   
                   this.server.listen(port, () => {
                       this.logToFile(`Aedes broker started on port ${port}`);
-                      this.logToFile(`Broker configuration: ${JSON.stringify(brokerOptions, null, 2)}`);
                       resolve(port);
                   });
               });
@@ -470,7 +446,7 @@ const aedesOpts = {
           return { broker: this.broker, server: this.server, port: actualPort };
       }
   
-      // Create MQTT client with VAST positioning
+      // ✅ UPDATED: Create MQTT client with proper event logging
       createClient(clientId, host, port, x, y, r) {
           const url = `mqtt://${host}:${port}`;
           const authPayload = JSON.stringify({ x, y, r });
@@ -488,25 +464,27 @@ const aedesOpts = {
   
           this.logClient(clientId, `Connecting to ${host}:${port} with position (${x}, ${y}) and radius ${r}`);
   
-          // Log CLIENT_JOIN event
+          // ✅ Log CLIENT_JOIN event with proper format
           this.logClientEvent(clientId, Client_Event.CLIENT_JOIN, {
               pos: { x, y },
-              radius: r,
-              matcher: 1
+              radius: r
           });
   
           client.on('connect', () => {
               this.logClient(clientId, 'Connected to broker');
+              
+              // ✅ Log CLIENT_CONNECT event
               this.logClientEvent(clientId, Client_Event.CLIENT_CONNECT, {
                   pos: { x, y },
-                  radius: r,
-                  matcher: 1
+                  radius: r
               });
+              
+              // ✅ Log CLIENT_MIGRATE event
               this.logClientEvent(clientId, Client_Event.CLIENT_MIGRATE, {
                   pos: { x, y },
-                  radius: r,
-                  matcher: 1
+                  radius: r
               });
+              
               this.simulatedClients[clientId] = { client, x, y, r };
           });
   
@@ -514,27 +492,21 @@ const aedesOpts = {
               this.logClient(clientId, 'Reconnecting to broker');
               this.logClientEvent(clientId, Client_Event.CLIENT_MIGRATE, {
                   pos: { x, y },
-                  radius: r,
-                  matcher: 1
+                  radius: r
               });
           });
   
           client.on('error', (err) => {
               this.logClient(clientId, `Error: ${err.message}`);
-              this.logClientEvent(clientId, Client_Event.CLIENT_DISCONNECT, {
-                  error: err.message,
-                  pos: { x, y },
-                  radius: r,
-                  matcher: 1
-              });
           });
   
           client.on('close', () => {
               this.logClient(clientId, 'Disconnected from broker');
+              
+              // ✅ Log CLIENT_LEAVE event
               this.logClientEvent(clientId, Client_Event.CLIENT_LEAVE, {
                   pos: { x, y },
-                  radius: r,
-                  matcher: 1
+                  radius: r
               });
           });
   
@@ -542,338 +514,309 @@ const aedesOpts = {
               let pubId, payload;
               
               try {
-                  // Try JSON parsing first (for newer format)
                   const obj = JSON.parse(message.toString());
                   pubId = obj.pubId;
                   payload = obj.message;
               } catch (parseError) {
-                  // Fallback to string parsing (for older format)
                   const [id, ...payloadParts] = message.toString().split(':');
                   pubId = id;
                   payload = payloadParts.join(':');
               }
               
               this.logClient(clientId, `Received message on topic ${topic}: ${payload}`);
-              this.logClientMessage(clientId, topic, message);
               
-              // Calculate latency if available
+              // Calculate latency
               const pongTimestamp = Date.now();
               const pingTimestamp = this.pingTimestamps.get(pubId);
               const latency = pingTimestamp ? pongTimestamp - pingTimestamp : null;
               
-              // Look up publisher info for this pubId
+              // Look up publisher info
               let pubInfo = this.pubInfoByPubId.get(pubId);
               if (!pubInfo) {
                   pubInfo = {
-                    clientID: clientId,
-                    aoi: { center: { x, y }, radius: r },
-                    channel: topic,
-                    payload: payload
-                };
-            }
-            
-            this.logClientEvent(clientId, Client_Event.RECEIVE_PUB, {
-                pub: {
-                    matcherID: 1,
-                    clientID: pubInfo.clientID,
-                    pubID: pubId,
-                    aoi: pubInfo.aoi,
-                    payload: pubInfo.payload,
-                    channel: pubInfo.channel,
-                    recipients: [1],
-                    chain: [1]
-                },
-                pingpong: latency ? {
-                    ping: {
-                        timestamp: pingTimestamp,
-                        pubid: pubId
-                    },
-                    pong: {
-                        timestamp: pongTimestamp,
-                        pubid: pubId,
-                        latency: latency
+                      clientID: clientId,
+                      aoi: { center: { x, y }, radius: r },
+                      channel: topic,
+                      payload: payload
+                  };
+              }
+              
+              // ✅ Log RECEIVE_PUB event with proper format
+              this.logClientEvent(clientId, Client_Event.RECEIVE_PUB, {
+                  pub: {
+                      pubID: pubId,
+                      time: pingTimestamp,
+                      aoi: pubInfo.aoi,
+                      channel: pubInfo.channel
+                  }
+              });
+              
+              // Clean up ping timestamp
+              if (pubId && this.pingTimestamps.has(pubId)) {
+                  setTimeout(() => {
+                      this.pingTimestamps.delete(pubId);
+                  }, 100);
+              }
+          });
+
+          return client;
+      }
+
+      // ✅ UPDATED: Process simulation script
+      async processScript(scriptPath) {
+          const script = fs.readFileSync(scriptPath, 'utf8');
+          const lines = script.split('\n');
+          
+          // Read broker position from first line
+          const firstLine = lines[0].trim();
+          if (firstLine.toLowerCase().startsWith('newmatcher')) {
+              const parts = firstLine.split(' ');
+              if (parts.length >= 9) {
+                  this.brokerPosition = {
+                      x: parseFloat(parts[7]),
+                      y: parseFloat(parts[8])
+                  };
+                  console.log(`✅ Broker position set to: (${this.brokerPosition.x}, ${this.brokerPosition.y})`);
+              }
+          }
+
+          try {
+              for (let index = 0; index < lines.length; index++) {
+                  const line = lines[index].trim();
+                  if (line === '' || line.startsWith('//')) continue;
+                  await this.processLine(line, index + 1);
+              }
+          } catch (err) {
+              this.logToFile(`Error reading script: ${err.message}`);
+              throw err;
+          }
+      }
+
+      // ✅ UPDATED: Process individual script line
+      async processLine(line, lineNumber) {
+          const parts = line.trim().split(' ');
+          const command = parts[0].toLowerCase();
+
+          switch (command) {
+              case 'wait':
+                  const waitTime = parseInt(parts[1]);
+                  this.logToFile(`⏳ Waiting for ${waitTime}ms`);
+                  return new Promise(resolve => setTimeout(resolve, waitTime));
+
+              case 'newmatcher':
+                  this.logToFile(`🔧 Creating new matcher/broker`);
+                  return this.startBroker(this.brokerPort);
+
+              case 'newclient':
+                  const [__, clientId, clientHost, clientPort, clientX, clientY, clientR] = parts;
+                  this.logToFile(`👤 Creating new client ${clientId} at (${clientX}, ${clientY}) radius ${clientR}`);
+                  this.createClient(clientId, clientHost, this.brokerPort, parseInt(clientX), parseInt(clientY), parseInt(clientR));
+                  return Promise.resolve();
+
+                  case 'subscribe':
+                    const [___, subClientId, subX, subY, subRadius, channel] = parts;
+                    const subId = this._generate_subID(subClientId);
+                    
+                    // ✅ Create topic with <sp: format for spatial tagging
+                    const subTopicObj = { x: parseInt(subX), y: parseInt(subY), radius: parseInt(subRadius), channel };
+                    const subTopic = `sp:<${JSON.stringify(subTopicObj)}>`;
+                    
+                    this.logToFile(`📬 Client ${subClientId} subscribing to ${subTopic}`);
+                    const subClient = this.simulatedClients[subClientId];
+                    
+                    if (!subClient) {
+                        this.logToFile(`❌ Error: Client ${subClientId} not found`);
+                        return Promise.reject(new Error(`Client ${subClientId} not found`));
                     }
-                } : undefined
-            });
-            
-            // Clean up ping timestamp
-            if (pubId && this.pingTimestamps.has(pubId)) {
-                setTimeout(() => {
-                    this.pingTimestamps.delete(pubId);
-                }, 100);
-            }
-        });
-
-        return client;
-    }
-
-    // Process simulation script
-    async processScript(scriptPath) {
-        const script = fs.readFileSync(scriptPath, 'utf8');
-        const lines = script.split('\n');
-        
-        // Read broker position from first line
-        const firstLine = lines[0].trim();
-        if (firstLine.startsWith('newMatcher')) {
-            const parts = firstLine.split(' ');
-            if (parts.length >= 9) {
-                this.brokerPosition = {
-                    x: parseFloat(parts[7]),
-                    y: parseFloat(parts[8])
-                };
-                console.log(`Broker position set to: (${this.brokerPosition.x}, ${this.brokerPosition.y})`);
-            }
-        }
-
-        try {
-            for (let index = 0; index < lines.length; index++) {
-                const line = lines[index].trim();
-                if (line === '' || line.startsWith('//')) continue;
-                await this.processLine(line, index + 1);
-            }
-        } catch (err) {
-            this.logToFile(`Error reading script: ${err.message}`);
-            throw err;
-        }
-    }
-
-    // Process individual script line
-    async processLine(line, lineNumber) {
-        const parts = line.trim().split(' ');
-        const command = parts[0].toLowerCase();
-
-        switch (command) {
-            case 'wait':
-                const waitTime = parseInt(parts[1]);
-                this.logToFile(`Waiting for ${waitTime}ms`);
-                return new Promise(resolve => setTimeout(resolve, waitTime));
-
-            case 'newmatcher':
-                const [_, matcherId, isGateway, host, port, x, y, radius] = parts;
-                this.logToFile(`Creating new matcher ${matcherId} at ${host}:${this.brokerPort} position (${x}, ${y}) radius ${radius}`);
-                return this.startBroker(this.brokerPort);
-
-            case 'newclient':
-                const [__, clientId, clientHost, clientPort, clientX, clientY, clientR] = parts;
-                this.logToFile(`Creating new client ${clientId} at ${clientHost}:${this.brokerPort} position (${clientX}, ${clientY}) radius ${clientR}`);
-                const client = this.createClient(clientId, clientHost, this.brokerPort, parseInt(clientX), parseInt(clientY), parseInt(clientR));
-                return Promise.resolve();
-
-            case 'subscribe':
-                const [___, subClientId, subX, subY, subRadius, channel] = parts;
-                const topicObj = { x: parseInt(subX), y: parseInt(subY), radius: parseInt(subRadius), channel };
-                const topic = `sp: <${JSON.stringify(topicObj)}>`;
-                this.logToFile(`Client ${subClientId} subscribing to topic ${topic}`);
-                const subClient = this.simulatedClients[subClientId];
-                if (!subClient) {
-                    this.logToFile(`Error: Client ${subClientId} not found`);
-                    return Promise.reject(new Error(`Client ${subClientId} not found`));
-                }
-                return new Promise((resolve, reject) => {
-                    const subId = `SUB-${this._randomString(5)}`;
-                    subClient.client.subscribe(topic, (err) => {
-                        if (err) {
-                            this.logToFile(`Error subscribing client ${subClientId} to topic ${topic}: ${err.message}`);
-                            reject(err);
-                        } else {
-                            this.logToFile(`Client ${subClientId} subscribed to topic ${topic}`);
-                            this.logClient(subClientId, `Subscribed to topic ${topic}`);
-                            
-                            this.logClientEvent(subClientId, Client_Event.SUB_NEW, {
-                                sub: {
-                                    hostID: 1,
-                                    hostPos: this.brokerPosition,
-                                    clientID: subClientId,
-                                    subID: subId,
-                                    channel: topic,
-                                    aoi: {
-                                        center: { x: parseInt(subX), y: parseInt(subY) },
-                                        radius: parseInt(subRadius)
-                                    },
-                                    recipients: [],
-                                    heartbeat: Date.now()
-                                }
-                            });
-                            resolve();
-                        }
-                    });
-                });
-
-            case 'publish':
-                const [____, pubClientId, pubX, pubY, pubRadius, pubTopic, ...pubPayloadParts] = parts;
-                const pubPayload = pubPayloadParts.join(' ').replace(/^"|"$/g, '');
-                const pubTopicObj = { x: parseInt(pubX), y: parseInt(pubY), radius: parseInt(pubRadius), channel: pubTopic };
-                const pubTopicStr = `sp: <${JSON.stringify(pubTopicObj)}>`;
-                this.logToFile(`Client ${pubClientId} publishing to topic ${pubTopicStr}: ${pubPayload}`);
-                const pubClient = this.simulatedClients[pubClientId];
-                if (!pubClient) {
-                    this.logToFile(`Error: Client ${pubClientId} not found`);
-                    return Promise.reject(new Error(`Client ${pubClientId} not found`));
-                }
-                return new Promise((resolve, reject) => {
-                    const pubId = `PUB-${this._randomString(5)}`;
-                    const pubAoi = {
-                        center: { x: parseInt(pubX), y: parseInt(pubY) },
-                        radius: parseInt(pubRadius)
-                    };
                     
-                    // Store ping timestamp for latency calculation
-                    const pingTimestamp = Date.now();
-                    this.pingTimestamps.set(pubId, pingTimestamp);
-                    
-                    // Track publisher info for this pubId
-                    this.pubInfoByPubId.set(pubId, {
-                        clientID: pubClientId,
-                        aoi: pubAoi,
-                        channel: pubTopicStr,
-                        payload: pubPayload
-                    });
-                    
-                    // Create message with JSON format for consistency
-                    const messageObj = {
-                        message: pubPayload,
-                        pubId: pubId
-                    };
-                    const message = JSON.stringify(messageObj);
-                    
-                    pubClient.client.publish(pubTopicStr, message, (err) => {
-                        if (err) {
-                            this.logToFile(`Error publishing from client ${pubClientId} to topic ${pubTopicStr}: ${err.message}`);
-                            reject(err);
-                        } else {
-                            this.logToFile(`Client ${pubClientId} published to topic ${pubTopicStr}: ${pubPayload}`);
-                            this.logClient(pubClientId, `Published to topic ${pubTopicStr}: ${pubPayload} [pub-id: ${pubId}]`);
-                            
-                            // Log PUB event with ping info
-                            this.logClientEvent(pubClientId, Client_Event.PUB, {
-                                pub: {
-                                    pubID: pubId,
-                                    aoi: pubAoi,
-                                    channel: pubTopicStr,
-                                    payload: pubPayload
-                                },
-                                pingpong: {
-                                    ping: {
-                                        timestamp: pingTimestamp,
-                                        pubid: pubId
+                    return new Promise((resolve, reject) => {
+                        subClient.client.subscribe(subTopic, (err) => {
+                            if (err) {
+                                this.logToFile(`❌ Error subscribing client ${subClientId}: ${err.message}`);
+                                reject(err);
+                            } else {
+                                this.logClient(subClientId, `Subscribed to ${subTopic}`);
+                                
+                                // ✅ Log SUB_NEW event with proper format
+                                this.logClientEvent(subClientId, Client_Event.SUB_NEW, {
+                                    sub: {
+                                        subID: subId,
+                                        clientID: subClientId,
+                                        channel: channel,
+                                        aoi: {
+                                            center: { x: parseInt(subX), y: parseInt(subY) },
+                                            radius: parseInt(subRadius)
+                                        }
                                     }
-                                }
-                            });
-                            resolve();
-                        }
-                    });
-                });
-
-            case 'end':
-                this.logToFile('Simulation ended, waiting for message delivery...');
-                setTimeout(() => {
-                    // Don't exit immediately, let cleanup handle it
-                }, 1000);
-                return Promise.resolve();
-
-            default:
-                this.logToFile(`Unknown command: ${command}`);
-                return Promise.resolve();
-        }
-    }
-
-    // Cleanup function
-    async cleanup() {
-        if (Object.keys(this.simulatedClients).length > 0) {
-            this.logToFile("Starting cleanup...");
-            for (const [clientId, clientData] of Object.entries(this.simulatedClients)) {
-                try {
-                    await new Promise((resolve) => {
-                        clientData.client.end(true, () => {
-                            this.logClient(clientId, 'Disconnected');
-                            resolve();
+                                });
+                                resolve();
+                            }
                         });
                     });
-                } catch (err) {
-                    this.logToFile(`Error disconnecting client ${clientId}: ${err.message}`);
-                }
-            }
-        }
-        
-        if (this.server) {
-            await new Promise((resolve) => {
-                this.server.close(() => {
-                    this.logToFile("Broker stopped");
-                    resolve();
-                });
-            });
-            this.server = null;
-        }
-        
-        if (this.broker) {
-            this.broker.close();
-            this.broker = null;
-        }
-        
-        this.logToFile("Cleanup completed");
-    }
-
-    // Main entry point
-    async run() {
-        try {
-            console.log('🎯 SPMQTT Simulation Runner');
-            console.log('============================');
-
-            // Get base directory from command line or use default
-            const baseDir = process.argv[2] || path.join(__dirname, '..', 'simScripts', '01_Generate_Node');
-            
-            if (!fs.existsSync(baseDir)) {
-                console.error(`❌ Base directory not found: ${baseDir}`);
-                console.error('Usage: node spmqtt-simulator.js [base_directory_path]');
-                process.exit(1);
-            }
-
-            console.log(`📁 Scanning directory: ${baseDir}`);
-
-            // Find script directories
-            const scriptDirs = this.findScriptDirectories(baseDir);
-            
-            if (scriptDirs.length === 0) {
-                console.log('❌ No script directories found (looking for Scripts_* folders)');
-                process.exit(1);
-            }
-
-            // Interactive directory selection
-            const selectedDir = await this.showScriptMenu(scriptDirs);
-            console.log(`✅ Selected: ${selectedDir.name}`);
-
-            // Find simulation scripts in selected directory
-            const scripts = this.findSimulationScripts(selectedDir.path);
-            
-            if (scripts.length === 0) {
-                console.log('❌ No simulation scripts found in selected directory');
-                process.exit(1);
-            }
-
-            // Interactive script selection
-            while (true) {
-                const selection = await this.showSimulationScriptMenu(scripts);
                 
-                if (selection === 'back') {
-                    // Restart the whole process
-                    return this.run();
-                } else if (selection === 'all') {
-                    await this.runAllScripts(scripts);
-                    break;
-                } else {
-                    await this.runSingleScript(selection);
-                    break;
-                }
-            }
+                case 'publish':
+                    const [____, pubClientId, pubX, pubY, pubRadius, pubTopic, ...pubPayloadParts] = parts;
+                    const pubPayload = pubPayloadParts.join(' ').replace(/^"|"$/g, '');
+                    const pubId = `PUB-${this._randomString(5)}`;
+                    
+                    // ✅ Create topic with <sp: format for spatial tagging
+                    const pubTopicObj = { x: parseInt(pubX), y: parseInt(pubY), radius: parseInt(pubRadius), channel: pubTopic };
+                    const pubTopicStr = `sp:<${JSON.stringify(pubTopicObj)}>`;
+                    
+                    this.logToFile(`📤 Client ${pubClientId} publishing to ${pubTopicStr}: ${pubPayload}`);
+                    const pubClient = this.simulatedClients[pubClientId];
+                    
+                    if (!pubClient) {
+                        this.logToFile(`❌ Error: Client ${pubClientId} not found`);
+                        return Promise.reject(new Error(`Client ${pubClientId} not found`));
+                    }
+                    
+                    return new Promise((resolve, reject) => {
+                        const pubAoi = {
+                            center: { x: parseInt(pubX), y: parseInt(pubY) },
+                            radius: parseInt(pubRadius)
+                        };
+                        
+                        // Store ping timestamp for latency calculation
+                        const pingTimestamp = Date.now();
+                        this.pingTimestamps.set(pubId, pingTimestamp);
+                        
+                        // Track publisher info
+                        this.pubInfoByPubId.set(pubId, {
+                            clientID: pubClientId,
+                            aoi: pubAoi,
+                            channel: pubTopic,
+                            payload: pubPayload
+                        });
+                        
+                        // Create message with JSON format
+                        const messageObj = {
+                            message: pubPayload,
+                            pubId: pubId
+                        };
+                        const message = JSON.stringify(messageObj);
+                        
+                        pubClient.client.publish(pubTopicStr, message, (err) => {
+                            if (err) {
+                                this.logToFile(`❌ Error publishing: ${err.message}`);
+                                reject(err);
+                            } else {
+                                this.logClient(pubClientId, `Published to ${pubTopicStr}: ${pubPayload} [pub-id: ${pubId}]`);
+                                
+                                // ✅ Log PUB event with proper format
+                                this.logClientEvent(pubClientId, Client_Event.PUB, {
+                                    pub: {
+                                        pubID: pubId,
+                                        time: pingTimestamp,
+                                        aoi: pubAoi,
+                                        channel: pubTopic
+                                    }
+                                });
+                                resolve();
+                            }
+                        });
+                    });
+                    
+              case 'end':
+                  this.logToFile('⏹️ Simulation ended');
+                  return Promise.resolve();
 
-        } catch (error) {
-            console.error('❌ Fatal error:', error.message);
-            process.exit(1);
-        } finally {
-            await this.cleanup();
-        }
-    }
-}
+              default:
+                  this.logToFile(`⚠️ Unknown command: ${command}`);
+                  return Promise.resolve();
+          }
+      }
+
+      // Cleanup function
+      async cleanup() {
+          if (Object.keys(this.simulatedClients).length > 0) {
+              this.logToFile("🧹 Starting cleanup...");
+              for (const [clientId, clientData] of Object.entries(this.simulatedClients)) {
+                  try {
+                      await new Promise((resolve) => {
+                          clientData.client.end(true, () => {
+                              this.logClient(clientId, 'Disconnected');
+                              resolve();
+                          });
+                      });
+                  } catch (err) {
+                      this.logToFile(`Error disconnecting client ${clientId}: ${err.message}`);
+                  }
+              }
+          }
+          
+          if (this.server) {
+              await new Promise((resolve) => {
+                  this.server.close(() => {
+                      this.logToFile("🛑 Broker stopped");
+                      resolve();
+                  });
+              });
+              this.server = null;
+          }
+          
+          if (this.broker) {
+              this.broker.close();
+              this.broker = null;
+          }
+          
+          this.logToFile("✅ Cleanup completed");
+      }
+
+      // Main entry point
+      async run() {
+          try {
+              console.log('🎯 SPMQTT Simulation Runner');
+              console.log('============================');
+
+              const baseDir = process.argv[2] || path.join(__dirname, '..', 'simScripts', '01_Generate_Node');
+              
+              if (!fs.existsSync(baseDir)) {
+                  console.error(`❌ Base directory not found: ${baseDir}`);
+                  process.exit(1);
+              }
+
+              console.log(`📁 Scanning directory: ${baseDir}`);
+
+              const scriptDirs = this.findScriptDirectories(baseDir);
+              
+              if (scriptDirs.length === 0) {
+                  console.log('❌ No script directories found');
+                  process.exit(1);
+              }
+
+              const selectedDir = await this.showScriptMenu(scriptDirs);
+              console.log(`✅ Selected: ${selectedDir.name}`);
+
+              const scripts = this.findSimulationScripts(selectedDir.path);
+              
+              if (scripts.length === 0) {
+                  console.log('❌ No simulation scripts found');
+                  process.exit(1);
+              }
+
+              while (true) {
+                  const selection = await this.showSimulationScriptMenu(scripts);
+                  
+                  if (selection === 'back') {
+                      return this.run();
+                  } else if (selection === 'all') {
+                      await this.runAllScripts(scripts);
+                      break;
+                  } else {
+                      await this.runSingleScript(selection);
+                      break;
+                  }
+              }
+
+          } catch (error) {
+              console.error('❌ Fatal error:', error.message);
+              process.exit(1);
+          } finally {
+              await this.cleanup();
+          }
+      }
+  }
 
 // Create and run the simulator
 const simulator = new SPMQTTSimulator();

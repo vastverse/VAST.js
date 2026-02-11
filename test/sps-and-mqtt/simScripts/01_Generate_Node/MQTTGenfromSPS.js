@@ -168,7 +168,7 @@ class SimulationAnalyzer {
         if (this.matcher) {
             const { name, distributed, host, port1, port2, port3, x, y, r } = this.matcher;
             output.push(`newMatcher ${name} ${distributed} ${host} ${port1} ${port2} ${port3} ${x} ${y} ${r}`);
-            output.push('wait 100');
+            output.push('wait 300');
             output.push('');
         }
 
@@ -176,17 +176,17 @@ class SimulationAnalyzer {
         for (const [client, clientData] of this.clients) {
             const { host, port, x, y, r } = clientData;
             output.push(`newClient ${client} ${host} ${port} ${x} ${y} ${r}`);
-            output.push('wait 100');
+            output.push('wait 300');
         }
         
         // Add big delay after all clients are created (matching the original pattern)
-        output.push('wait 10000');
+        output.push('wait 30000');
         output.push('');
 
         // Add MQTT topic subscriptions (no coordinates needed for MQTT)
         for (const sub of this.subscribes) {
             output.push(`subscribe ${sub.client} 0 0 0 ${sub.channel}`);
-            output.push('wait 100');
+            output.push('wait 300');
         }
         output.push('');
 
@@ -214,20 +214,20 @@ class SimulationAnalyzer {
                     for (let i = 0; i < mqttPublishCount; i++) {
                         const originalPub = channelPubs[i % channelPubs.length];
                         output.push(`publish ${originalPub.client} 0 0 0 ${pub.channel} "${originalPub.message}"`);
-                        output.push('wait 100');
+                        output.push('wait 300');
                     }
                 } else {
                     // If no subscribers, still include the original publish for completeness
                     for (const originalPub of channelPubs) {
                         output.push(`publish ${originalPub.client} 0 0 0 ${originalPub.channel} "${originalPub.message}"`);
-                        output.push('wait 100');
+                        output.push('wait 300');
                     }
                 }
                 output.push('');
             }
         }
 
-        output.push('wait 1000');
+        output.push('wait 3000');
         output.push('end');
 
         // Save to mqtt subfolder with same filename as original

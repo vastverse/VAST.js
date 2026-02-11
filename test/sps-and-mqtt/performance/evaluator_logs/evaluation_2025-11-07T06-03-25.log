@@ -1,0 +1,27 @@
+[2025-11-07T06:03:25.915Z] Performance Evaluator Started
+[2025-11-07T06:03:25.923Z] Config File: evaluation_config.txt
+[2025-11-07T06:03:25.923Z] 
+[2025-11-07T06:03:25.923Z] Loaded 2 evaluation configurations:
+[2025-11-07T06:03:25.924Z]   - SPS: ../SPS/logs_and_events/Client_events.txt
+[2025-11-07T06:03:25.924Z]   - MQTT: ../logs/mqtt_events/sim_test_uniform_1762494762066/mqtt_client_events_no_broker.txt
+[2025-11-07T06:03:25.924Z] 
+[2025-11-07T06:03:25.924Z] Processing: SPS (../SPS/logs_and_events/Client_events.txt)
+[2025-11-07T06:03:25.927Z]   Finished reading (2ms) - 151 events
+[2025-11-07T06:03:25.929Z] Processing: MQTT (../logs/mqtt_events/sim_test_uniform_1762494762066/mqtt_client_events_no_broker.txt)
+[2025-11-07T06:03:25.930Z]   Finished reading (1ms) - 182 events
+[2025-11-07T06:03:25.930Z] 
+[2025-11-07T06:03:25.930Z] ════════════════════════════════════════════════════════════
+[2025-11-07T06:03:25.930Z] ALL EVALUATIONS COMPLETED
+[2025-11-07T06:03:25.930Z] ════════════════════════════════════════════════════════════
+[2025-11-07T06:03:25.930Z] 
+[2025-11-07T06:03:25.931Z] SPS:
+[2025-11-07T06:03:25.931Z]   Delivery Rate: 100%
+[2025-11-07T06:03:25.931Z]   Latency (avg): 1.50ms
+[2025-11-07T06:03:25.931Z]   Undelivered: 0
+[2025-11-07T06:03:25.931Z] 
+[2025-11-07T06:03:25.931Z] MQTT:
+[2025-11-07T06:03:25.931Z]   Delivery Rate: 0%
+[2025-11-07T06:03:25.931Z]   Latency (avg): 4.00ms
+[2025-11-07T06:03:25.931Z]   Undelivered: 0
+[2025-11-07T06:03:25.931Z] 
+[2025-11-07T06:03:25.931Z] Log saved to: ./evaluator_logs/evaluation_2025-11-07T06-03-25.log

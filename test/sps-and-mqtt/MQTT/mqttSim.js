@@ -5,6 +5,20 @@ const net = require('net');
 const mqtt = require('mqtt');
 require('../../../lib/common');  // This will make Client_Event available globally
 
+// =====================================================
+// EVENT TYPE CONSTANTS
+// =====================================================
+const eventTypes = {
+    CLIENT_JOIN: 1,
+    CLIENT_CONNECT: 2,
+    CLIENT_LEAVE: 3,
+    CLIENT_MIGRATE: 4,
+    SUB_NEW: 6,
+    SUB_DELETE: 7,
+    PUB: 9,
+    RECEIVE_PUB: 10
+};
+
 class MQTTSimulator {
     constructor() {
         this.clients = {};
@@ -80,7 +94,7 @@ class MQTTSimulator {
         return 0;
     }
 
-        // Run multiple scripts sequentially
+    // Run multiple scripts sequentially
     async runAllScripts(mqttScripts) {
         console.log(`\n🎮 Running ${mqttScripts.length} scripts sequentially...\n`);
         
@@ -117,6 +131,7 @@ class MQTTSimulator {
         await this.cleanup();
         process.exit(0);
     }
+
     // Find MQTT scripts in a directory
     findMQTTScripts(scriptsDir) {
         const mqttScripts = [];
@@ -248,8 +263,6 @@ class MQTTSimulator {
         });
     }
 
-    // Run multiple scripts sequentially
- 
     async run() {
         try {
             console.log('🎯 MQTT Simulation Runner');
@@ -367,30 +380,36 @@ class MQTTSimulator {
         return prefix + '-' + Math.random().toString(36).substring(2, 7);
     }
 
+    // ✅ FIX 4: Use synchronous logging
     logVastEvent(eventObj) {
         const line = JSON.stringify(eventObj) + '\n';
-        fs.appendFile(this.EVENTS_LOG_PATH, line, err => {
-            if (err) console.error('Error writing to events log:', err);
-        });
+        try {
+            fs.appendFileSync(this.EVENTS_LOG_PATH, line);
+        } catch (err) {
+            console.error('Error writing to events log:', err);
+        }
     }
 
+    // ✅ FIX 4: Use synchronous logging
     logClientEvent(eventObj) {
         const line = JSON.stringify(eventObj) + '\n';
-        fs.appendFile(this.CLIENT_EVENTS_LOG_PATH, line, err => {
-            if (err) console.error('Error writing to client events log:', err);
-        });
+        try {
+            fs.appendFileSync(this.CLIENT_EVENTS_LOG_PATH, line);
+        } catch (err) {
+            console.error('Error writing to client events log:', err);
+        }
     }
 
     logBroker(message) {
         const timestamp = new Date().toISOString();
         const line = `[${timestamp}] ${message}\n`;
         console.log(`[BROKER] ${line.trim()}`);
-        fs.appendFile(this.BROKER_LOG_PATH, line, err => {
-            if (err) console.error('Error writing to broker log:', err);
-        });
-        fs.appendFile(this.EVENTS_LOG_PATH, line, err => {
-            if (err) console.error('Error writing to events log:', err);
-        });
+        try {
+            fs.appendFileSync(this.BROKER_LOG_PATH, line);
+            fs.appendFileSync(this.EVENTS_LOG_PATH, line);
+        } catch (err) {
+            console.error('Error writing to broker log:', err);
+        }
     }
 
     logClient(clientId, message) {
@@ -399,13 +418,17 @@ class MQTTSimulator {
         console.log(`[CLIENT ${clientId}] ${line.trim()}`);
         if (this.ENABLE_CLIENT_LOGS) {
             const clientLogPath = path.join(this.CLIENT_LOGS_DIR, `client_${clientId}.txt`);
-            fs.appendFile(clientLogPath, line, err => {
-                if (err) console.error(`Error writing to client ${clientId} log:`, err);
-            });
+            try {
+                fs.appendFileSync(clientLogPath, line);
+            } catch (err) {
+                console.error(`Error writing to client ${clientId} log:`, err);
+            }
         }
-        fs.appendFile(this.EVENTS_LOG_PATH, line, err => {
-            if (err) console.error('Error writing to events log:', err);
-        });
+        try {
+            fs.appendFileSync(this.EVENTS_LOG_PATH, line);
+        } catch (err) {
+            console.error('Error writing to events log:', err);
+        }
     }
 
     async startBroker(port = 1883) {
@@ -421,9 +444,11 @@ class MQTTSimulator {
                         subId = this.generateId('SUB');
                         this.subIdMap.set(subKey, subId);
                     }
+                    
+                    // ✅ FIX 4: Sync logging for broker subscriptions
                     this.logClientEvent({
                         time: Date.now(),
-                        event: Client_Event.SUB_NEW,
+                        event: eventTypes.SUB_NEW,
                         id: client.id,
                         alias: "unnamed_client",
                         matcher: 1,
@@ -450,7 +475,7 @@ class MQTTSimulator {
                     if (subId) {
                         this.logClientEvent({
                             time: Date.now(),
-                            event: Client_Event.SUB_DELETE,
+                            event: eventTypes.SUB_DELETE,
                             id: client.id,
                             alias: "unnamed_client",
                             matcher: 1,
@@ -491,6 +516,16 @@ class MQTTSimulator {
     createClient(clientId, host, port, x, y, r) {
         return new Promise((resolve, reject) => {
             const url = `mqtt://${host}:${port}`;
+            
+            // ✅ FIX 3: Setup timeout BEFORE creating connection
+            let connected = false;
+            const timeoutHandle = setTimeout(() => {
+                if (!connected) {
+                    client.end(true);
+                    reject(new Error(`Connection timeout after 30 seconds`));
+                }
+            }, 30000);
+
             const client = mqtt.connect(url, { 
                 clientId,
                 connectTimeout: 30000,
@@ -498,24 +533,23 @@ class MQTTSimulator {
                 clean: true
             });
             const clientPos = { x, y };
-
+    
             this.logClientEvent({
                 time: Date.now(),
-                event: Client_Event.CLIENT_JOIN,
+                event: eventTypes.CLIENT_JOIN,
                 id: clientId,
                 alias: clientId,
                 pos: clientPos,
                 matcher: 0
             });
-
-            let connected = false;
-
+    
             client.on('connect', () => {
                 connected = true;
+                clearTimeout(timeoutHandle);  // ✅ Clear timeout on successful connection
                 this.logClient(clientId, `Connected successfully to ${url}`);
                 this.logClientEvent({
                     time: Date.now(),
-                    event: Client_Event.CLIENT_CONNECT,
+                    event: eventTypes.CLIENT_CONNECT,
                     id: clientId,
                     alias: clientId,
                     pos: clientPos,
@@ -523,7 +557,7 @@ class MQTTSimulator {
                 });
                 this.logClientEvent({
                     time: Date.now(),
-                    event: Client_Event.CLIENT_MIGRATE,
+                    event: eventTypes.CLIENT_MIGRATE,
                     id: clientId,
                     alias: clientId,
                     pos: clientPos,
@@ -532,63 +566,58 @@ class MQTTSimulator {
                 this.clients[clientId] = client;
                 resolve(client);
             });
-
+    
             client.on('error', (err) => {
                 this.logClient(clientId, `Connection error: ${err.message}`);
                 if (!connected) {
+                    clearTimeout(timeoutHandle);
                     reject(err);
                 }
             });
-
+    
             client.on('close', () => {
                 this.logClient(clientId, `Connection closed`);
                 if (!connected) {
+                    clearTimeout(timeoutHandle);
                     reject(new Error('Connection closed before connecting'));
                 }
                 this.logClientEvent({
                     time: Date.now(),
-                    event: Client_Event.CLIENT_LEAVE,
+                    event: eventTypes.CLIENT_LEAVE,
                     id: clientId,
                     alias: "unnamed_client",
                     pos: clientPos,
                     matcher: 1
                 });
             });
-
+    
             // Message handler with latency measurement
             client.on('message', (topic, message) => {
                 let pubId = null;
                 let cleanMsg = '';
                 
                 try {
-                    // Try JSON parsing first
                     const obj = JSON.parse(message.toString());
                     pubId = obj.pubId;
                     cleanMsg = obj.message;
-                    
                 } catch (parseError) {
-                    // Fallback to regex for backwards compatibility
                     let msgStr = message.toString();
-                    const pubIdPattern = / $$pub-id: ([^$$]+)\]$/;
+                    const pubIdPattern = / \$\$pub-id: ([^\$]+)\]\$/;
                     const match = msgStr.match(pubIdPattern);
                     if (match) {
                         pubId = match[1];
                         cleanMsg = msgStr.replace(pubIdPattern, '');
-                                        } else {
-                        // If no pubId found, use the raw message
+                    } else {
                         cleanMsg = msgStr;
                     }
                 }
                 
-                // Calculate latency
                 const receiveTimestamp = Date.now();
                 const publishTimestamp = this.publishTimestamps.get(pubId);
                 const latency = publishTimestamp ? receiveTimestamp - publishTimestamp : null;
                 
-                // Look up publisher info
                 let pubInfo = pubId ? this.pubInfoByPubId.get(pubId) : null;
                 if (!pubInfo) {
-                    // If not found, fallback to receiver's info
                     pubInfo = {
                         clientID: clientId,
                         pubID: pubId,
@@ -600,7 +629,7 @@ class MQTTSimulator {
                 
                 this.logClientEvent({
                     time: receiveTimestamp,
-                    event: Client_Event.RECEIVE_PUB,
+                    event: eventTypes.RECEIVE_PUB,
                     id: clientId,
                     alias: clientId,
                     matcher: 1,
@@ -627,21 +656,11 @@ class MQTTSimulator {
                     }
                 });
                 
-                // Clean up publish timestamp after calculating latency
+                // ✅ FIX 4: Synchronously delete immediately
                 if (pubId && this.publishTimestamps.has(pubId)) {
-                    setTimeout(() => {
-                        this.publishTimestamps.delete(pubId);
-                    }, 100);
+                    this.publishTimestamps.delete(pubId);
                 }
             });
-
-            // Add timeout for connection
-            setTimeout(() => {
-                if (!connected) {
-                    client.end(true);
-                    reject(new Error(`Connection timeout after 30 seconds`));
-                }
-            }, 30000);
         });
     }
 
@@ -689,6 +708,12 @@ class MQTTSimulator {
                 const x = parseFloat(parts[4]);
                 const y = parseFloat(parts[5]);
                 const r = parseFloat(parts[6]);
+                
+                // ✅ Validate coordinates
+                if (isNaN(x) || isNaN(y) || isNaN(r)) {
+                    throw new Error(`Invalid coordinates at line ${lineNumber}`);
+                }
+                
                 this.logClient(clientId, `Creating connection to ${clientHost}:${this.brokerPort}`);
                 try {
                     await this.createClient(clientId, clientHost, this.brokerPort, x, y, r);
@@ -701,23 +726,27 @@ class MQTTSimulator {
 
             case 'wait': {
                 const waitTime = parseInt(parts[1]);
+                if (isNaN(waitTime)) {
+                    throw new Error(`Invalid wait time at line ${lineNumber}`);
+                }
                 this.logBroker(`Waiting for ${waitTime} ms`);
-                await new Promise(resolve => setTimeout(resolve, waitTime));
+                await this.wait(waitTime);
                 break;
             }
 
             case 'subscribe': {
                 const subClientId = parts[1];
-                const topic = parts[5];
+                const subAoiX = parseFloat(parts[2]);
+                const subAoiY = parseFloat(parts[3]);
+                const subAoiR = parseFloat(parts[4]);
+                const topic = parts.slice(5).join(' ');
+                
+                // ✅ Validate coordinates
+                if (isNaN(subAoiX) || isNaN(subAoiY) || isNaN(subAoiR)) {
+                    throw new Error(`Invalid AoI coordinates at line ${lineNumber}`);
+                }
                 
                 if (this.clients[subClientId]) {
-                    this.logClient(subClientId, `Attempting to subscribe to topic: "${topic}"`);
-                    
-                    if (!topic || topic === '') {
-                        this.logClient(subClientId, `ERROR: Empty topic for subscribe command`);
-                        break;
-                    }
-                    
                     const subKey = subClientId + ':' + topic;
                     let subId = this.subIdMap.get(subKey);
                     if (!subId) {
@@ -725,14 +754,37 @@ class MQTTSimulator {
                         this.subIdMap.set(subKey, subId);
                     }
                     
+                    // ✅ FIX 1: Log subscription event BEFORE calling subscribe
+                    this.logClientEvent({
+                        time: Date.now(),
+                        event: eventTypes.SUB_NEW,
+                        id: subClientId,
+                        alias: subClientId,
+                        matcher: 1,
+                        sub: {
+                            hostID: 1,
+                            hostPos: { x: 500, y: 500 },
+                            clientID: subClientId,
+                            subID: subId,
+                            channel: topic,
+                            aoi: { center: { x: subAoiX, y: subAoiY }, radius: subAoiR },
+                            recipients: [],
+                            heartbeat: Date.now()
+                        }
+                    });
+                    
+                    this.logClient(subClientId, `Attempting to subscribe to topic: "${topic}" [${subId}]`);
+                    
+                    if (!topic || topic === '') {
+                        this.logClient(subClientId, `ERROR: Empty topic for subscribe command`);
+                        break;
+                    }
+                    
                     this.clients[subClientId].subscribe(topic, (err, granted) => {
                         if (err) {
                             this.logClient(subClientId, `Failed to subscribe to ${topic}: ${err.message}`);
                         } else {
-                            this.logClient(subClientId, `Successfully subscribed to "${topic}" [sub-id: ${subId}]`);
-                            if (granted && granted.length > 0) {
-                                this.logClient(subClientId, `Subscription to '${topic}' granted with QoS ${granted[0].qos}`);
-                            }
+                            this.logClient(subClientId, `Successfully subscribed to "${topic}"`);
                         }
                     });
                 } else {
@@ -740,57 +792,23 @@ class MQTTSimulator {
                 }
                 break;
             }
-
-            case 'unsubscribe': {
-                const unsubClientId = parts[1];
-                const unsubTopic = parts[5];
-                if (this.clients[unsubClientId]) {
-                    const subKey = unsubClientId + ':' + unsubTopic;
-                    const subId = this.subIdMap.get(subKey);
-                    if (subId) {
-                        this.clients[unsubClientId].unsubscribe(unsubTopic, (err) => {
-                            if (err) {
-                                this.logClient(unsubClientId, `Failed to unsubscribe from ${unsubTopic}: ${err.message}`);
-                            } else {
-                                this.logClient(unsubClientId, `Unsubscribing from ${unsubTopic} [sub-id: ${subId}]`);
-                            }
-                        });
-                    } else {
-                        this.logClient(unsubClientId, `No subscription found for topic ${unsubTopic}`);
-                    }
-                } else {
-                    this.logBroker(`Client ${unsubClientId} not found for unsubscribe`);
-                }
-                break;
-            }
-
+            
             case 'publish': {
                 const pubClientId = parts[1];
+                const pubAoiX = parseFloat(parts[2]);
+                const pubAoiY = parseFloat(parts[3]);
+                const pubAoiR = parseFloat(parts[4]);
                 const pubTopic = parts[5];
+                const message = parts.slice(6).join(' ').replace(/^"|"$/g, '');
                 
-                // Handle quoted messages properly
-                let message = '';
-                if (parts.length > 3) {
-                    message = parts.slice(5).join(' ');
-                    if (message.startsWith('"') && message.endsWith('"')) {
-                        message = message.slice(1, -1);
-                    }
+                // ✅ Validate coordinates
+                if (isNaN(pubAoiX) || isNaN(pubAoiY) || isNaN(pubAoiR)) {
+                    throw new Error(`Invalid AoI coordinates at line ${lineNumber}`);
                 }
                 
-                this.logClient(pubClientId, `Attempting to publish to topic: "${pubTopic}" with message: "${message}"`);
-                
-                if (!pubTopic || pubTopic === '') {
-                    this.logClient(pubClientId, `ERROR: Empty topic for publish command`);
-                    break;
-                }
-                
-                // For MQTT, use defaults since we don't have spatial coordinates
-                const clientPos = { x: 0, y: 0 };
-                const clientRadius = 100;
-                const pubAoi = { center: clientPos, radius: clientRadius };
-
+                const pubAoi = { center: { x: pubAoiX, y: pubAoiY }, radius: pubAoiR };
+            
                 if (this.clients[pubClientId]) {
-                    // Generate a single pubID
                     const pubKey = pubClientId + ':' + pubTopic + ':' + message;
                     let pubId = this.pubIdMap.get(pubKey);
                     if (!pubId) {
@@ -798,11 +816,9 @@ class MQTTSimulator {
                         this.pubIdMap.set(pubKey, pubId);
                     }
                     
-                    // Store publish timestamp for latency calculation
                     const publishTimestamp = Date.now();
                     this.publishTimestamps.set(pubId, publishTimestamp);
                     
-                    // Store reverse mapping for receive log
                     this.pubInfoByPubId.set(pubId, {
                         clientID: pubClientId,
                         topic: pubTopic,
@@ -810,7 +826,23 @@ class MQTTSimulator {
                         aoi: pubAoi
                     });
                     
-                    // Create JSON payload
+                    // ✅ FIX 1: Log PUB event with correct event type
+                    this.logClientEvent({
+                        time: publishTimestamp,
+                        event: eventTypes.PUB,
+                        id: pubClientId,
+                        alias: pubClientId,
+                        matcher: 1,
+                        pub: {
+                            pubID: pubId,
+                            clientID: pubClientId,
+                            aoi: pubAoi,
+                            channel: pubTopic,
+                            payload: message,
+                            recipients: []
+                        }
+                    });
+                    
                     const payloadObj = {
                         message: message,
                         pubId: pubId
@@ -819,30 +851,9 @@ class MQTTSimulator {
                     
                     this.clients[pubClientId].publish(pubTopic, payloadWithId, { qos: 0 }, (err) => {
                         if (err) {
-                            this.logClient(pubClientId, `Failed to publish to ${pubTopic}: ${err.message}`);
+                            this.logClient(pubClientId, `Failed to publish: ${err.message}`);
                         } else {
-                            this.logClient(pubClientId, `Successfully published to "${pubTopic}": "${message}" [pub-id: ${pubId}]`);
-                            
-                            // Log PUB event with publish timestamp
-                            this.logClientEvent({
-                                time: Date.now(),
-                                event: Client_Event.PUB,
-                                id: pubClientId,
-                                alias: "unnamed_client",
-                                matcher: 1,
-                                pub: {
-                                    pubID: pubId,
-                                    aoi: pubAoi,
-                                    channel: pubTopic,
-                                    payload: message
-                                },
-                                latency: {
-                                    publish: {
-                                        timestamp: publishTimestamp,
-                                        pubid: pubId
-                                    }
-                                }
-                            });
+                            this.logClient(pubClientId, `Published to ${pubTopic}: ${message} [pub-id: ${pubId}]`);
                         }
                     });
                 } else {
@@ -851,9 +862,46 @@ class MQTTSimulator {
                 break;
             }
 
-            case 'end':
+            case 'unsubscribe': {
+                const unsubClientId = parts[1];
+                const unsubTopic = parts.slice(5).join(' ');
+                if (this.clients[unsubClientId]) {
+                    const subKey = unsubClientId + ':' + unsubTopic;
+                    const subId = this.subIdMap.get(subKey);
+                    if (subId) {
+                        // ✅ FIX 1: Log SUB_DELETE event
+                        this.logClientEvent({
+                            time: Date.now(),
+                            event: eventTypes.SUB_DELETE,
+                            id: unsubClientId,
+                            alias: unsubClientId,
+                            matcher: 1,
+                            subID: subId
+                        });
+                        
+                        this.clients[unsubClientId].unsubscribe(unsubTopic, (err) => {
+                            if (err) {
+                                this.logClient(unsubClientId, `Failed to unsubscribe from ${unsubTopic}: ${err.message}`);
+                            } else {
+                                this.logClient(unsubClientId, `Unsubscribing from ${unsubTopic} [sub-id: ${subId}]`);
+                            }
+                        });
+                        this.subIdMap.delete(subKey);
+                    } else {
+                        this.logClient(unsubClientId, `No subscription found for topic ${unsubTopic}`);
+                    }
+                } else {
+                    this.logBroker(`Client ${unsubClientId} not found for unsubscribe`);
+                }
+                break;
+            }
+            
+            case 'end': {
                 this.logBroker("Simulation ended.");
+                // ✅ FIX 2: Give time for pending writes before exiting
+                await this.wait(500);
                 return true;
+            }
 
             default:
                 this.logBroker(`Unknown command at line ${lineNumber}: ${command}`);
@@ -922,3 +970,5 @@ process.on('unhandledRejection', (reason, p) => {
 process.on('uncaughtException', (error) => {
     console.error('Uncaught Exception:', error);
 });
+
+module.exports = MQTTSimulator;

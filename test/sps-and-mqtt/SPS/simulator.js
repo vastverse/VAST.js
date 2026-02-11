@@ -21,8 +21,11 @@ var clientIDs2alias = {};
 var instructions = [];
 
 // Dynamic script file path
-// const SCRIPT_FILE = path.join(__dirname, '..', './simScripts/01_Generate_Node/Scripts_2025-08-12_08-28-39/sps/simulation_test_uniform.txt');
-const SCRIPT_FILE = path.join(__dirname, '..', './simScripts/simulationScript.txt');
+// /Users/vo/Documents/vast_dev/vast_js_experiments/VAST.js/test/sps-and-mqtt/simScripts/01_Generate_Node/Scripts_2025-11-07_05-40-01/sps/simulation_test_uniform.txt
+const SCRIPT_FILE = path.join(__dirname, '..', './simScripts/01_Generate_Node/Scripts_2025-11-07_07-50-43/sps/simulation_test_uniform.txt');
+// const SCRIPT_FILE = path.join(__dirname, '..', './simScripts/simulationScript.txt');
+
+///Users/vo/Documents/vast_dev/vast_js_experiments/VAST.js/test/sps-and-mqtt/simScripts/simulationScript.txt
 
 // Add timestamp to log messages
 function logWithTimestamp(message) {

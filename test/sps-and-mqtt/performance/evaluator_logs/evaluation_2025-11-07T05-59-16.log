@@ -1,0 +1,35 @@
+[2025-11-07T05:59:16.221Z] Performance Evaluator Started
+[2025-11-07T05:59:16.227Z] Config File: evaluation_config.txt
+[2025-11-07T05:59:16.227Z] 
+[2025-11-07T05:59:16.227Z] Loaded 3 evaluation configurations:
+[2025-11-07T05:59:16.227Z]   - SPS: ../SPS/logs_and_events/Client_events.txt
+[2025-11-07T05:59:16.227Z]   - MQTT: ../logs/mqtt_events/sim_test_uniform_1762494762066/mqtt_client_events_no_broker.txt
+[2025-11-07T05:59:16.227Z]   - SP-MQTT: ../logs/spmqtt_events/sim_test_uniform_1762494783567/spmqtt_client_events_no_broker.txt
+[2025-11-07T05:59:16.227Z] 
+[2025-11-07T05:59:16.228Z] Processing: SPS (../SPS/logs_and_events/Client_events.txt)
+[2025-11-07T05:59:16.230Z]   Finished reading (2ms) - 151 events
+[2025-11-07T05:59:16.231Z] Processing: MQTT (../logs/mqtt_events/sim_test_uniform_1762494762066/mqtt_client_events_no_broker.txt)
+[2025-11-07T05:59:16.233Z]   Finished reading (1ms) - 182 events
+[2025-11-07T05:59:16.233Z] Processing: SP-MQTT (../logs/spmqtt_events/sim_test_uniform_1762494783567/spmqtt_client_events_no_broker.txt)
+[2025-11-07T05:59:16.234Z]   Finished reading (1ms) - 164 events
+[2025-11-07T05:59:16.234Z] 
+[2025-11-07T05:59:16.235Z] ════════════════════════════════════════════════════════════
+[2025-11-07T05:59:16.235Z] ALL EVALUATIONS COMPLETED
+[2025-11-07T05:59:16.235Z] ════════════════════════════════════════════════════════════
+[2025-11-07T05:59:16.235Z] 
+[2025-11-07T05:59:16.235Z] SPS:
+[2025-11-07T05:59:16.235Z]   Delivery Rate: 100%
+[2025-11-07T05:59:16.235Z]   Latency (avg): 1.50ms
+[2025-11-07T05:59:16.235Z]   Undelivered: 0
+[2025-11-07T05:59:16.235Z] 
+[2025-11-07T05:59:16.235Z] MQTT:
+[2025-11-07T05:59:16.235Z]   Delivery Rate: 0%
+[2025-11-07T05:59:16.235Z]   Latency (avg): 4.00ms
+[2025-11-07T05:59:16.235Z]   Undelivered: 0
+[2025-11-07T05:59:16.235Z] 
+[2025-11-07T05:59:16.236Z] SP-MQTT:
+[2025-11-07T05:59:16.236Z]   Delivery Rate: 0%
+[2025-11-07T05:59:16.236Z]   Latency (avg): N/Ams
+[2025-11-07T05:59:16.236Z]   Undelivered: 0
+[2025-11-07T05:59:16.236Z] 
+[2025-11-07T05:59:16.236Z] Log saved to: ./evaluator_logs/evaluation_2025-11-07T05-59-16.log

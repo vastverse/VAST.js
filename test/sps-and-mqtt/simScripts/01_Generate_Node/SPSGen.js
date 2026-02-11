@@ -139,7 +139,7 @@ class ScriptGenerator {
         const clientRegistry = {};
 
         if (config.mode === 'centralized') {
-            script += `newMatcher GW true localhost 8000 8001 20000 500 500 100\nwait 100\n`;
+            script += `newMatcher GW true localhost 8000 8001 20000 500 500 100\nwait 300\n`;
         }
 
         // Create all clients with their subscriptions immediately after
@@ -151,11 +151,11 @@ class ScriptGenerator {
         });
 
         // Add big delay after all clients are created and subscribed
-        script += 'wait 10000\n';
+        script += 'wait 30000\n';
 
         // Generate publications
         script += this.generatePublicationsFromRegistry(clientRegistry);
-        script += 'wait 1000\nend\n';
+        script += 'wait 3000\nend\n';
         
         return script;
     }
@@ -176,14 +176,14 @@ class ScriptGenerator {
         for (let i = 0; i < warehouses; i++) {
             const coords = ZoneManager.getRandomCoordinatesInZone(zone);
             const radius = ZoneManager.calculateZoneRadius(zone);
-            const clientName = `WH_${zone.name}_${i + 1}`;
+            const clientName = `WH${zone.name}${i + 1}`;
             
             clients.warehouses.push({ name: clientName, coords, radius });
-            script += `\nnewClient ${clientName} localhost 20000 ${coords.x} ${coords.y} ${radius}\nwait 100\n`;
+            script += `\nnewClient ${clientName} localhost 20000 ${coords.x} ${coords.y} ${radius}\nwait 300\n`;
             
             // Add subscriptions immediately after client creation
             TOPICS.WAREHOUSE.SUBSCRIBE.forEach(topic => {
-                script += `subscribe ${clientName} ${coords.x} ${coords.y} ${radius} ${topic}\nwait 100\n`;
+                script += `subscribe ${clientName} ${coords.x} ${coords.y} ${radius} ${topic}\nwait 300\n`;
             });
         }
 
@@ -191,14 +191,14 @@ class ScriptGenerator {
         for (let i = 0; i < trucks; i++) {
             const coords = ZoneManager.getRandomCoordinatesInZone(zone);
             const radius = ZoneManager.calculateZoneRadius(zone);
-            const clientName = `TR_${zone.name}_${i + 1}`;
+            const clientName = `TR${zone.name}${i + 1}`;
             
             clients.trucks.push({ name: clientName, coords, radius });
-            script += `newClient ${clientName} localhost 20000 ${coords.x} ${coords.y} ${radius}\nwait 100\n`;
+            script += `newClient ${clientName} localhost 20000 ${coords.x} ${coords.y} ${radius}\nwait 300\n`;
             
             // Add subscriptions immediately after client creation
             TOPICS.TRUCK.SUBSCRIBE.forEach(topic => {
-                script += `subscribe ${clientName} ${coords.x} ${coords.y} ${radius} ${topic}\nwait 100\n`;
+                script += `subscribe ${clientName} ${coords.x} ${coords.y} ${radius} ${topic}\nwait 300\n`;
             });
         }
 
@@ -206,14 +206,14 @@ class ScriptGenerator {
         for (let i = 0; i < customers; i++) {
             const coords = ZoneManager.getRandomCoordinatesInZone(zone);
             const radius = ZoneManager.calculateZoneRadius(zone);
-            const clientName = `CS_${zone.name}_${i + 1}`;
+            const clientName = `CS${zone.name}${i + 1}`;
             
             clients.customers.push({ name: clientName, coords, radius });
-            script += `newClient ${clientName} localhost 20000 ${coords.x} ${coords.y} ${radius}\nwait 100\n`;
+            script += `newClient ${clientName} localhost 20000 ${coords.x} ${coords.y} ${radius}\nwait 300\n`;
             
             // Add subscriptions immediately after client creation
             TOPICS.CUSTOMER.SUBSCRIBE.forEach(topic => {
-                script += `subscribe ${clientName} ${coords.x} ${coords.y} ${radius} ${topic}\nwait 100\n`;
+                script += `subscribe ${clientName} ${coords.x} ${coords.y} ${radius} ${topic}\nwait 300\n`;
             });
         }
 
@@ -227,21 +227,21 @@ class ScriptGenerator {
             // Warehouses subscribe
             clients.warehouses.forEach(client => {
                 TOPICS.WAREHOUSE.SUBSCRIBE.forEach(topic => {
-                    script += `subscribe ${client.name} ${client.coords.x} ${client.coords.y} ${client.radius} ${topic}\nwait 100\n`;
+                    script += `subscribe ${client.name} ${client.coords.x} ${client.coords.y} ${client.radius} ${topic}\nwait 300\n`;
                 });
             });
 
             // Trucks subscribe
             clients.trucks.forEach(client => {
                 TOPICS.TRUCK.SUBSCRIBE.forEach(topic => {
-                    script += `subscribe ${client.name} ${client.coords.x} ${client.coords.y} ${client.radius} ${topic}\nwait 100\n`;
+                    script += `subscribe ${client.name} ${client.coords.x} ${client.coords.y} ${client.radius} ${topic}\nwait 300\n`;
                 });
             });
 
             // Customers subscribe
             clients.customers.forEach(client => {
                 TOPICS.CUSTOMER.SUBSCRIBE.forEach(topic => {
-                    script += `subscribe ${client.name} ${client.coords.x} ${client.coords.y} ${client.radius} ${topic}\nwait 100\n`;
+                    script += `subscribe ${client.name} ${client.coords.x} ${client.coords.y} ${client.radius} ${topic}\nwait 300\n`;
                 });
             });
         });
@@ -250,27 +250,27 @@ class ScriptGenerator {
     }
 
     static generatePublicationsFromRegistry(clientRegistry) {
-        let script = 'wait 10000\n';
+        let script = 'wait 30000\n';
         
         Object.entries(clientRegistry).forEach(([zoneName, clients]) => {
             // Warehouses publish
             clients.warehouses.forEach(client => {
                 TOPICS.WAREHOUSE.PUBLISH.forEach(topic => {
-                    script += `publish ${client.name} ${client.coords.x} ${client.coords.y} ${client.radius} ${topic} "Sample ${topic} message"\nwait 100\n`;
+                    script += `publish ${client.name} ${client.coords.x} ${client.coords.y} ${client.radius} ${topic} "Sample ${topic} message"\nwait 300\n`;
                 });
             });
 
             // Trucks publish
             clients.trucks.forEach(client => {
                 TOPICS.TRUCK.PUBLISH.forEach(topic => {
-                    script += `publish ${client.name} ${client.coords.x} ${client.coords.y} ${client.radius} ${topic} "Sample ${topic} message"\nwait 100\n`;
+                    script += `publish ${client.name} ${client.coords.x} ${client.coords.y} ${client.radius} ${topic} "Sample ${topic} message"\nwait 300\n`;
                 });
             });
 
             // Customers publish
             clients.customers.forEach(client => {
                 TOPICS.CUSTOMER.PUBLISH.forEach(topic => {
-                    script += `publish ${client.name} ${client.coords.x} ${client.coords.y} ${client.radius} ${topic} "Sample ${topic} message"\nwait 100\n`;
+                    script += `publish ${client.name} ${client.coords.x} ${client.coords.y} ${client.radius} ${topic} "Sample ${topic} message"\nwait 300\n`;
                 });
             });
         });

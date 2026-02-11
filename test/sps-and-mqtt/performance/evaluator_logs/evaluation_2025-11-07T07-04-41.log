@@ -1,0 +1,76 @@
+[2025-11-07T07:04:41.420Z] Performance Evaluator Started
+[2025-11-07T07:04:41.426Z] Config File: evaluation_config.txt
+[2025-11-07T07:04:41.426Z] 
+[2025-11-07T07:04:41.426Z] Loaded 3 evaluation configurations:
+[2025-11-07T07:04:41.426Z]   - SPS: ../SPS/logs_and_events/Client_events.txt
+[2025-11-07T07:04:41.426Z]   - MQTT: ../logs/mqtt_events/sim_test_uniform_1762496550552/mqtt_client_events_no_broker.txt
+[2025-11-07T07:04:41.426Z]   - SP-MQTT: ../logs/spmqtt_events/sim_test_uniform_1762498905334/spmqtt_client_events_no_broker.txt
+[2025-11-07T07:04:41.427Z] 
+[2025-11-07T07:04:41.427Z] Processing: SPS (../SPS/logs_and_events/Client_events.txt)
+[2025-11-07T07:04:41.430Z]   Finished reading (2ms) - 151 events
+[2025-11-07T07:04:41.431Z]   Event type breakdown: {"0":16,"2":16,"4":16,"6":48,"8":1,"9":52,"10":2}
+[2025-11-07T07:04:41.431Z]     1=CLIENT_JOIN, 2=CLIENT_CONNECT, 3=CLIENT_LEAVE, 4=CLIENT_MIGRATE
+[2025-11-07T07:04:41.431Z]     6=SUB_NEW, 7=SUB_DELETE, 9=PUB, 10=RECEIVE_PUB
+[2025-11-07T07:04:41.432Z]   Collected: 48 subscriptions, 52 publications, 2 receipts
+[2025-11-07T07:04:41.432Z]   System: SPS/SPMQTT (with AoI filtering)
+[2025-11-07T07:04:41.432Z]   Matching details: 2 total matches (channel mismatches: 2304, AoI mismatches: 190)
+[2025-11-07T07:04:41.432Z]   Receipt matching: 2 matched, 0 unmatched
+[2025-11-07T07:04:41.433Z]   Metrics: 2 expected, 2 received, 0 undelivered
+[2025-11-07T07:04:41.433Z]   Latency stats - Min: 1.00ms, Max: 2.00ms, Avg: 1.50ms, Median: 1.50ms
+[2025-11-07T07:04:41.433Z] Processing: MQTT (../logs/mqtt_events/sim_test_uniform_1762496550552/mqtt_client_events_no_broker.txt)
+[2025-11-07T07:04:41.434Z]   Finished reading (1ms) - 234 events
+[2025-11-07T07:04:41.435Z]   Event type breakdown: {"1":16,"2":16,"3":16,"4":16,"6":96,"7":48,"9":14,"10":12}
+[2025-11-07T07:04:41.435Z]     1=CLIENT_JOIN, 2=CLIENT_CONNECT, 3=CLIENT_LEAVE, 4=CLIENT_MIGRATE
+[2025-11-07T07:04:41.435Z]     6=SUB_NEW, 7=SUB_DELETE, 9=PUB, 10=RECEIVE_PUB
+[2025-11-07T07:04:41.435Z]   Collected: 96 subscriptions, 14 publications, 12 receipts
+[2025-11-07T07:04:41.435Z]   System: MQTT (channel-only)
+[2025-11-07T07:04:41.435Z]   Matching details: 12 total matches (channel mismatches: 660, AoI mismatches: 0)
+[2025-11-07T07:04:41.435Z]   Receipt matching: 12 matched, 0 unmatched
+[2025-11-07T07:04:41.435Z]   Metrics: 12 expected, 12 received, 0 undelivered
+[2025-11-07T07:04:41.435Z]   Latency stats - Min: 2.00ms, Max: 7.00ms, Avg: 4.58ms, Median: 5.50ms
+[2025-11-07T07:04:41.435Z] Processing: SP-MQTT (../logs/spmqtt_events/sim_test_uniform_1762498905334/spmqtt_client_events_no_broker.txt)
+[2025-11-07T07:04:41.436Z]   Finished reading (1ms) - 164 events
+[2025-11-07T07:04:41.436Z]   Event type breakdown: {"1":16,"2":16,"3":16,"4":16,"6":48,"9":52}
+[2025-11-07T07:04:41.436Z]     1=CLIENT_JOIN, 2=CLIENT_CONNECT, 3=CLIENT_LEAVE, 4=CLIENT_MIGRATE
+[2025-11-07T07:04:41.437Z]     6=SUB_NEW, 7=SUB_DELETE, 9=PUB, 10=RECEIVE_PUB
+[2025-11-07T07:04:41.437Z]   Collected: 48 subscriptions, 52 publications, 0 receipts
+[2025-11-07T07:04:41.437Z]   System: SPS/SPMQTT (with AoI filtering)
+[2025-11-07T07:04:41.437Z]   Matching details: 2 total matches (channel mismatches: 2304, AoI mismatches: 190)
+[2025-11-07T07:04:41.437Z]   Receipt matching: 0 matched, 0 unmatched
+[2025-11-07T07:04:41.437Z]   Metrics: 2 expected, 0 received, 2 undelivered
+[2025-11-07T07:04:41.437Z] 
+[2025-11-07T07:04:41.437Z] ════════════════════════════════════════════════════════════
+[2025-11-07T07:04:41.437Z] ALL EVALUATIONS COMPLETED
+[2025-11-07T07:04:41.437Z] ════════════════════════════════════════════════════════════
+[2025-11-07T07:04:41.437Z] 
+[2025-11-07T07:04:41.437Z] SPS:
+[2025-11-07T07:04:41.437Z]   Delivery Rate: 100%
+[2025-11-07T07:04:41.437Z]   Total Expected: 2
+[2025-11-07T07:04:41.437Z]   Total Received: 2
+[2025-11-07T07:04:41.438Z]   Latency (avg): 1.50ms
+[2025-11-07T07:04:41.438Z]   Latency (min): 1.00ms
+[2025-11-07T07:04:41.438Z]   Latency (max): 2.00ms
+[2025-11-07T07:04:41.438Z]   Undelivered: 0
+[2025-11-07T07:04:41.438Z]   Duplicates: 0
+[2025-11-07T07:04:41.438Z] 
+[2025-11-07T07:04:41.438Z] MQTT:
+[2025-11-07T07:04:41.438Z]   Delivery Rate: 100%
+[2025-11-07T07:04:41.438Z]   Total Expected: 12
+[2025-11-07T07:04:41.438Z]   Total Received: 12
+[2025-11-07T07:04:41.439Z]   Latency (avg): 4.58ms
+[2025-11-07T07:04:41.439Z]   Latency (min): 2.00ms
+[2025-11-07T07:04:41.439Z]   Latency (max): 7.00ms
+[2025-11-07T07:04:41.439Z]   Undelivered: 0
+[2025-11-07T07:04:41.439Z]   Duplicates: 0
+[2025-11-07T07:04:41.439Z] 
+[2025-11-07T07:04:41.439Z] SP-MQTT:
+[2025-11-07T07:04:41.439Z]   Delivery Rate: 0%
+[2025-11-07T07:04:41.439Z]   Total Expected: 2
+[2025-11-07T07:04:41.439Z]   Total Received: 0
+[2025-11-07T07:04:41.439Z]   Latency (avg): N/Ams
+[2025-11-07T07:04:41.439Z]   Latency (min): N/Ams
+[2025-11-07T07:04:41.439Z]   Latency (max): N/Ams
+[2025-11-07T07:04:41.439Z]   Undelivered: 2
+[2025-11-07T07:04:41.439Z]   Duplicates: 0
+[2025-11-07T07:04:41.439Z] 
+[2025-11-07T07:04:41.439Z] Log saved to: ./evaluator_logs/evaluation_2025-11-07T07-04-41.log
